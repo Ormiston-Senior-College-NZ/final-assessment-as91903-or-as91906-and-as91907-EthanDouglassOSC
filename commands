@@ -1,0 +1,6 @@
+cd ~/Documents/final-assessment-as91903-or-as91906-and-as91907-EthanDouglassOSC
+source venv/bin/activate
+python backend/app.py
+
+cd ~/Documents/final-assessment-as91903-or-as91906-and-as91907-EthanDouglassOSC/frontend
+npm start

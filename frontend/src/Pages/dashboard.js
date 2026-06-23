@@ -1,9 +1,11 @@
+import Layout from "../Components/layout";
+
 function Dashboard() {
   return (
-    <div>
-      <h1>Welcome to StudentNET</h1>
-      <p>Dashboard</p>
-    </div>
+    <Layout>
+      <h1>StudentNET</h1>
+      <p>Welcome Ethan!</p>
+    </Layout>
   );
 }
 

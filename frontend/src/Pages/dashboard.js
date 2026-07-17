@@ -1,11 +1,15 @@
-import Layout from "../Components/layout";
+import "./dashboard.css";
 
 function Dashboard() {
   return (
-    <Layout>
-      <h1>StudentNET</h1>
-      <p>Welcome Ethan!</p>
-    </Layout>
+    <div className="dashboard">
+      <div className="welcome-card">
+        <h1>Good Morning, Ethan 👋</h1>
+        <p>Welcome back to OSC StudentNET</p>
+      </div>
+
+      {/* rest of dashboard */}
+    </div>
   );
 }
 

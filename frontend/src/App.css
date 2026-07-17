@@ -45,3 +45,173 @@ body {
   color: red;
   text-align: center;
 }
+
+:root {
+  --osc-orange: #E2883A;
+  --osc-orange-dark: #C97324;
+  --osc-dark: #1a1a1a;
+  --osc-gray: #6b6b6b;
+  --osc-bg: #f7f7f8;
+}
+
+.dashboard {
+  padding: 32px 40px;
+  background: var(--osc-bg);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 26px;
+  color: var(--osc-dark);
+}
+
+.dashboard-subtitle {
+  margin: 4px 0 0;
+  color: var(--osc-gray);
+  font-size: 14px;
+}
+
+.attendance-badge {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.attendance-ring {
+  width: 64px;
+  height: 64px;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--osc-orange);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.attendance-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.attendance-value {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--osc-dark);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--osc-orange-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notices-card li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notice-icon {
+  font-size: 18px;
+}
+
+.notice-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--osc-dark);
+}
+
+.notice-subtitle {
+  font-size: 12px;
+  color: var(--osc-gray);
+}
+
+.upcoming-card li,
+.assessments-card li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.upcoming-subject,
+.assessment-code {
+  font-weight: 600;
+  color: var(--osc-dark);
+}
+
+.upcoming-detail {
+  color: var(--osc-gray);
+}
+
+.assessment-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.status-complete {
+  background: #e3f6e8;
+  color: #2e8b47;
+}
+
+.status-in-progress {
+  background: #fff3e0;
+  color: var(--osc-orange-dark);
+}
+
+.status-not-started {
+  background: #f1f1f1;
+  color: var(--osc-gray);
+}
+
+.dashboard-loading {
+  padding: 60px;
+  text-align: center;
+  color: var(--osc-gray);
+}

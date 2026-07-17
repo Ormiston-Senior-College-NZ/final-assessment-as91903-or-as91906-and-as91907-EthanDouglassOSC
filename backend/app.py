@@ -8,7 +8,7 @@ CORS(app)
 
 @app.route("/")
 def home():
-    return jsonify({"message": "Flask is working"})
+    return jsonify({"message": "StudentNET is running!"})
 
 @app.route("/login", methods=["POST"])
 def login():

@@ -25,3 +25,23 @@ def login(student_id, password):
     connection.close()
 
     return user
+
+def get_timetable(student_id, day):
+
+    connection = get_connection()
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM timetable
+        WHERE student_id = ?
+        AND day = ?
+        ORDER BY start_time
+    """,(student_id,day))
+
+    lessons = cursor.fetchall()
+
+    connection.close()
+
+    return lessons

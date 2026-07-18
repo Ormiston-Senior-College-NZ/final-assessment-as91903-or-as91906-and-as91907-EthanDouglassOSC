@@ -1,0 +1,44 @@
+.day-selector {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.day-selector button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.day-selector button:hover {
+    background: #c8941c;
+    color: white;
+}
+
+.timetable-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.timetable-table th {
+    background: #c8941c;
+    color: white;
+    padding: 16px;
+    text-align: left;
+}
+
+.timetable-table td {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.timetable-table tr:hover {
+    background: #fafafa;
+}

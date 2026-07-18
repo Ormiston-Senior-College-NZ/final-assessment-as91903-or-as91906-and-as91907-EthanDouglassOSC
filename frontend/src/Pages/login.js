@@ -11,24 +11,31 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    setError("");
+
     try {
       const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username,
-          password
-        })
+          password,
+        }),
       });
 
       const data = await response.json();
 
       if (data.success) {
+        // Save logged in user
+        localStorage.setItem("studentId", data.studentId);
+        localStorage.setItem("firstName", data.firstName);
+        localStorage.setItem("lastName", data.lastName);
+
         navigate("/dashboard");
       } else {
-        setError("Invalid username or password");
+        setError("Invalid Student ID or password");
       }
     } catch (err) {
       setError("Cannot connect to server");

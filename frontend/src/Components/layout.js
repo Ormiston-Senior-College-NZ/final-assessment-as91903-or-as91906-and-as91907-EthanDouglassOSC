@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 function Layout() {
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
 
       <div
@@ -12,7 +12,6 @@ function Layout() {
           flex: 1,
           background: "#f4f4f4",
           padding: "20px",
-          overflowY: "auto",
         }}
       >
         <Topbar />

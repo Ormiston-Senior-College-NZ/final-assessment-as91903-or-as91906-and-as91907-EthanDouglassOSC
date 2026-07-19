@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from database import login, get_timetable
+from database import login, signup
 
 app = Flask(__name__)
 CORS(app)
@@ -10,19 +10,23 @@ CORS(app)
 @app.route("/")
 def home():
     return jsonify({
-        "message": "Flask is working"
+        "message": "StudentNET API Running"
     })
 
+
+# ==========================================
+# LOGIN
+# ==========================================
 
 @app.route("/login", methods=["POST"])
 def login_route():
 
     data = request.get_json()
 
-    username = data.get("username")
+    student_id = data.get("username")
     password = data.get("password")
 
-    user = login(username, password)
+    user = login(student_id, password)
 
     if user:
         return jsonify({
@@ -33,27 +37,59 @@ def login_route():
         })
 
     return jsonify({
-        "success": False
+        "success": False,
+        "message": "Invalid Student ID or Password."
     })
 
 
-@app.route("/timetable/<student_id>/<int:day>")
-def timetable(student_id, day):
+# ==========================================
+# SIGN UP
+# ==========================================
 
-    lessons = get_timetable(student_id, day)
+@app.route("/signup", methods=["POST"])
+def signup_route():
 
-    data = []
+    data = request.get_json()
 
-    for lesson in lessons:
-        data.append({
-            "session": lesson["session"],
-            "subject": lesson["subject"],
-            "room": lesson["room"],
-            "start": lesson["start_time"],
-            "end": lesson["end_time"]
+    email = data.get("email", "").lower().strip()
+    password = data.get("password")
+
+    first_name = data.get("firstName", "").strip()
+    last_name = data.get("lastName", "").strip()
+
+    if not email.endswith("@ormiston.school.nz"):
+        return jsonify({
+            "success": False,
+            "message": "Please use your school email."
         })
 
-    return jsonify(data)
+    username = email.split("@")[0]
+
+    if not username.startswith("st"):
+        return jsonify({
+            "success": False,
+            "message": "Invalid school email."
+        })
+
+    student_id = username.replace("st", "")
+
+    success = signup(
+        student_id,
+        email,
+        password,
+        first_name,
+        last_name
+    )
+
+    if success:
+        return jsonify({
+            "success": True
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Account already exists."
+    })
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ function Topbar() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [lesson, setLesson] = useState(getCurrentLesson());
 
+  const firstName = localStorage.getItem("firstName") || "Student";
+
   useEffect(() => {
     let interval;
 
@@ -16,12 +18,12 @@ function Topbar() {
     update();
 
     const now = new Date();
+
     const delay =
       (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 
     const timeout = setTimeout(() => {
       update();
-
       interval = setInterval(update, 60000);
     }, delay);
 
@@ -43,7 +45,7 @@ function Topbar() {
     <div style={styles.topbar}>
       <div>
         <h2 style={styles.title}>
-          {greeting()}, Ethan 👋
+          {greeting()}, {firstName} 👋
         </h2>
 
         {lesson ? (

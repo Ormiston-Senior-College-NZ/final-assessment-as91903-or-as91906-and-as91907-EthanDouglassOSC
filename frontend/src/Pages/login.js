@@ -1,76 +1,268 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./login.css";
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
+    const [mode, setMode] = useState("login");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+    // Login
+    const [studentId, setStudentId] = useState("");
+    const [loginPassword, setLoginPassword] = useState("");
 
-    setError("");
+    // Signup
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [signupStudentId, setSignupStudentId] = useState("");
+    const [signupPassword, setSignupPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    try {
-      const response = await fetch("http://127.0.0.1:5000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-      const data = await response.json();
+    // ==========================
+    // LOGIN
+    // ==========================
 
-      if (data.success) {
-        // Save logged in user
-        localStorage.setItem("studentId", data.studentId);
-        localStorage.setItem("firstName", data.firstName);
-        localStorage.setItem("lastName", data.lastName);
+    const handleLogin = async (e) => {
+        e.preventDefault();
 
-        navigate("/dashboard");
-      } else {
-        setError("Invalid Student ID or password");
-      }
-    } catch (err) {
-      setError("Cannot connect to server");
-    }
-  };
+        setError("");
+        setSuccess("");
 
-  return (
-    <div className="login-page">
-      <div className="login-card">
-        <h1>OSC StudentNET</h1>
+        try {
 
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="Student ID"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+            const response = await fetch("http://127.0.0.1:5000/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: studentId,
+                    password: loginPassword
+                })
+            });
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            const data = await response.json();
 
-          {error && <p className="error">{error}</p>}
+            if (data.success) {
 
-          <button type="submit">
-            Log In
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+                localStorage.setItem("studentId", data.studentId);
+                localStorage.setItem("firstName", data.firstName);
+                localStorage.setItem("lastName", data.lastName);
+
+                navigate("/dashboard");
+
+            } else {
+
+                setError("Invalid Student ID or Password.");
+
+            }
+
+        } catch {
+
+            setError("Cannot connect to the server.");
+
+        }
+    };
+
+    // ==========================
+    // SIGN UP
+    // ==========================
+
+    const handleSignup = async (e) => {
+
+        e.preventDefault();
+
+        setError("");
+        setSuccess("");
+
+        if (!firstName || !lastName || !signupStudentId) {
+            setError("Please complete all fields.");
+            return;
+        }
+
+        if (signupPassword !== confirmPassword) {
+            setError("Passwords do not match.");
+            return;
+        }
+
+        const schoolEmail = `st${signupStudentId}@ormiston.school.nz`;
+
+        try {
+
+            const response = await fetch("http://127.0.0.1:5000/signup", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: schoolEmail,
+                    password: signupPassword,
+                    firstName: firstName,
+                    lastName: lastName
+                })
+
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                setSuccess("Account created successfully! Please log in.");
+
+                setFirstName("");
+                setLastName("");
+                setSignupStudentId("");
+                setSignupPassword("");
+                setConfirmPassword("");
+
+                setMode("login");
+
+            } else {
+
+                setError(data.message);
+
+            }
+
+        } catch {
+
+            setError("Cannot connect to the server.");
+
+        }
+
+    };
+
+    return (
+
+        <div className="login-page">
+
+            <div className="login-card">
+
+                <h1>OSC StudentNET</h1>
+
+                <div className="tabs">
+
+                    <button
+                        className={mode === "login" ? "active" : ""}
+                        onClick={() => {
+                            setMode("login");
+                            setError("");
+                            setSuccess("");
+                        }}
+                    >
+                        Log In
+                    </button>
+
+                    <button
+                        className={mode === "signup" ? "active" : ""}
+                        onClick={() => {
+                            setMode("signup");
+                            setError("");
+                            setSuccess("");
+                        }}
+                    >
+                        Sign Up
+                    </button>
+
+                </div>
+
+                {mode === "login" ? (
+
+                    <form onSubmit={handleLogin}>
+
+                        <input
+                            type="text"
+                            placeholder="Student ID"
+                            value={studentId}
+                            onChange={(e) => setStudentId(e.target.value)}
+                        />
+
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={loginPassword}
+                            onChange={(e) => setLoginPassword(e.target.value)}
+                        />
+
+                        {error && <p className="error">{error}</p>}
+                        {success && <p className="success">{success}</p>}
+
+                        <button type="submit">
+                            Log In
+                        </button>
+
+                    </form>
+
+                ) : (
+
+                    <form onSubmit={handleSignup}>
+
+                        <input
+                            type="text"
+                            placeholder="First Name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Last Name"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Student ID"
+                            value={signupStudentId}
+                            onChange={(e) => setSignupStudentId(e.target.value)}
+                        />
+
+                        <p className="email-preview">
+                            School Email
+                            <br />
+                            <strong>
+                                {signupStudentId
+                                    ? `st${signupStudentId}@ormiston.school.nz`
+                                    : "st12345@ormiston.school.nz"}
+                            </strong>
+                        </p>
+
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={signupPassword}
+                            onChange={(e) => setSignupPassword(e.target.value)}
+                        />
+
+                        <input
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+
+                        {error && <p className="error">{error}</p>}
+                        {success && <p className="success">{success}</p>}
+
+                        <button type="submit">
+                            Create Account
+                        </button>
+
+                    </form>
+
+                )}
+
+            </div>
+
+        </div>
+
+    );
 }
 
 export default Login;

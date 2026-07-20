@@ -88,7 +88,7 @@ const styles = {
 
   title: {
     margin: 0,
-    color: "#c8941c",
+    color: "#f4901f",
     fontSize: "28px",
     fontWeight: "700"
   },

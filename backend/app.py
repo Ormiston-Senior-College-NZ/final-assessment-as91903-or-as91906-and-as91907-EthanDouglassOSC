@@ -1,11 +1,21 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from database import login, signup
+from database import (
+    login,
+    signup,
+    get_courses,
+    save_setup,
+    get_user
+)
 
 app = Flask(__name__)
 CORS(app)
 
+
+# ==========================================
+# HOME
+# ==========================================
 
 @app.route("/")
 def home():
@@ -28,17 +38,17 @@ def login_route():
 
     user = login(student_id, password)
 
-    if user:
+    if not user:
         return jsonify({
-            "success": True,
-            "studentId": user["student_id"],
-            "firstName": user["first_name"],
-            "lastName": user["last_name"]
+            "success": False
         })
 
     return jsonify({
-        "success": False,
-        "message": "Invalid Student ID or Password."
+        "success": True,
+        "studentId": user["student_id"],
+        "firstName": user["first_name"],
+        "lastName": user["last_name"],
+        "setupComplete": bool(user["setup_complete"])
     })
 
 
@@ -51,27 +61,12 @@ def signup_route():
 
     data = request.get_json()
 
-    email = data.get("email", "").lower().strip()
+    student_id = data.get("studentId")
+    first_name = data.get("firstName")
+    last_name = data.get("lastName")
     password = data.get("password")
 
-    first_name = data.get("firstName", "").strip()
-    last_name = data.get("lastName", "").strip()
-
-    if not email.endswith("@ormiston.school.nz"):
-        return jsonify({
-            "success": False,
-            "message": "Please use your school email."
-        })
-
-    username = email.split("@")[0]
-
-    if not username.startswith("st"):
-        return jsonify({
-            "success": False,
-            "message": "Invalid school email."
-        })
-
-    student_id = username.replace("st", "")
+    email = f"st{student_id}@ormiston.school.nz"
 
     success = signup(
         student_id,
@@ -89,6 +84,80 @@ def signup_route():
     return jsonify({
         "success": False,
         "message": "Account already exists."
+    })
+
+
+# ==========================================
+# GET COURSES
+# ==========================================
+
+@app.route("/courses")
+def courses():
+
+    courses = get_courses()
+
+    data = []
+
+    for course in courses:
+
+        data.append({
+            "id": course["id"],
+            "code": course["code"],
+            "name": course["name"],
+            "level": course["level"]
+        })
+
+    return jsonify(data)
+
+
+# ==========================================
+# SAVE SETUP
+# ==========================================
+
+@app.route("/setup", methods=["POST"])
+def setup():
+
+    data = request.get_json()
+
+    student_id = data["studentId"]
+    year_level = data["yearLevel"]
+    learning_area = data["learningArea"]
+    subjects = data["subjects"]
+
+    save_setup(
+        student_id,
+        year_level,
+        learning_area,
+        subjects
+    )
+
+    return jsonify({
+        "success": True
+    })
+
+
+# ==========================================
+# GET USER
+# ==========================================
+
+@app.route("/user/<student_id>")
+def user(student_id):
+
+    user = get_user(student_id)
+
+    if not user:
+        return jsonify({
+            "success": False
+        })
+
+    return jsonify({
+        "success": True,
+        "studentId": user["student_id"],
+        "firstName": user["first_name"],
+        "lastName": user["last_name"],
+        "yearLevel": user["year_level"],
+        "learningArea": user["learning_area"],
+        "setupComplete": bool(user["setup_complete"])
     })
 
 

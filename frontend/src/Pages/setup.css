@@ -1,0 +1,189 @@
+/* ==========================================
+   PAGE
+========================================== */
+
+.setup-page {
+    min-height: 100vh;
+    background: #f5f7fb;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
+.setup-card {
+    width: 100%;
+    max-width: 700px;
+    max-height: 88vh;
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 40px;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+
+    overflow-y: auto;
+}
+
+.setup-card h1{
+    margin:0;
+    color:#c8941c;
+    font-size:34px;
+}
+
+.setup-card p{
+    color:#666;
+    margin-top:10px;
+    margin-bottom:30px;
+}
+
+/* ==========================================
+   PROGRESS
+========================================== */
+
+.progress{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-bottom:35px;
+}
+
+.dot{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:#ddd;
+}
+
+.dot.active{
+    background:#c8941c;
+}
+
+/* ==========================================
+   HEADINGS
+========================================== */
+
+.setup-card h2{
+    margin-bottom:25px;
+    font-size:24px;
+}
+
+/* ==========================================
+   BUTTON GRID
+========================================== */
+
+.option-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+/* ==========================================
+   OPTION BUTTONS
+========================================== */
+
+.setup-card button{
+    font-size:16px;
+    padding:14px 18px;
+
+    border:none;
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.setup-card button:hover{
+    transform:translateY(-2px);
+}
+
+.selected{
+    background:#f4901f;
+    color:white;
+}
+
+.setup-card button:not(.selected):not(.next){
+    background:#ececec;
+}
+
+/* ==========================================
+   SUBJECTS
+========================================== */
+
+.subject{
+    margin-bottom:22px;
+}
+
+.subject label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.subject select{
+
+    width:100%;
+
+    padding:12px;
+
+    border:1px solid #ddd;
+    border-radius:8px;
+
+    font-size:15px;
+}
+
+/* ==========================================
+   NAV BUTTONS
+========================================== */
+
+.buttons{
+
+    display:flex;
+    justify-content:space-between;
+
+    margin-top:35px;
+}
+
+.next{
+
+    background:#c8941c;
+    color:white;
+}
+
+.next:disabled{
+
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width:700px){
+
+    .setup-card{
+
+        padding:25px;
+        max-height:95vh;
+    }
+
+    .setup-card h1{
+        font-size:28px;
+    }
+
+    .option-grid{
+        grid-template-columns:1fr;
+    }
+
+}

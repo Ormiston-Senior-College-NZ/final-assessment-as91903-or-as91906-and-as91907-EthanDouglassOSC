@@ -20,7 +20,7 @@ function Sidebar() {
 const styles = {
   sidebar: {
     width: "220px",
-    height: "100vh",
+    height: "130vh",
     background: "#1f1f1f",
     color: "white",
     padding: "20px",

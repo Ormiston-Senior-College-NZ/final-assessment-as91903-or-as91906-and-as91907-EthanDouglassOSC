@@ -11,9 +11,9 @@ def get_connection():
     return connection
 
 
-# ==========================================
+# ==========================================================
 # LOGIN
-# ==========================================
+# ==========================================================
 
 def login(student_id, password):
 
@@ -34,16 +34,15 @@ def login(student_id, password):
     return user
 
 
-# ==========================================
+# ==========================================================
 # SIGN UP
-# ==========================================
+# ==========================================================
 
 def signup(student_id, email, password, first_name, last_name):
 
     connection = get_connection()
     cursor = connection.cursor()
 
-    # Check if account already exists
     cursor.execute("""
         SELECT *
         FROM users
@@ -63,10 +62,11 @@ def signup(student_id, email, password, first_name, last_name):
             first_name,
             last_name,
             year_level,
-            learning_area
+            learning_area,
+            setup_complete
         )
         VALUES
-        (?, ?, ?, ?, ?, NULL, NULL)
+        (?, ?, ?, ?, ?, NULL, NULL, 0)
     """, (
         student_id,
         email,
@@ -81,9 +81,9 @@ def signup(student_id, email, password, first_name, last_name):
     return True
 
 
-# ==========================================
+# ==========================================================
 # GET USER
-# ==========================================
+# ==========================================================
 
 def get_user(student_id):
 
@@ -103,25 +103,100 @@ def get_user(student_id):
     return user
 
 
-# ==========================================
-# TIMETABLE
-# ==========================================
+# ==========================================================
+# GET COURSES
+# ==========================================================
 
-def get_timetable(student_id, day):
+def get_courses():
 
     connection = get_connection()
     cursor = connection.cursor()
 
     cursor.execute("""
         SELECT *
-        FROM timetable
-        WHERE student_id = ?
-        AND day = ?
-        ORDER BY start_time
-    """, (student_id, day))
+        FROM courses
+        ORDER BY level, name
+    """)
 
-    lessons = cursor.fetchall()
+    courses = cursor.fetchall()
 
     connection.close()
 
-    return lessons
+    return courses
+
+
+# ==========================================================
+# SAVE SETUP
+# ==========================================================
+
+def save_setup(student_id, year_level, learning_area, subjects):
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            year_level = ?,
+            learning_area = ?,
+            setup_complete = 1
+        WHERE student_id = ?
+    """, (
+        year_level,
+        learning_area,
+        student_id
+    ))
+
+    cursor.execute("""
+        DELETE FROM student_subjects
+        WHERE student_id = ?
+    """, (student_id,))
+
+    for line, course_id in enumerate(subjects, start=1):
+
+        cursor.execute("""
+            INSERT INTO student_subjects
+            (
+                student_id,
+                line,
+                course_id
+            )
+            VALUES
+            (?, ?, ?)
+        """, (
+            student_id,
+            line,
+            course_id
+        ))
+
+    connection.commit()
+    connection.close()
+
+
+# ==========================================================
+# GET STUDENT SUBJECTS
+# ==========================================================
+
+def get_student_subjects(student_id):
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            student_subjects.line,
+            courses.code,
+            courses.name,
+            courses.level
+        FROM student_subjects
+        JOIN courses
+        ON student_subjects.course_id = courses.id
+        WHERE student_subjects.student_id = ?
+        ORDER BY line
+    """, (student_id,))
+
+    subjects = cursor.fetchall()
+
+    connection.close()
+
+    return subjects

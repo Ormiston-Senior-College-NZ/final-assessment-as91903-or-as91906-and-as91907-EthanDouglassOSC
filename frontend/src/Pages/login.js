@@ -3,29 +3,39 @@ import { useNavigate } from "react-router-dom";
 import "./login.css";
 
 function Login() {
+
     const navigate = useNavigate();
 
     const [mode, setMode] = useState("login");
 
+    // -----------------------------
     // Login
+    // -----------------------------
+
     const [studentId, setStudentId] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
 
+    // -----------------------------
     // Signup
+    // -----------------------------
+
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [signupStudentId, setSignupStudentId] = useState("");
     const [signupPassword, setSignupPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    // -----------------------------
+
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // ==========================
+    // =====================================================
     // LOGIN
-    // ==========================
+    // =====================================================
 
     const handleLogin = async (e) => {
+
         e.preventDefault();
 
         setError("");
@@ -34,14 +44,20 @@ function Login() {
         try {
 
             const response = await fetch("http://127.0.0.1:5000/login", {
+
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json"
                 },
+
                 body: JSON.stringify({
+
                     username: studentId,
                     password: loginPassword
+
                 })
+
             });
 
             const data = await response.json();
@@ -52,7 +68,15 @@ function Login() {
                 localStorage.setItem("firstName", data.firstName);
                 localStorage.setItem("lastName", data.lastName);
 
-                navigate("/dashboard");
+                if (data.setupComplete) {
+
+                    navigate("/dashboard");
+
+                } else {
+
+                    navigate("/setup");
+
+                }
 
             } else {
 
@@ -65,11 +89,12 @@ function Login() {
             setError("Cannot connect to the server.");
 
         }
+
     };
 
-    // ==========================
+    // =====================================================
     // SIGN UP
-    // ==========================
+    // =====================================================
 
     const handleSignup = async (e) => {
 
@@ -79,16 +104,18 @@ function Login() {
         setSuccess("");
 
         if (!firstName || !lastName || !signupStudentId) {
+
             setError("Please complete all fields.");
             return;
+
         }
 
         if (signupPassword !== confirmPassword) {
+
             setError("Passwords do not match.");
             return;
-        }
 
-        const schoolEmail = `st${signupStudentId}@ormiston.school.nz`;
+        }
 
         try {
 
@@ -101,10 +128,12 @@ function Login() {
                 },
 
                 body: JSON.stringify({
-                    email: schoolEmail,
-                    password: signupPassword,
+
+                    studentId: signupStudentId,
                     firstName: firstName,
-                    lastName: lastName
+                    lastName: lastName,
+                    password: signupPassword
+
                 })
 
             });
@@ -179,7 +208,11 @@ function Login() {
                             type="text"
                             placeholder="Student ID"
                             value={studentId}
-                            onChange={(e) => setStudentId(e.target.value)}
+                            onChange={(e) =>
+                                setStudentId(
+                                    e.target.value.replace(/^st/i, "")
+                                )
+                            }
                         />
 
                         <input
@@ -193,7 +226,9 @@ function Login() {
                         {success && <p className="success">{success}</p>}
 
                         <button type="submit">
+
                             Log In
+
                         </button>
 
                     </form>
@@ -220,17 +255,27 @@ function Login() {
                             type="text"
                             placeholder="Student ID"
                             value={signupStudentId}
-                            onChange={(e) => setSignupStudentId(e.target.value)}
+                            onChange={(e) =>
+                                setSignupStudentId(
+                                    e.target.value.replace(/^st/i, "")
+                                )
+                            }
                         />
 
                         <p className="email-preview">
+
                             School Email
+
                             <br />
+
                             <strong>
+
                                 {signupStudentId
                                     ? `st${signupStudentId}@ormiston.school.nz`
                                     : "st12345@ormiston.school.nz"}
+
                             </strong>
+
                         </p>
 
                         <input
@@ -251,7 +296,9 @@ function Login() {
                         {success && <p className="success">{success}</p>}
 
                         <button type="submit">
+
                             Create Account
+
                         </button>
 
                     </form>
@@ -263,6 +310,7 @@ function Login() {
         </div>
 
     );
+
 }
 
 export default Login;

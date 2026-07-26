@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./Components/layout";
 
+import Setup from "./Pages/setup";
 import Dashboard from "./Pages/dashboard";
 import Timetable from "./Pages/timetable";
 import NCEA from "./Pages/ncea";
@@ -21,6 +22,8 @@ function App() {
 
         {/* ALL pages WITH sidebar */}
         <Route element={<Layout />}>
+          
+          <Route path="/setup" element={<Setup />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/timetable" element={<Timetable />} />
           <Route path="/ncea" element={<NCEA />} />

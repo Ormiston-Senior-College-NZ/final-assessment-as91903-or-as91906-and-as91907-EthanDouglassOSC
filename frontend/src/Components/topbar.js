@@ -1,18 +1,50 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getCurrentLesson } from "../utils/timetableHelper";
 
 function Topbar() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [lesson, setLesson] = useState(getCurrentLesson());
+  const [timetable, setTimetable] = useState([]);
 
   const firstName = localStorage.getItem("firstName") || "Student";
+
+  const lesson = useMemo(
+    () => getCurrentLesson(timetable, currentTime),
+    [timetable, currentTime]
+  );
+
+  useEffect(() => {
+    const studentId = localStorage.getItem("studentId");
+    if (!studentId) return undefined;
+
+    const controller = new AbortController();
+
+    fetch(`/timetable/${encodeURIComponent(studentId)}`, {
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Could not load timetable");
+        return response.json();
+      })
+      .then((data) => {
+        setTimetable(data.map((item) => ({
+          ...item,
+          subject: item.name,
+          start: item.start_time,
+          end: item.end_time,
+        })));
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") setTimetable([]);
+      });
+
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     let interval;
 
     const update = () => {
       setCurrentTime(new Date());
-      setLesson(getCurrentLesson());
     };
 
     update();

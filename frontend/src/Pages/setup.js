@@ -41,7 +41,7 @@ function Setup() {
 
     useEffect(() => {
 
-        fetch("http://127.0.0.1:5000/courses")
+        fetch("/courses")
             .then(res => res.json())
             .then(data => setCourses(data));
 
@@ -95,7 +95,7 @@ function Setup() {
 
     const finish = async () => {
 
-        await fetch("http://127.0.0.1:5000/setup", {
+        await fetch("/setup", {
 
             method: "POST",
 

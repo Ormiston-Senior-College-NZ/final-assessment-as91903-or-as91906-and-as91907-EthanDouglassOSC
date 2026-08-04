@@ -6,8 +6,9 @@ from database import (
     signup,
     get_courses,
     save_setup,
-    get_user
-)
+    get_user,
+    get_timetable
+) 
 
 app = Flask(__name__)
 CORS(app)
@@ -156,10 +157,16 @@ def user(student_id):
         "firstName": user["first_name"],
         "lastName": user["last_name"],
         "yearLevel": user["year_level"],
-        "learningArea": user["learning_area"],
+        "learningArea": user["kainga"],
         "setupComplete": bool(user["setup_complete"])
     })
 
+@app.route("/timetable/<student_id>")
+def timetable(student_id):
+
+    timetable = get_timetable(student_id)
+
+    return jsonify([dict(row) for row in timetable])
 
 if __name__ == "__main__":
     app.run(debug=True)

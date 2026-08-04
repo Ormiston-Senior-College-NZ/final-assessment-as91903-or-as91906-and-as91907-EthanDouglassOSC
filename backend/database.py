@@ -8,6 +8,7 @@ DATABASE = os.path.join(BASE_DIR, "studentnet.db")
 def get_connection():
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
     return connection
 
 
@@ -41,42 +42,34 @@ def login(student_id, password):
 def signup(student_id, email, password, first_name, last_name):
 
     connection = get_connection()
-    cursor = connection.cursor()
-
-    cursor.execute("""
-        SELECT *
-        FROM users
-        WHERE student_id = ?
-    """, (student_id,))
-
-    if cursor.fetchone():
-        connection.close()
-        return False
-
-    cursor.execute("""
-        INSERT INTO users
-        (
+    try:
+        connection.execute("""
+            INSERT INTO users
+            (
+                student_id,
+                email,
+                password,
+                first_name,
+                last_name,
+                year_level,
+                kainga,
+                setup_complete
+            )
+            VALUES
+            (?, ?, ?, ?, ?, NULL, NULL, 0)
+        """, (
             student_id,
             email,
             password,
             first_name,
-            last_name,
-            year_level,
-            learning_area,
-            setup_complete
-        )
-        VALUES
-        (?, ?, ?, ?, ?, NULL, NULL, 0)
-    """, (
-        student_id,
-        email,
-        password,
-        first_name,
-        last_name
-    ))
-
-    connection.commit()
-    connection.close()
+            last_name
+        ))
+        connection.commit()
+    except sqlite3.IntegrityError:
+        connection.rollback()
+        return False
+    finally:
+        connection.close()
 
     return True
 
@@ -129,48 +122,51 @@ def get_courses():
 # SAVE SETUP
 # ==========================================================
 
-def save_setup(student_id, year_level, learning_area, subjects):
+def save_setup(student_id, year_level, kainga, subjects):
+
+    if len(subjects) != 5 or any(not course_id for course_id in subjects):
+        raise ValueError("Exactly five subjects must be selected")
 
     connection = get_connection()
-    cursor = connection.cursor()
-
-    cursor.execute("""
-        UPDATE users
-        SET
-            year_level = ?,
-            learning_area = ?,
-            setup_complete = 1
-        WHERE student_id = ?
-    """, (
-        year_level,
-        learning_area,
-        student_id
-    ))
-
-    cursor.execute("""
-        DELETE FROM student_subjects
-        WHERE student_id = ?
-    """, (student_id,))
-
-    for line, course_id in enumerate(subjects, start=1):
-
-        cursor.execute("""
-            INSERT INTO student_subjects
-            (
-                student_id,
-                line,
-                course_id
-            )
-            VALUES
-            (?, ?, ?)
+    try:
+        cursor = connection.execute("""
+            UPDATE users
+            SET
+                year_level = ?,
+                kainga = ?,
+                setup_complete = 1
+            WHERE student_id = ?
         """, (
+            year_level,
+            kainga,
+            student_id
+        ))
+
+        if cursor.rowcount != 1:
+            raise ValueError("Student does not exist")
+
+        connection.execute("""
+            DELETE FROM student_lines
+            WHERE student_id = ?
+        """, (student_id,))
+
+        for line, course_id in enumerate(subjects, start=1):
+            connection.execute("""
+                INSERT INTO student_lines
+                (student_id, line, course_id)
+                VALUES (?, ?, ?)
+            """, (
             student_id,
             line,
             course_id
-        ))
+            ))
 
-    connection.commit()
-    connection.close()
+        connection.commit()
+    except (sqlite3.Error, ValueError):
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
 
 
 # ==========================================================
@@ -184,14 +180,14 @@ def get_student_subjects(student_id):
 
     cursor.execute("""
         SELECT
-            student_subjects.line,
+            student_lines.line,
             courses.code,
             courses.name,
             courses.level
-        FROM student_subjects
+        FROM student_lines
         JOIN courses
-        ON student_subjects.course_id = courses.id
-        WHERE student_subjects.student_id = ?
+        ON student_lines.course_id = courses.id
+        WHERE student_lines.student_id = ?
         ORDER BY line
     """, (student_id,))
 
@@ -200,3 +196,43 @@ def get_student_subjects(student_id):
     connection.close()
 
     return subjects
+
+def get_timetable(student_id):
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            student_lines.line,
+            courses.code,
+            courses.name,
+            teachers.name AS teacher,
+            rooms.code AS room,
+            course_schedule.day,
+            course_schedule.session
+
+        FROM student_lines
+
+        JOIN courses
+            ON student_lines.course_id = courses.id
+
+        JOIN course_schedule
+            ON student_lines.course_id = course_schedule.course_id
+
+        LEFT JOIN teachers
+            ON course_schedule.teacher_id = teachers.id
+
+        LEFT JOIN rooms
+            ON course_schedule.room_id = rooms.id
+
+        WHERE student_lines.student_id = ?
+
+        ORDER BY course_schedule.day, course_schedule.session
+    """, (student_id,))
+
+    timetable = cursor.fetchall()
+
+    connection.close()
+
+    return timetable

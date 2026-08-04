@@ -10,6 +10,7 @@ if os.path.exists(DATABASE):
 connection = sqlite3.connect(DATABASE)
 cursor = connection.cursor()
 
+cursor.execute("PRAGMA foreign_keys = ON;")
 # ==========================================================
 # USERS
 # ==========================================================
@@ -65,9 +66,7 @@ CREATE TABLE teachers (
 
     email TEXT,
 
-    kainga TEXT,
-
-    FOREIGN KEY(email) REFERENCES users(email)
+    kainga TEXT
 
 )
 """)
@@ -81,8 +80,9 @@ CREATE TABLE rooms (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-    room TEXT,
-    kainga TEXT
+    code TEXT UNIQUE NOT NULL,
+
+    name TEXT NOT NULL
 
 )
 """)
@@ -185,13 +185,22 @@ users = [
 ]
 
 cursor.executemany("""
-INSERT INTO users
+INSERT INTO users (
+    student_id,
+    email,
+    password,
+    first_name,
+    last_name,
+    year_level,
+    kainga,
+    setup_complete,
+    is_admin
+)
 VALUES (?,?,?,?,?,?,?,?,?)
 """, users)
 
 # ==========================================================
 # COURSES
-# Paste your courses list here
 # ==========================================================
 
 courses = [
@@ -208,7 +217,7 @@ courses = [
     ("MAO1","Te Reo Māori",1,"Languages"),
     ("TIK1","Tikanga",1,"Languages"),
 
-    ("SCI1","Science",1,"Science"),
+    ("SCI1","General Science",1,"Science"),
     ("BIO1","Biology",1,"Science"),
     ("CHE1","Chemistry",1,"Science"),
     ("PHY1","Physics",1,"Science"),
@@ -265,7 +274,7 @@ courses = [
     ("PHY2","Physics",2,"Science"),
     ("CHE2","Chemistry",2,"Science"),
     ("BIO2","Biology",2,"Science"),
-    ("SCI2","Science",2,"Science"),
+    ("SCI2","General Science",2,"Science"),
 
     ("PAS2","Pacific Studies",2,"Social Sciences"),
     ("GEO2","Geography",2,"Social Sciences"),
@@ -315,7 +324,7 @@ courses = [
     ("PHY3","Physics",3,"Science"),
     ("CHE3","Chemistry",3,"Science"),
     ("BIO3","Biology",3,"Science"),
-    ("SCI3","Science",3,"Science"),
+    ("SCI3","General Science",3,"Science"),
 
     ("PAS3","Pacific Studies",3,"Social Sciences"),
     ("GEO3","Geography",3,"Social Sciences"),
@@ -418,7 +427,6 @@ teachers = [
     ("Geraldine Jagesur-Singh", "Kāinga Leader", "", "Pūkeko"),
     ("Selina Yee", "Kāinga Leader", "", "Pūkeko"),
     ("Ritesh Sharma", "Kāinga Leader", "", "Pūkeko"),
-    ("Ziad Abdelmaksoud", "Teacher", "", "Pūkeko"),
     ("Shams Al-Chalabi", "Teacher", "", "Pūkeko"),
     ("Neil Bather", "Teacher", "", "Pūkeko"),
     ("Swastika Devi", "Teacher", "", "Pūkeko"),
@@ -456,8 +464,8 @@ teachers = [
     ("Seetha Singh", "Kāinga Leader", "", "Pūngāwerewere"),
     ("Wiaam Al Salihi", "Teacher", "", "Pūngāwerewere"),
     ("Wayne Atkins", "Teacher", "", "Pūngāwerewere"),
-    ("Katitlin Bethell", "Teacher", "", "Pūngāwerewere"),
-    ("Micheal Charlton", "Teacher", "", "Pūngāwerewere"),
+    ("Kaitlin Bethell", "Teacher", "", "Pūngāwerewere"),
+    ("Michael Charlton", "Teacher", "", "Pūngāwerewere"),
     ("Letitia Deng", "Teacher", "", "Pūngāwerewere"),
     ("Shakil Chand", "Teacher", "", "Pūngāwerewere"),
     ("Araadhana Sharma", "Teacher", "", "Pūngāwerewere"),
@@ -475,8 +483,14 @@ teachers = [
 
 ]
 
+cursor.executemany("""
+INSERT INTO teachers
+(name, role, email, kainga)
+VALUES (?, ?, ?, ?)
+""", teachers)
+
 # ==========================================================
-# ROOMS
+# ROOMS LIST
 # ==========================================================
 
 rooms = [
@@ -484,62 +498,66 @@ rooms = [
     ("Papa1","Papatūānuku Inner 1"),
     ("Papa2","Papatūānuku Inner 2"),
     ("PapaO","Papatūānuku Outer"),
-    ("PapaP1","Papatūānuku Presentation"),
-    ("PapaP2","Papatūānuku Pod"),
+    ("PapaPS","Papatūānuku Presentation"),
+    ("PapaPD","Papatūānuku Pod"),
 
     ("Pung1","Pūngāwerewere Inner 1"),
     ("Pung2","Pūngāwerewere Inner 2"),
     ("PungO","Pūngāwerewere Outer"),
-    ("PungP1","Pūngāwerewere Presentation"),
-    ("PungP2","Pūngāwerewere Pod"),
+    ("PungPS","Pūngāwerewere Presentation"),
+    ("PungPD","Pūngāwerewere Pod"),
 
     ("Kahi1","Kahikatea Inner 1"),
     ("Kahi2","Kahikatea Inner 2"),
     ("KahiO","Kahikatea Outer"),
-    ("KahiP1","Kahikatea Presentation"),
-    ("KahiP2","Kahikatea Pod"),
+    ("KahiPS","Kahikatea Presentation"),
+    ("KahiPD","Kahikatea Pod"),
 
     ("Puke1","Pūkeko Inner 1"),
     ("Puke2","Pūkeko Inner 2"),
     ("PukeO","Pūkeko Outer"),
-    ("PukeP1","Pūkeko Presentation"),
-    ("PukeP2","Pūkeko Pod"),
+    ("PukePS","Pūkeko Presentation"),
+    ("PukePD","Pūkeko Pod"),
 
     ("Hara1","Harakeke Inner 1"),
     ("Hara2","Harakeke Inner 2"),
     ("HaraO","Harakeke Outer"),
-    ("HaraP1","Harakeke Presentation"),
-    ("HaraP2","Harakeke Pod"),
+    ("HaraPS","Harakeke Presentation"),
+    ("HaraPD","Harakeke Pod"),
 
     ("Moko1","Mokoroa Inner 1"),
     ("Moko2","Mokoroa Inner 2"),
     ("MokoO","Mokoroa Outer"),
-    ("MokoP1","Mokoroa Presentation"),
-    ("MokoP2","Mokoroa Pod"),
+    ("MokoPS","Mokoroa Presentation"),
+    ("MokoPD","Mokoroa Pod"),
 
     ("Waka1","Waka Inner 1"),
     ("Waka2","Waka Inner 2"),
     ("WakaO","Waka Outer"),
-    ("WakaP1","Waka Presentation"),
-    ("WakaP2","Waka Pod"),
+    ("WakaPS","Waka Presentation"),
+    ("WakaPD","Waka Pod"),
 
     ("Kea1","Kea Inner 1"),
     ("Kea2","Kea Inner 2"),
     ("KeaO","Kea Outer"),
-    ("KeaP1","Kea Presentation"),
-    ("KeaP2","Kea Pod"),
+    ("KeaPS","Kea Presentation"),
+    ("KeaPD","Kea Pod"),
 
     ("Ngah1","Ngahere Inner 1"),
     ("Ngah2","Ngahere Inner 2"),
-    ("NgahO","Ngahere Outer"),
-    ("NgahP1","Ngahere Presentation"),
-    ("NgahP2","Ngahere Pod")
+    ("NgahO1","Ngahere Outer 1"),
+    ("NgahO2","Ngahere Outer 2"),
+    ("NgahP1","Ngahere Pod 1"),
+    ("NgahP2","Ngahere Pod 2"),
+    ("NgahP3","Ngahere Pod 3"),
+    ("NgahP4","Ngahere Pod 4"),
+
 ]
 
 cursor.executemany("""
 INSERT INTO rooms
-(room,kainga)
-VALUES (?,?)
+(code, name)
+VALUES (?, ?)
 """, rooms)
 
 # ==========================================================

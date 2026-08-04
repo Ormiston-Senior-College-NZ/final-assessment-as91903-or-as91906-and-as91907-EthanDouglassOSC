@@ -139,28 +139,38 @@
 }
 
 .settings-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px 170px;
   min-height: 48px;
   align-items: center;
-  justify-content: flex-end;
   gap: 10px;
 }
 
-.settings-actions button {
-  min-height: 43px;
+.settings-actions > .logout-button,
+.settings-actions > .save-button {
+  width: 170px;
+  min-width: 170px;
+  max-width: 170px;
+  height: 48px;
   padding: 0 18px;
   border-radius: 9px;
+  box-sizing: border-box;
   font: inherit;
   font-size: 12px;
   font-weight: 800;
+  flex: 0 0 170px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
 }
 
 .save-button { border: 1px solid #c8941c; background: #c8941c; color: #fff; }
 .save-button:disabled { cursor: wait; opacity: 0.6; }
 .logout-button { border: 1px solid #e0b7b7; background: #fff; color: #a34343; }
 
-.settings-message { margin-right: auto; color: #438153; font-size: 12px; font-weight: 700; }
+.settings-message { color: #438153; font-size: 12px; font-weight: 700; }
 .settings-message.error { color: #ad3c3c; }
 .settings-state { padding: 70px 20px; color: #777; text-align: center; }
 .settings-state.error { color: #ad3c3c; }
@@ -171,6 +181,13 @@
   .settings-subject-grid { grid-template-columns: 1fr; }
   .settings-subject-grid label { grid-template-columns: 36px 96px minmax(0, 1fr); }
   .settings-card-heading { align-items: flex-start; flex-direction: column; gap: 7px; }
-  .settings-actions { align-items: stretch; flex-direction: column; }
+  .settings-actions { grid-template-columns: 1fr; align-items: stretch; }
+  .settings-actions > .logout-button,
+  .settings-actions > .save-button {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex-basis: 48px;
+  }
   .settings-message { min-height: 18px; margin: 0; }
 }

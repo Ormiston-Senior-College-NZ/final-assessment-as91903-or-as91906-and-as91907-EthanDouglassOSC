@@ -1,46 +1,89 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import "./sidebar.css";
+
+const NAV_ITEMS = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/timetable", label: "Timetable" },
+  { to: "/ncea", label: "NCEA" },
+  { to: "/courses", label: "Courses" },
+  { to: "/kainga", label: "Kāinga" },
+];
 
 function Sidebar() {
-  return (
-    <div style={styles.sidebar}>
-      <h2 style={styles.title}>OSC StudentNET</h2>
+  const navigate = useNavigate();
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [profile, setProfile] = useState(() => ({
+    firstName: localStorage.getItem("firstName") || "Student",
+    lastName: localStorage.getItem("lastName") || "",
+  }));
+  const { firstName, lastName } = profile;
+  const initials = `${firstName[0] || "S"}${lastName[0] || ""}`.toUpperCase();
 
-      <nav style={styles.nav}>
-        <Link style={styles.link} to="/dashboard">Dashboard</Link>
-        <Link style={styles.link} to="/timetable">Timetable</Link>
-        <Link style={styles.link} to="/ncea">NCEA</Link>
-        <Link style={styles.link} to="/courses">Courses</Link>
-        <Link style={styles.link} to="/kainga">Kāinga</Link>
-        <Link style={styles.link} to="/settings">Settings</Link>
+  useEffect(() => {
+    const updateProfile = () => setProfile({
+      firstName: localStorage.getItem("firstName") || "Student",
+      lastName: localStorage.getItem("lastName") || "",
+    });
+
+    window.addEventListener("studentnet-profile-updated", updateProfile);
+    return () => window.removeEventListener("studentnet-profile-updated", updateProfile);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("studentId");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
+    navigate("/");
+  };
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div>
+          <strong>StudentNET</strong>
+          <small>Ormiston Senior College</small>
+        </div>
+      </div>
+
+      <nav className="sidebar-nav" aria-label="Main navigation">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+            key={item.to}
+            to={item.to}
+          >
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
       </nav>
-    </div>
+
+      <div className="sidebar-account">
+        {accountOpen && (
+          <div className="account-menu">
+            <NavLink to="/settings" onClick={() => setAccountOpen(false)}>
+              Settings
+            </NavLink>
+            <button type="button" onClick={logout}>Log out</button>
+          </div>
+        )}
+        <button
+          type="button"
+          className="sidebar-profile"
+          aria-expanded={accountOpen}
+          aria-haspopup="menu"
+          onClick={() => setAccountOpen((open) => !open)}
+        >
+          <span className="profile-initials">{initials}</span>
+          <span className="profile-copy">
+            <strong>{firstName} {lastName}</strong>
+            <small>Student account</small>
+          </span>
+          <span className="account-chevron" aria-hidden="true">⌃</span>
+        </button>
+      </div>
+    </aside>
   );
 }
-
-const styles = {
-  sidebar: {
-    width: "220px",
-    height: "130vh",
-    background: "#1f1f1f",
-    color: "white",
-    padding: "20px",
-    boxSizing: "border-box"
-  },
-  title: {
-    color: "#c8941c",
-    marginBottom: "20px"
-  },
-  nav: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px"
-  },
-  link: {
-    color: "white",
-    textDecoration: "none",
-    padding: "8px",
-    borderRadius: "5px"
-  }
-};
 
 export default Sidebar;

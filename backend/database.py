@@ -96,6 +96,96 @@ def get_user(student_id):
     return user
 
 
+def update_user(
+    student_id,
+    first_name,
+    last_name,
+    year_level,
+    kainga,
+    subjects,
+    current_password=None,
+    new_password=None
+):
+    connection = get_connection()
+
+    try:
+        user = connection.execute("""
+            SELECT password
+            FROM users
+            WHERE student_id = ?
+        """, (student_id,)).fetchone()
+
+        if not user:
+            return False, "Student not found."
+
+        if new_password and user["password"] != current_password:
+            return False, "Current password is incorrect."
+
+        selected_courses = connection.execute("""
+            SELECT id, level
+            FROM courses
+            WHERE id IN (?, ?, ?, ?, ?)
+        """, tuple(subjects)).fetchall()
+
+        allowed_levels = {
+            11: {1},
+            12: {2, 3},
+            13: {3}
+        }
+
+        if len(selected_courses) != 5:
+            return False, "One or more selected subjects do not exist."
+
+        if any(course["level"] not in allowed_levels[year_level] for course in selected_courses):
+            return False, "One or more subjects do not match the selected year level."
+
+        if new_password:
+            connection.execute("""
+                UPDATE users
+                SET first_name = ?, last_name = ?, year_level = ?, kainga = ?,
+                    password = ?
+                WHERE student_id = ?
+            """, (
+                first_name,
+                last_name,
+                year_level,
+                kainga,
+                new_password,
+                student_id
+            ))
+        else:
+            connection.execute("""
+                UPDATE users
+                SET first_name = ?, last_name = ?, year_level = ?, kainga = ?
+                WHERE student_id = ?
+            """, (
+                first_name,
+                last_name,
+                year_level,
+                kainga,
+                student_id
+            ))
+
+        connection.execute("""
+            DELETE FROM student_lines
+            WHERE student_id = ?
+        """, (student_id,))
+
+        for line, course_id in enumerate(subjects, start=1):
+            connection.execute("""
+                INSERT INTO student_lines (student_id, line, course_id)
+                VALUES (?, ?, ?)
+            """, (student_id, line, course_id))
+
+        connection.commit()
+        return True, "Account settings saved."
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
 # ==========================================================
 # GET COURSES
 # ==========================================================
@@ -181,6 +271,7 @@ def get_student_subjects(student_id):
     cursor.execute("""
         SELECT
             student_lines.line,
+            courses.id,
             courses.code,
             courses.name,
             courses.level

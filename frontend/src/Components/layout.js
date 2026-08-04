@@ -1,22 +1,17 @@
+import { Outlet } from "react-router-dom";
 import Sidebar from "./sidebar";
 import Topbar from "./topbar";
-import { Outlet } from "react-router-dom";
+import "./layout.css";
 
 function Layout() {
   return (
-    <div style={{ display: "flex", minHeight: "130vh" }}>
+    <div className="app-layout">
       <Sidebar />
-
-      <div
-        style={{
-          flex: 1,
-          background: "#f4f4f4",
-          padding: "20px",
-        }}
-      >
-        <Topbar />
-
-        <Outlet />
+      <div className="app-content">
+        <div className="app-content-inner">
+          <Topbar />
+          <Outlet />
+        </div>
       </div>
     </div>
   );

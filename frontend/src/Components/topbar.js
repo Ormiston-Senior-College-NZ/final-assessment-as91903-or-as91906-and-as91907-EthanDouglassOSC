@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentLesson } from "../utils/timetableHelper";
+import "./topbar.css";
 
 function Topbar() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -74,69 +75,39 @@ function Topbar() {
   };
 
   return (
-    <div style={styles.topbar}>
-      <div>
-        <h2 style={styles.title}>
+    <header className="topbar">
+      <div className="topbar-copy">
+        <h2>
           {greeting()}, {firstName} 👋
         </h2>
 
         {lesson ? (
-          <p style={styles.subtitle}>
-            {lesson.subject || lesson.session}
-            {lesson.session !== lesson.subject &&
-              ` • Session ${lesson.session}`}
-            {lesson.room && ` • ${lesson.room}`}
-            {` • ${lesson.start}–${lesson.end}`}
-          </p>
+          <div className="topbar-lesson">
+            <span className="lesson-status-dot" aria-hidden="true"></span>
+            <span className="topbar-lesson-label">Now</span>
+            <strong>{lesson.subject || lesson.session}</strong>
+            <span>Line {lesson.session}</span>
+            {lesson.room_name || lesson.room ? <span>{lesson.room_name || lesson.room}</span> : null}
+            <span>{lesson.start}–{lesson.end}</span>
+          </div>
         ) : (
-          <p style={styles.subtitle}>
-            No current lesson
-          </p>
+          <div className="topbar-lesson muted">
+            <span className="lesson-status-dot" aria-hidden="true"></span>
+            <span>No current lesson</span>
+          </div>
         )}
       </div>
 
-      <div style={styles.time}>
-        {currentTime.toLocaleTimeString([], {
+      <div className="topbar-clock">
+        <span>{currentTime.toLocaleDateString("en-NZ", { weekday: "short" })}</span>
+        <strong>{currentTime.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
-        })}
+        })}</strong>
       </div>
-    </div>
+    </header>
   );
 }
-
-const styles = {
-  topbar: {
-    background: "white",
-    borderRadius: "12px",
-    padding: "25px 30px",
-    marginBottom: "25px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    boxShadow: "0 2px 10px rgba(0,0,0,.08)"
-  },
-
-  title: {
-    margin: 0,
-    color: "#f4901f",
-    fontSize: "28px",
-    fontWeight: "700"
-  },
-
-  subtitle: {
-    marginTop: "12px",
-    fontSize: "20px",
-    color: "#666",
-    fontWeight: "500"
-  },
-
-  time: {
-    fontSize: "34px",
-    fontWeight: "700",
-    color: "#1f1f1f"
-  }
-};
 
 export default Topbar;

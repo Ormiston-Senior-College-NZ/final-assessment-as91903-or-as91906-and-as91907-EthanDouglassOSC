@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./setup.css";
 
+const LINE_EXAMPLES = {
+    1: "Mon 09:00–10:30",
+    2: "Mon 10:50–12:20",
+    3: "Mon 13:40–14:30",
+    4: "Mon 14:35–15:25",
+    5: "Tue 10:50–12:20"
+};
+
 function Setup() {
 
     const navigate = useNavigate();
@@ -124,15 +132,20 @@ function Setup() {
 
             <div className="setup-card">
 
+                <span className="setup-eyebrow">Account setup</span>
+
                 <h1>Welcome to StudentNET</h1>
 
                 <p>Let's personalise your account.</p>
 
                 <div className="progress">
 
-                    <div className={step >= 1 ? "dot active" : "dot"}></div>
-                    <div className={step >= 2 ? "dot active" : "dot"}></div>
-                    <div className={step >= 3 ? "dot active" : "dot"}></div>
+                    {["Year", "Kāinga", "Subjects"].map((label, index) => (
+                        <div className={step >= index + 1 ? "progress-step active" : "progress-step"} key={label}>
+                            <span>{index + 1}</span>
+                            <small>{label}</small>
+                        </div>
+                    ))}
 
                 </div>
 
@@ -169,14 +182,16 @@ function Setup() {
                             Year 13
                         </button>
 
-                        <button
-                            className="next"
-                            disabled={!yearLevel}
-                            onClick={next}
-                        >
-                            Next
-                        </button>
+                        </div>
 
+                        <div className="buttons buttons-end">
+                            <button
+                                className="next"
+                                disabled={!yearLevel}
+                                onClick={next}
+                            >
+                                Continue
+                            </button>
                         </div>
 
                     </>
@@ -193,7 +208,7 @@ function Setup() {
 
                         <h2>Select your Kāinga</h2>
 
-                        <div className="option-grid">
+                        <div className="option-grid kainga-grid">
 
                         {kaingas.map((kainga) => (
                             
@@ -251,6 +266,7 @@ function Setup() {
 
                                 <label>
                                     <strong>Line {line}</strong>
+                                    <small>{LINE_EXAMPLES[line]}</small>
                                 </label>
 
                                 <select
@@ -294,6 +310,7 @@ function Setup() {
 
                             <button
                                 className="next"
+                                disabled={subjects.some(subject => !subject)}
                                 onClick={finish}
                             >
                                 Finish Setup

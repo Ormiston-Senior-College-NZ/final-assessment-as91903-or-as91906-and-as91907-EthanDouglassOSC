@@ -169,6 +169,15 @@
 .save-button { border: 1px solid #c8941c; background: #c8941c; color: #fff; }
 .save-button:disabled { cursor: wait; opacity: 0.6; }
 .logout-button { border: 1px solid #e0b7b7; background: #fff; color: #a34343; }
+.danger-zone { border-color: #edd1d1; }
+.danger-zone .settings-card-heading span { color: #a34343; }
+.deletion-request-row { display: flex; padding: 22px; align-items: center; justify-content: space-between; gap: 20px; }
+.deletion-request-row strong { font-size: 13px; }
+.deletion-request-row p { max-width: 680px; margin: 5px 0 0; color: #777; font-size: 11px; line-height: 1.5; }
+.request-deletion-button, .cancel-deletion-button { min-width: 145px; min-height: 42px; padding: 0 15px; border-radius: 8px; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+.request-deletion-button { border: 1px solid #c55a5a; background: #fff0f0; color: #9f3030; }
+.cancel-deletion-button { border: 1px solid #d3d3d3; background: #f4f4f4; color: #555; }
+.request-deletion-button:disabled, .cancel-deletion-button:disabled { cursor: wait; opacity: .6; }
 
 .settings-message { color: #438153; font-size: 12px; font-weight: 700; }
 .settings-message.error { color: #ad3c3c; }
@@ -190,4 +199,5 @@
     flex-basis: 48px;
   }
   .settings-message { min-height: 18px; margin: 0; }
+  .deletion-request-row { align-items: stretch; flex-direction: column; }
 }

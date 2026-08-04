@@ -21,6 +21,8 @@ function Settings() {
   const [courses, setCourses] = useState([]);
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  const [deletionRequest, setDeletionRequest] = useState(null);
+  const [deletionBusy, setDeletionBusy] = useState(false);
 
   useEffect(() => {
     if (!studentId) {
@@ -33,12 +35,13 @@ function Settings() {
       fetch(`/user/${encodeURIComponent(studentId)}`, { signal: controller.signal }),
       fetch(`/subjects/${encodeURIComponent(studentId)}`, { signal: controller.signal }),
       fetch("/courses", { signal: controller.signal }),
+      fetch(`/account-deletion/${encodeURIComponent(studentId)}`, { signal: controller.signal }),
     ])
       .then(async (responses) => {
         if (responses.some((response) => !response.ok)) throw new Error("Could not load account");
         return Promise.all(responses.map((response) => response.json()));
       })
-      .then(([data, subjectData, courseData]) => {
+      .then(([data, subjectData, courseData, deletionData]) => {
         if (!data.success) throw new Error("Student not found");
         const selectedSubjects = ["", "", "", "", ""];
         subjectData.forEach((subject) => {
@@ -54,6 +57,7 @@ function Settings() {
           subjects: selectedSubjects,
         }));
         setCourses(courseData);
+        setDeletionRequest(deletionData.request);
         setStatus("ready");
       })
       .catch((error) => {
@@ -151,7 +155,34 @@ function Settings() {
     localStorage.removeItem("studentId");
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");
+    localStorage.removeItem("isAdmin");
     navigate("/");
+  };
+
+  const requestDeletion = async () => {
+    if (!window.confirm("Send an account deletion request to an administrator? Your account will remain active until it is approved.")) return;
+    setDeletionBusy(true);
+    try {
+      const response = await fetch(`/account-deletion/${encodeURIComponent(studentId)}`, { method: "POST" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+      const statusResponse = await fetch(`/account-deletion/${encodeURIComponent(studentId)}`);
+      setDeletionRequest((await statusResponse.json()).request);
+      setMessage(data.message);
+    } catch (error) { setMessage(error.message || "Could not send the deletion request."); }
+    finally { setDeletionBusy(false); }
+  };
+
+  const cancelDeletion = async () => {
+    setDeletionBusy(true);
+    try {
+      const response = await fetch(`/account-deletion/${encodeURIComponent(studentId)}`, { method: "DELETE" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+      setDeletionRequest(null);
+      setMessage(data.message);
+    } catch (error) { setMessage(error.message || "Could not cancel the request."); }
+    finally { setDeletionBusy(false); }
   };
 
   if (status === "loading") return <div className="settings-state">Loading account settings…</div>;
@@ -256,6 +287,22 @@ function Settings() {
               <span>Confirm new password</span>
               <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={updateField} minLength="6" autoComplete="new-password" />
             </label>
+          </div>
+        </section>
+
+        <section className="settings-card danger-zone">
+          <div className="settings-card-heading">
+            <div><span>Account deletion</span><h2>Delete my account</h2></div>
+            <p>An administrator must approve your request.</p>
+          </div>
+          <div className="deletion-request-row">
+            <div>
+              <strong>{deletionRequest?.status === "pending" ? "Request awaiting review" : deletionRequest?.status === "denied" ? "Previous request denied" : "Request account deletion"}</strong>
+              <p>{deletionRequest?.status === "pending" ? "Your account remains active while an administrator reviews your request." : deletionRequest?.status === "denied" ? "An administrator denied your previous request. You may submit another if needed." : "This sends a request to the admin team. Nothing is deleted immediately."}</p>
+            </div>
+            {deletionRequest?.status === "pending"
+              ? <button type="button" className="cancel-deletion-button" onClick={cancelDeletion} disabled={deletionBusy}>Cancel request</button>
+              : <button type="button" className="request-deletion-button" onClick={requestDeletion} disabled={deletionBusy}>{deletionBusy ? "Sending…" : "Request deletion"}</button>}
           </div>
         </section>
 

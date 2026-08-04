@@ -153,6 +153,22 @@ CREATE TABLE student_lines (
 """)
 
 # ==========================================================
+# ACCOUNT DELETION REQUESTS
+# ==========================================================
+
+cursor.execute("""
+CREATE TABLE account_deletion_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT UNIQUE NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at TEXT,
+    reviewed_by TEXT,
+    FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE
+)
+""")
+
+# ==========================================================
 # SAMPLE USERS
 # ==========================================================
 
@@ -319,6 +335,7 @@ courses = [
     ("PHO3","Photography",3,"Arts"),
 
     ("MAT3","Mathematics",3,"Mathematics"),
+    ("CAL3","Calculus",3,"Mathematics"),
     ("STA3","Statistics",3,"Mathematics"),
 
     ("PHY3","Physics",3,"Science"),
@@ -551,6 +568,28 @@ rooms = [
     ("NgahP2","Ngahere Pod 2"),
     ("NgahP3","Ngahere Pod 3"),
     ("NgahP4","Ngahere Pod 4"),
+
+    ("Puri1","Pūriri 1"),
+    ("Puri2","Pūriri 2"),
+    ("Puri3","Pūriri 3"),
+    ("Puri4","Pūriri 4"),
+    ("Puri5","Pūriri 5"),
+    ("Puri6","Pūriri 6"),
+    ("Puri7","Pūriri 7"),
+    ("Puri8","Pūriri 8"),
+    ("Puri9","Pūriri 9"),
+    ("Puri10","Pūriri 10"),
+
+    ("Owha1","Ōwhanga 1"),
+    ("Owha2","Ōwhanga 2"),
+    ("Owha3","Ōwhanga 3"),
+    ("Owha4","Ōwhanga 4"),
+    ("Owha5","Ōwhanga 5"),
+    ("Owha6","Ōwhanga 6"),
+    ("Owha7","Ōwhanga 7"),
+    ("Owha8","Ōwhanga 8"),
+    ("Owha9","Ōwhanga 9"),
+    ("Owha10","Ōwhanga 10"),
 
 ]
 

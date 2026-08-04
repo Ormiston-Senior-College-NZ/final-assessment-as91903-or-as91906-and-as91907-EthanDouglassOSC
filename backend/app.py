@@ -9,7 +9,18 @@ from database import (
     save_setup,
     get_user,
     update_user,
-    get_timetable
+    get_timetable,
+    create_course,
+    update_course,
+    delete_course,
+    is_admin,
+    get_scheduling_data,
+    save_course_assignment,
+    get_deletion_request,
+    submit_deletion_request,
+    cancel_deletion_request,
+    get_deletion_requests,
+    review_deletion_request
 )
 
 app = Flask(__name__)
@@ -51,6 +62,7 @@ def login_route():
         "studentId": user["student_id"],
         "firstName": user["first_name"],
         "lastName": user["last_name"],
+        "isAdmin": bool(user["is_admin"]),
         "setupComplete": bool(user["setup_complete"])
     })
 
@@ -107,10 +119,110 @@ def courses():
             "id": course["id"],
             "code": course["code"],
             "name": course["name"],
-            "level": course["level"]
+            "level": course["level"],
+            "category": course["category"]
         })
 
     return jsonify(data)
+
+
+def admin_course_data():
+    data = request.get_json(silent=True) or {}
+    code = str(data.get("code", "")).strip().upper()
+    name = str(data.get("name", "")).strip()
+    category = str(data.get("category", "")).strip()
+    try:
+        level = int(data.get("level"))
+    except (TypeError, ValueError):
+        level = None
+    if not code or not name or not category or level not in (1, 2, 3):
+        return None
+    return code, name, level, category
+
+
+@app.route("/admin/courses", methods=["POST"])
+@app.route("/admin/courses/<int:course_id>", methods=["PUT", "DELETE"])
+def admin_courses(course_id=None):
+    if not is_admin(request.headers.get("X-Student-ID")):
+        return jsonify({"success": False, "message": "Admin access required."}), 403
+
+    if request.method == "DELETE":
+        success, message = delete_course(course_id)
+        if success:
+            return jsonify({"success": True})
+        return jsonify({"success": False, "message": message or "Course not found."}), 400
+
+    course = admin_course_data()
+    if not course:
+        return jsonify({"success": False, "message": "Complete every field with a valid NCEA level."}), 400
+
+    if request.method == "POST":
+        new_id = create_course(*course)
+        if not new_id:
+            return jsonify({"success": False, "message": "That course code is already in use."}), 409
+        return jsonify({"success": True, "id": new_id}), 201
+
+    if not update_course(course_id, *course):
+        return jsonify({"success": False, "message": "Course not found or code already in use."}), 400
+    return jsonify({"success": True})
+
+
+@app.route("/admin/scheduling", methods=["GET"])
+def admin_scheduling():
+    if not is_admin(request.headers.get("X-Student-ID")):
+        return jsonify({"success": False, "message": "Admin access required."}), 403
+    teachers, rooms, assignments = get_scheduling_data()
+    return jsonify({
+        "teachers": [dict(teacher) for teacher in teachers],
+        "rooms": [dict(room) for room in rooms],
+        "assignments": [dict(assignment) for assignment in assignments]
+    })
+
+
+@app.route("/admin/scheduling/<int:course_id>", methods=["PUT"])
+def admin_course_assignment(course_id):
+    if not is_admin(request.headers.get("X-Student-ID")):
+        return jsonify({"success": False, "message": "Admin access required."}), 403
+    data = request.get_json(silent=True) or {}
+    try:
+        line = int(data.get("line"))
+        teacher_id = int(data.get("teacherId"))
+        room_id = int(data.get("roomId"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Select a line, teacher, and room."}), 400
+    success, message = save_course_assignment(course_id, line, teacher_id, room_id)
+    return jsonify({"success": success, "message": message}), 200 if success else 409
+
+
+@app.route("/account-deletion/<student_id>", methods=["GET", "POST", "DELETE"])
+def account_deletion(student_id):
+    if request.method == "GET":
+        deletion_request = get_deletion_request(student_id)
+        return jsonify({
+            "request": dict(deletion_request) if deletion_request else None
+        })
+    if request.method == "DELETE":
+        success = cancel_deletion_request(student_id)
+        return jsonify({"success": success, "message": "Deletion request cancelled." if success else "No pending request found."}), 200 if success else 404
+    success, message = submit_deletion_request(student_id)
+    return jsonify({"success": success, "message": message}), 201 if success else 400
+
+
+@app.route("/admin/account-deletions", methods=["GET"])
+def admin_account_deletions():
+    if not is_admin(request.headers.get("X-Student-ID")):
+        return jsonify({"success": False, "message": "Admin access required."}), 403
+    return jsonify([dict(item) for item in get_deletion_requests()])
+
+
+@app.route("/admin/account-deletions/<int:request_id>", methods=["PUT"])
+def admin_account_deletion_review(request_id):
+    admin_id = request.headers.get("X-Student-ID")
+    if not is_admin(admin_id):
+        return jsonify({"success": False, "message": "Admin access required."}), 403
+    decision = (request.get_json(silent=True) or {}).get("decision")
+    success, message = review_deletion_request(request_id, decision, admin_id)
+    return jsonify({"success": success, "message": message}), 200 if success else 400
 
 
 # ==========================================

@@ -9,6 +9,7 @@ import NCEA from "./Pages/ncea/ncea";
 import Courses from "./Pages/courses/courses";
 import Kainga from "./Pages/kainga/kainga";
 import Settings from "./Pages/settings/settings";
+import Admin from "./Pages/admin/admin";
 
 import Login from "./Pages/login/login";
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/kainga" element={<Kainga />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
 
       </Routes>

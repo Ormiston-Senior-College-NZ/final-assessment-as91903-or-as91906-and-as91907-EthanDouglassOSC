@@ -208,6 +208,235 @@ def get_courses():
     return courses
 
 
+def create_course(code, name, level, category):
+    connection = get_connection()
+    try:
+        cursor = connection.execute("""
+            INSERT INTO courses (code, name, level, category)
+            VALUES (?, ?, ?, ?)
+        """, (code, name, level, category))
+        connection.commit()
+        return cursor.lastrowid
+    except sqlite3.IntegrityError:
+        connection.rollback()
+        return None
+    finally:
+        connection.close()
+
+
+def update_course(course_id, code, name, level, category):
+    connection = get_connection()
+    try:
+        cursor = connection.execute("""
+            UPDATE courses
+            SET code = ?, name = ?, level = ?, category = ?
+            WHERE id = ?
+        """, (code, name, level, category, course_id))
+        connection.commit()
+        return cursor.rowcount == 1
+    except sqlite3.IntegrityError:
+        connection.rollback()
+        return False
+    finally:
+        connection.close()
+
+
+def delete_course(course_id):
+    connection = get_connection()
+    try:
+        cursor = connection.execute("DELETE FROM courses WHERE id = ?", (course_id,))
+        connection.commit()
+        return cursor.rowcount == 1, None
+    except sqlite3.IntegrityError:
+        connection.rollback()
+        return False, "This course is in use and cannot be deleted."
+    finally:
+        connection.close()
+
+
+def is_admin(student_id):
+    connection = get_connection()
+    user = connection.execute(
+        "SELECT is_admin FROM users WHERE student_id = ?",
+        (student_id,)
+    ).fetchone()
+    connection.close()
+    return bool(user and user["is_admin"])
+
+
+def get_scheduling_data():
+    connection = get_connection()
+    teachers = connection.execute("""
+        SELECT id, name, role, email, kainga
+        FROM teachers
+        ORDER BY name
+    """).fetchall()
+    rooms = connection.execute("""
+        SELECT id, code, name
+        FROM rooms
+        ORDER BY code
+    """).fetchall()
+    assignments = connection.execute("""
+        SELECT
+            course_schedule.course_id,
+            MIN(course_schedule.session) AS line,
+            MIN(course_schedule.teacher_id) AS teacher_id,
+            MIN(course_schedule.room_id) AS room_id
+        FROM course_schedule
+        GROUP BY course_schedule.course_id
+    """).fetchall()
+    connection.close()
+    return teachers, rooms, assignments
+
+
+def save_course_assignment(course_id, line, teacher_id, room_id):
+    connection = get_connection()
+    try:
+        course = connection.execute(
+            "SELECT id FROM courses WHERE id = ?", (course_id,)
+        ).fetchone()
+        teacher = connection.execute(
+            "SELECT id FROM teachers WHERE id = ?", (teacher_id,)
+        ).fetchone()
+        room = connection.execute(
+            "SELECT id FROM rooms WHERE id = ?", (room_id,)
+        ).fetchone()
+        if not course or not teacher or not room or line not in (1, 2, 3, 4, 5):
+            return False, "Select a valid course, line, teacher, and room."
+
+        teacher_clash = connection.execute("""
+            SELECT courses.code
+            FROM course_schedule
+            JOIN courses ON courses.id = course_schedule.course_id
+            WHERE course_schedule.teacher_id = ?
+              AND course_schedule.session = ?
+              AND course_schedule.course_id != ?
+            LIMIT 1
+        """, (teacher_id, line, course_id)).fetchone()
+        if teacher_clash:
+            return False, f"That teacher already teaches {teacher_clash['code']} on Line {line}."
+
+        room_clash = connection.execute("""
+            SELECT courses.code
+            FROM course_schedule
+            JOIN courses ON courses.id = course_schedule.course_id
+            WHERE course_schedule.room_id = ?
+              AND course_schedule.session = ?
+              AND course_schedule.course_id != ?
+            LIMIT 1
+        """, (room_id, line, course_id)).fetchone()
+        if room_clash:
+            return False, f"That room is already used by {room_clash['code']} on Line {line}."
+
+        connection.execute("DELETE FROM course_schedule WHERE course_id = ?", (course_id,))
+        connection.execute("""
+            INSERT INTO course_schedule (course_id, teacher_id, room_id, day, session)
+            SELECT ?, ?, ?, day, session
+            FROM timetable_slots
+            WHERE session = ?
+        """, (course_id, teacher_id, room_id, line))
+        connection.commit()
+        return True, "Class assignment saved."
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
+def get_deletion_request(student_id):
+    connection = get_connection()
+    deletion_request = connection.execute("""
+        SELECT id, student_id, status, requested_at, reviewed_at
+        FROM account_deletion_requests
+        WHERE student_id = ?
+    """, (student_id,)).fetchone()
+    connection.close()
+    return deletion_request
+
+
+def submit_deletion_request(student_id):
+    connection = get_connection()
+    try:
+        user = connection.execute("""
+            SELECT is_admin FROM users WHERE student_id = ?
+        """, (student_id,)).fetchone()
+        if not user or user["is_admin"]:
+            return False, "This account cannot submit a deletion request."
+        connection.execute("""
+            INSERT INTO account_deletion_requests (student_id, status, requested_at, reviewed_at, reviewed_by)
+            VALUES (?, 'pending', CURRENT_TIMESTAMP, NULL, NULL)
+            ON CONFLICT(student_id) DO UPDATE SET
+                status = 'pending', requested_at = CURRENT_TIMESTAMP,
+                reviewed_at = NULL, reviewed_by = NULL
+        """, (student_id,))
+        connection.commit()
+        return True, "Your account deletion request was sent to an administrator."
+    finally:
+        connection.close()
+
+
+def cancel_deletion_request(student_id):
+    connection = get_connection()
+    cursor = connection.execute("""
+        DELETE FROM account_deletion_requests
+        WHERE student_id = ? AND status = 'pending'
+    """, (student_id,))
+    connection.commit()
+    connection.close()
+    return cursor.rowcount == 1
+
+
+def get_deletion_requests():
+    connection = get_connection()
+    requests = connection.execute("""
+        SELECT account_deletion_requests.id, account_deletion_requests.student_id,
+               account_deletion_requests.status, account_deletion_requests.requested_at,
+               account_deletion_requests.reviewed_at,
+               users.first_name, users.last_name, users.email, users.year_level, users.kainga
+        FROM account_deletion_requests
+        JOIN users ON users.student_id = account_deletion_requests.student_id
+        ORDER BY CASE account_deletion_requests.status WHEN 'pending' THEN 0 ELSE 1 END,
+                 account_deletion_requests.requested_at DESC
+    """).fetchall()
+    connection.close()
+    return requests
+
+
+def review_deletion_request(request_id, decision, admin_id):
+    connection = get_connection()
+    try:
+        deletion_request = connection.execute("""
+            SELECT student_id, status FROM account_deletion_requests WHERE id = ?
+        """, (request_id,)).fetchone()
+        if not deletion_request or deletion_request["status"] != "pending":
+            return False, "This request is no longer pending."
+
+        if decision == "deny":
+            connection.execute("""
+                UPDATE account_deletion_requests
+                SET status = 'denied', reviewed_at = CURRENT_TIMESTAMP, reviewed_by = ?
+                WHERE id = ?
+            """, (admin_id, request_id))
+            connection.commit()
+            return True, "Deletion request denied."
+
+        if decision != "approve":
+            return False, "Select approve or deny."
+
+        student_id = deletion_request["student_id"]
+        connection.execute("DELETE FROM student_lines WHERE student_id = ?", (student_id,))
+        connection.execute("DELETE FROM account_deletion_requests WHERE id = ?", (request_id,))
+        connection.execute("DELETE FROM users WHERE student_id = ? AND is_admin = 0", (student_id,))
+        connection.commit()
+        return True, "Student account deleted."
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
 # ==========================================================
 # SAVE SETUP
 # ==========================================================

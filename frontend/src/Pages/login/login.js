@@ -67,8 +67,13 @@ function Login() {
                 localStorage.setItem("studentId", data.studentId);
                 localStorage.setItem("firstName", data.firstName);
                 localStorage.setItem("lastName", data.lastName);
+                localStorage.setItem("isAdmin", String(data.isAdmin));
 
-                if (data.setupComplete) {
+                if (data.isAdmin) {
+
+                    navigate("/admin");
+
+                } else if (data.setupComplete) {
 
                     navigate("/dashboard");
 

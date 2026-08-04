@@ -1,0 +1,100 @@
+.admin-page { color: #242424; }
+.admin-heading { display: flex; padding: 8px 0 24px; align-items: center; justify-content: space-between; gap: 20px; }
+.admin-heading h1 { margin: 5px 0; font-size: 34px; }
+.admin-heading p { margin: 0; color: #777; }
+.admin-eyebrow, .admin-card-heading span { color: #9a6a0b; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.admin-total { display: flex; min-width: 105px; padding: 13px 18px; border: 1px solid #eadfca; border-radius: 12px; background: #fffaf0; flex-direction: column; text-align: right; }
+.admin-total strong { color: #9a6a0b; font-size: 25px; }
+.admin-total span { color: #81745d; font-size: 11px; }
+.admin-card { overflow: hidden; margin-bottom: 18px; border: 1px solid #e7e7e7; border-radius: 14px; background: #fff; box-shadow: 0 3px 14px rgba(0,0,0,.055); }
+.admin-card-heading, .admin-toolbar { display: flex; padding: 19px 22px; border-bottom: 1px solid #ececec; align-items: center; justify-content: space-between; gap: 20px; }
+.admin-card h2 { margin: 4px 0 0; font-size: 18px; }
+.admin-card-heading p, .admin-toolbar p { margin: 5px 0 0; color: #858585; font-size: 12px; }
+.admin-tabs { display: flex; margin-bottom: 18px; padding: 5px; border: 1px solid #e5e5e5; border-radius: 11px; background: #fff; gap: 5px; }
+.admin-tabs button { padding: 10px 16px; border: 0; border-radius: 7px; background: transparent; color: #666; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.admin-tabs button.active { background: #c8941c; color: #fff; }
+.admin-editor form { display: grid; padding: 20px 22px 22px; grid-template-columns: 150px minmax(200px, 1.5fr) 150px minmax(180px, 1fr) auto; gap: 14px; align-items: end; }
+.admin-editor label { display: flex; flex-direction: column; gap: 7px; }
+.admin-editor label span { color: #4e4e4e; font-size: 11px; font-weight: 700; }
+.admin-editor input, .admin-editor select, .admin-filters input, .admin-filters select { min-height: 42px; padding: 0 12px; border: 1px solid #dcdcdc; border-radius: 8px; outline: none; background: #fff; box-sizing: border-box; font: inherit; font-size: 12px; }
+.admin-editor input:focus, .admin-editor select:focus, .admin-filters input:focus, .admin-filters select:focus { border-color: #c8941c; box-shadow: 0 0 0 3px rgba(200,148,28,.12); }
+.admin-form-actions { display: flex; gap: 8px; }
+.admin-primary, .admin-secondary { min-height: 42px; padding: 0 17px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.admin-primary { background: #c8941c; color: #fff; }
+.admin-secondary { background: #ededed; color: #444; }
+.admin-message { margin: 0 0 18px; padding: 12px 15px; border-radius: 9px; font-size: 12px; font-weight: 700; }
+.admin-message.success { background: #edf8ee; color: #287333; }
+.admin-message.error { background: #fff0f0; color: #a52b2b; }
+.admin-filters { display: flex; gap: 9px; }
+.admin-filters input { width: 220px; }
+.admin-table-wrap { overflow-x: auto; }
+.admin-card table { width: 100%; border-collapse: collapse; }
+.admin-card th, .admin-card td { padding: 14px 22px; border-bottom: 1px solid #efefef; font-size: 12px; text-align: left; }
+.admin-card th { color: #777; background: #fafafa; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+.admin-card tbody tr:last-child td { border-bottom: 0; }
+.course-code { color: #8d620d; }
+.level-pill { display: inline-block; padding: 5px 8px; border-radius: 20px; background: #fff3d7; color: #8d620d; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.row-actions button { padding: 6px 9px; border: 0; border-radius: 6px; background: #eee; color: #444; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
+.row-actions button.delete { background: #fff0f0; color: #a52b2b; }
+.admin-state { padding: 45px 20px; color: #777; text-align: center; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.schedule-list { display: grid; }
+.schedule-row { display: grid; padding: 13px 20px; border-bottom: 1px solid #eee; grid-template-columns: minmax(210px, 1.2fr) 105px minmax(170px, 1fr) minmax(190px, 1fr) auto; gap: 12px; align-items: end; }
+.schedule-row:last-child { border-bottom: 0; }
+.schedule-course { display: flex; min-width: 0; gap: 11px; align-items: center; }
+.schedule-course > strong { display: grid; width: 48px; height: 38px; border-radius: 8px; background: #fff3d7; color: #8d620d; font-size: 10px; flex: 0 0 auto; place-items: center; }
+.schedule-course div { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.schedule-course b { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.schedule-course small { color: #898989; font-size: 9px; }
+.schedule-row label { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.schedule-row label > span { color: #777; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.schedule-row select { width: 100%; min-width: 0; height: 38px; padding: 0 9px; border: 1px solid #ddd; border-radius: 7px; background: #fff; font: inherit; font-size: 10px; }
+.schedule-save { min-height: 38px; }
+.teacher-dashboard-grid { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 18px; align-items: start; }
+.teacher-picker { max-height: 690px; }
+.teacher-picker > input { width: calc(100% - 32px); min-height: 40px; margin: 14px 16px 8px; padding: 0 11px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font: inherit; font-size: 11px; }
+.teacher-list { overflow-y: auto; max-height: 580px; padding: 5px 9px 12px; }
+.teacher-list button { display: flex; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: transparent; color: #333; text-align: left; cursor: pointer; flex-direction: column; gap: 3px; }
+.teacher-list button:hover { background: #f5f5f5; }
+.teacher-list button.active { background: #fff3d7; color: #835a08; }
+.teacher-list strong { font-size: 11px; }
+.teacher-list small { color: #888; font-size: 9px; }
+.teacher-profile { display: grid; padding: 24px; border-bottom: 1px solid #eee; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+.teacher-avatar { display: grid; width: 50px; height: 50px; border-radius: 50%; background: #fff0cc; color: #94670b; font-size: 13px; font-weight: 900; place-items: center; }
+.teacher-profile h2 { margin: 3px 0; font-size: 21px; }
+.teacher-profile p { margin: 0; color: #777; font-size: 11px; }
+.teacher-profile > strong { color: #9a6a0b; font-size: 12px; }
+.teacher-class-grid { display: grid; padding: 20px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.teacher-class-grid article { padding: 17px; border: 1px solid #e8e8e8; border-radius: 10px; background: #fafafa; }
+.teacher-class-grid article > div { display: flex; flex-direction: column; gap: 5px; }
+.teacher-class-grid article > div > strong { margin-top: 5px; font-size: 14px; }
+.teacher-class-grid article small { color: #888; font-size: 10px; }
+.teacher-class-grid dl { display: grid; margin: 15px 0 0; padding-top: 13px; border-top: 1px solid #e4e4e4; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.teacher-class-grid dl div:last-child { grid-column: span 2; }
+.teacher-class-grid dt { color: #888; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.teacher-class-grid dd { margin: 3px 0 0; font-size: 10px; font-weight: 700; }
+.teacher-room-select { display: flex; margin-top: 13px; flex-direction: column; gap: 5px; }
+.teacher-room-select span { color: #777; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.teacher-room-select select { width: 100%; height: 36px; padding: 0 8px; border: 1px solid #d8d8d8; border-radius: 7px; background: #fff; font: inherit; font-size: 9px; }
+.request-count { padding: 7px 10px; border-radius: 20px; background: #fff3d7; color: #8d620d; font-size: 10px; font-weight: 800; }
+.deletion-list { display: grid; }
+.deletion-row { display: grid; padding: 15px 20px; border-bottom: 1px solid #eee; grid-template-columns: 40px minmax(180px, 1fr) minmax(250px, 1.4fr) auto minmax(185px, auto); gap: 13px; align-items: center; }
+.deletion-row:last-child { border-bottom: 0; }
+.request-avatar { display: grid; width: 38px; height: 38px; border-radius: 50%; background: #f0f0f0; color: #555; font-size: 10px; font-weight: 900; place-items: center; text-transform: uppercase; }
+.request-student { display: flex; flex-direction: column; gap: 3px; }
+.request-student strong { font-size: 12px; }
+.request-student small, .reviewed-date { color: #888; font-size: 9px; }
+.request-details { display: flex; color: #666; font-size: 9px; gap: 12px; }
+.request-status { padding: 5px 8px; border-radius: 20px; font-size: 8px; font-weight: 900; text-transform: uppercase; }
+.request-status.pending { background: #fff3d7; color: #8d620d; }
+.request-status.denied { background: #f0f0f0; color: #666; }
+.request-actions { display: flex; justify-content: flex-end; gap: 7px; }
+.request-actions button { min-height: 34px; padding: 0 11px; border-radius: 7px; font: inherit; font-size: 9px; font-weight: 800; cursor: pointer; }
+.request-actions .deny { border: 1px solid #d8d8d8; background: #fff; color: #555; }
+.request-actions .approve { border: 1px solid #b94747; background: #b94747; color: #fff; }
+@media (max-width: 1100px) { .admin-editor form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-form-actions { grid-column: span 2; } }
+@media (max-width: 1100px) { .schedule-row { grid-template-columns: minmax(200px, 1fr) 100px minmax(160px, 1fr); } .schedule-row label:nth-of-type(3) { grid-column: 1 / span 2; } }
+@media (max-width: 750px) { .teacher-dashboard-grid { grid-template-columns: 1fr; } .teacher-picker { max-height: 400px; } .teacher-list { max-height: 290px; } .teacher-class-grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .deletion-row { grid-template-columns: 40px 1fr auto; } .request-details { grid-column: 2 / span 2; } .request-actions, .reviewed-date { grid-column: 2 / span 2; justify-content: flex-start; } }
+@media (max-width: 650px) { .admin-heading, .admin-toolbar { align-items: stretch; flex-direction: column; } .admin-total { text-align: left; } .admin-tabs { overflow-x: auto; } .admin-tabs button { white-space: nowrap; } .admin-editor form, .schedule-row { grid-template-columns: 1fr; } .admin-form-actions, .schedule-row label:nth-of-type(3) { grid-column: auto; } .admin-filters { flex-direction: column; } .admin-filters input { width: 100%; } .admin-card th, .admin-card td { padding: 12px; } .teacher-profile { grid-template-columns: 52px 1fr; } .teacher-profile > strong { grid-column: 2; } }

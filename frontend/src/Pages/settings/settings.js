@@ -146,8 +146,8 @@ function Settings() {
   const filteredCourses = courses.filter((course) => {
     const yearLevel = Number(form.yearLevel);
     if (yearLevel === 11) return course.level === 1;
-    if (yearLevel === 12) return course.level === 2 || course.level === 3;
-    if (yearLevel === 13) return course.level === 3;
+    if (yearLevel === 12) return course.level === 2 || course.level === 3 || course.level === 23;
+    if (yearLevel === 13) return course.level === 3 || course.level === 23;
     return false;
   });
 

@@ -27,6 +27,7 @@ CREATE TABLE users (
 
     year_level INTEGER,
     kainga TEXT,
+    la_teacher_id INTEGER,
 
     setup_complete INTEGER DEFAULT 0,
     is_admin INTEGER DEFAULT 0
@@ -120,6 +121,8 @@ CREATE TABLE course_schedule (
 
     room_id INTEGER,
 
+    area TEXT,
+
     day INTEGER,
 
     session INTEGER,
@@ -165,6 +168,47 @@ CREATE TABLE account_deletion_requests (
     reviewed_at TEXT,
     reviewed_by TEXT,
     FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE
+)
+""")
+
+cursor.execute("""
+CREATE TABLE student_standards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    course_id INTEGER NOT NULL,
+    standard_number TEXT NOT NULL,
+    title TEXT NOT NULL,
+    credits INTEGER NOT NULL,
+    assessment_type TEXT NOT NULL,
+    grade TEXT NOT NULL DEFAULT '',
+    ue_approved INTEGER NOT NULL DEFAULT 1,
+    UNIQUE(student_id, standard_number),
+    FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE,
+    FOREIGN KEY(course_id) REFERENCES courses(id)
+)
+""")
+
+cursor.execute("""
+CREATE TABLE assessment_catalog (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    standard_number TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    level INTEGER NOT NULL,
+    assessment_type TEXT NOT NULL,
+    credits INTEGER NOT NULL,
+    domain TEXT,
+    subfield TEXT,
+    source_year INTEGER NOT NULL
+)
+""")
+
+cursor.execute("""
+CREATE TABLE course_standard_catalog (
+    course_id INTEGER NOT NULL,
+    standard_id INTEGER NOT NULL,
+    PRIMARY KEY(course_id, standard_id),
+    FOREIGN KEY(course_id) REFERENCES courses(id),
+    FOREIGN KEY(standard_id) REFERENCES assessment_catalog(id)
 )
 """)
 
@@ -265,7 +309,7 @@ courses = [
     # =========================
 
     ("ENG2","English",2,"English"),
-    ("ENP2","English Projects",2,"English"),
+    ("ENP23","English Projects",23,"English"),
     ("ESL2","English for Speakers of Other Languages",2,"English"),
 
     ("MAO2","Te Reo Māori",2,"Languages"),
@@ -316,7 +360,6 @@ courses = [
     # =========================
 
     ("ENG3","English",3,"English"),
-    ("ENP3","English Projects",3,"English"),
 
     ("MAO3","Te Reo Māori",3,"Languages"),
     ("TAH3","Te Ao Haka",3,"Languages"),
@@ -659,9 +702,12 @@ schedule = [
 
 cursor.executemany("""
 INSERT INTO course_schedule
-(course_id,teacher_id,room_id,day,session)
-VALUES (?,?,?,?,?)
+(course_id,teacher_id,room_id,area,day,session)
+VALUES (?,?,?,?,?,?)
 """, schedule)
+
+from import_standards import import_standards
+import_standards(connection)
 
 connection.commit()
 connection.close()

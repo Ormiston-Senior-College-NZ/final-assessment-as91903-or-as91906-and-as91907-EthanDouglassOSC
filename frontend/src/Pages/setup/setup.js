@@ -20,9 +20,13 @@ function Setup() {
 
     const [courses, setCourses] = useState([]);
 
+    const [teachers, setTeachers] = useState([]);
+
     const [yearLevel, setYearLevel] = useState("");
 
     const [learningArea, setLearningArea] = useState("");
+
+    const [laTeacherId, setLaTeacherId] = useState("");
 
     const [subjects, setSubjects] = useState([
         "",
@@ -49,9 +53,12 @@ function Setup() {
 
     useEffect(() => {
 
-        fetch("/courses")
-            .then(res => res.json())
-            .then(data => setCourses(data));
+        Promise.all([fetch("/courses"), fetch("/teachers")])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(([courseData, teacherData]) => {
+                setCourses(courseData);
+                setTeachers(teacherData);
+            });
 
     }, []);
 
@@ -66,11 +73,11 @@ function Setup() {
         }
 
         if (yearLevel === 12) {
-            return course.level === 2 || course.level === 3;
+            return course.level === 2 || course.level === 3 || course.level === 23;
         }
 
         if (yearLevel === 13) {
-            return course.level === 3;
+            return course.level === 3 || course.level === 23;
         }
 
         return false;
@@ -116,6 +123,7 @@ function Setup() {
                 studentId,
                 yearLevel,
                 learningArea,
+                laTeacherId,
                 subjects
 
             })
@@ -215,7 +223,10 @@ function Setup() {
                             <button
                                 key={kainga}
                                 className={learningArea === kainga ? "selected" : ""}
-                                onClick={() => setLearningArea(kainga)}
+                                onClick={() => {
+                                    setLearningArea(kainga);
+                                    setLaTeacherId("");
+                                }}
                             >
                                 {kainga}
                             </button>
@@ -226,6 +237,21 @@ function Setup() {
 
                         </div>
 
+                        <label className="la-teacher-field">
+                            <span>Who is your LA?</span>
+                            <select value={laTeacherId} onChange={(event) => setLaTeacherId(event.target.value)} disabled={!learningArea}>
+                                <option value="">{learningArea ? "Select your LA teacher" : "Select your Kāinga first"}</option>
+                                {teachers
+                                    .filter((teacher) => teacher.kainga === learningArea)
+                                    .sort((first, second) => {
+                                        const order = { "Deputy Principal": 0, "Kāinga Leader": 1, "Teacher": 2 };
+                                        return (order[first.role] ?? 3) - (order[second.role] ?? 3) || first.name.localeCompare(second.name);
+                                    })
+                                    .map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name} — {teacher.role}</option>)}
+                            </select>
+                            <small>Your LA will appear in every LA / iTime session.</small>
+                        </label>
+
                         <div className="buttons">
 
                             <button onClick={back}>
@@ -234,7 +260,7 @@ function Setup() {
 
                             <button
                                 className="next"
-                                disabled={!learningArea}
+                                disabled={!learningArea || !laTeacherId}
                                 onClick={next}
                             >
                                 Next
@@ -291,7 +317,7 @@ function Setup() {
                                                 key={course.id}
                                                 value={course.id}
                                             >
-                                                {course.name} (Level {course.level})
+                                                {course.name} ({course.level === 23 ? "Levels 2 & 3" : `Level ${course.level}`})
                                             </option>
 
                                         ))}

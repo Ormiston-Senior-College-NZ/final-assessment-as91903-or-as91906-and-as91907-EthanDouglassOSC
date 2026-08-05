@@ -20,7 +20,13 @@ from database import (
     submit_deletion_request,
     cancel_deletion_request,
     get_deletion_requests,
-    review_deletion_request
+    review_deletion_request,
+    get_teachers,
+    delete_course_assignment,
+    get_student_standards,
+    get_standard_catalog,
+    save_student_standard,
+    delete_student_standard
 )
 
 app = Flask(__name__)
@@ -126,6 +132,11 @@ def courses():
     return jsonify(data)
 
 
+@app.route("/teachers")
+def teachers():
+    return jsonify([dict(teacher) for teacher in get_teachers()])
+
+
 def admin_course_data():
     data = request.get_json(silent=True) or {}
     code = str(data.get("code", "")).strip().upper()
@@ -135,7 +146,7 @@ def admin_course_data():
         level = int(data.get("level"))
     except (TypeError, ValueError):
         level = None
-    if not code or not name or not category or level not in (1, 2, 3):
+    if not code or not name or not category or level not in (1, 2, 3, 23):
         return None
     return code, name, level, category
 
@@ -187,11 +198,81 @@ def admin_course_assignment(course_id):
     try:
         line = int(data.get("line"))
         teacher_id = int(data.get("teacherId"))
-        room_id = int(data.get("roomId"))
+        room_id = int(data.get("roomId")) if data.get("roomId") else None
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Select a line, teacher, and room."}), 400
-    success, message = save_course_assignment(course_id, line, teacher_id, room_id)
+        return jsonify({"success": False, "message": "Select a line, teacher, and area."}), 400
+    area = str(data.get("area", "")).strip()
+    try:
+        original_line = int(data.get("originalLine")) if data.get("originalLine") else None
+    except (TypeError, ValueError):
+        original_line = None
+    success, message = save_course_assignment(course_id, line, teacher_id, area, room_id, original_line)
     return jsonify({"success": success, "message": message}), 200 if success else 409
+
+
+@app.route("/admin/scheduling/<int:course_id>/<int:line>", methods=["DELETE"])
+def admin_course_assignment_delete(course_id, line):
+    if not is_admin(request.headers.get("X-Student-ID")):
+        return jsonify({"success": False, "message": "Admin access required."}), 403
+    if line not in (1, 2, 3, 4, 5):
+        return jsonify({"success": False, "message": "Select a valid timetable line."}), 400
+    success = delete_course_assignment(course_id, line)
+    return jsonify({
+        "success": success,
+        "message": "Class offering deleted." if success else "Class offering not found."
+    }), 200 if success else 404
+
+
+@app.route("/ncea/<student_id>", methods=["GET", "POST"])
+def ncea_standards(student_id):
+    if request.method == "GET":
+        return jsonify([dict(item) for item in get_student_standards(student_id)])
+    data = request.get_json(silent=True) or {}
+    try:
+        course_id = int(data.get("courseId"))
+        credits = int(data.get("credits"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Choose a class and enter valid credits."}), 400
+    number = str(data.get("number", "")).strip()
+    title = str(data.get("title", "")).strip()
+    assessment_type = data.get("assessmentType")
+    grade = data.get("grade", "")
+    if not number or not title or credits < 1 or credits > 30 or assessment_type not in ("Internal", "External") or grade not in ("", "NA", "A", "M", "E"):
+        return jsonify({"success": False, "message": "Complete every standard field with valid values."}), 400
+    success, message, saved_id = save_student_standard(
+        student_id, None, course_id, number, title, credits,
+        assessment_type, grade, bool(data.get("ueApproved", True))
+    )
+    return jsonify({"success": success, "message": message, "id": saved_id}), 201 if success else 400
+
+
+@app.route("/ncea/catalog/<student_id>")
+def ncea_catalog(student_id):
+    return jsonify([dict(item) for item in get_standard_catalog(student_id)])
+
+
+@app.route("/ncea/<student_id>/<int:standard_id>", methods=["PUT", "DELETE"])
+def ncea_standard(student_id, standard_id):
+    if request.method == "DELETE":
+        success = delete_student_standard(student_id, standard_id)
+        return jsonify({"success": success, "message": "Standard deleted." if success else "Standard not found."}), 200 if success else 404
+    data = request.get_json(silent=True) or {}
+    try:
+        course_id = int(data.get("courseId"))
+        credits = int(data.get("credits"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Choose a class and enter valid credits."}), 400
+    number = str(data.get("number", "")).strip()
+    title = str(data.get("title", "")).strip()
+    assessment_type = data.get("assessmentType")
+    grade = data.get("grade", "")
+    if not number or not title or credits < 1 or credits > 30 or assessment_type not in ("Internal", "External") or grade not in ("", "NA", "A", "M", "E"):
+        return jsonify({"success": False, "message": "Complete every standard field with valid values."}), 400
+    success, message, saved_id = save_student_standard(
+        student_id, standard_id, course_id, number, title, credits,
+        assessment_type, grade, bool(data.get("ueApproved", True))
+    )
+    return jsonify({"success": success, "message": message, "id": saved_id}), 200 if success else 400
 
 
 @app.route("/account-deletion/<student_id>", methods=["GET", "POST", "DELETE"])
@@ -238,12 +319,14 @@ def setup():
     year_level = data["yearLevel"]
     learning_area = data["learningArea"]
     subjects = data["subjects"]
+    la_teacher_id = data.get("laTeacherId")
 
     save_setup(
         student_id,
         year_level,
         learning_area,
-        subjects
+        subjects,
+        la_teacher_id
     )
 
     return jsonify({

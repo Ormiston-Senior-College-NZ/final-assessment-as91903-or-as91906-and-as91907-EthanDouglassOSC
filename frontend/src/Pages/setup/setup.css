@@ -191,6 +191,13 @@
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.13);
 }
 
+.la-teacher-field { display: flex; margin-top: 16px; text-align: left; flex-direction: column; gap: 6px; }
+.la-teacher-field > span { color: #565656; font-size: 12px; font-weight: 800; }
+.la-teacher-field select { width: 100%; min-height: 44px; padding: 0 13px; border: 1px solid #dcdcdc; border-radius: 10px; outline: none; background: #fff; color: #303030; font: inherit; font-size: 12px; }
+.la-teacher-field select:focus { border-color: #c8941c; box-shadow: 0 0 0 3px rgba(200, 148, 28, .13); }
+.la-teacher-field select:disabled { background: #f3f3f3; color: #999; }
+.la-teacher-field small { color: #8b8b8b; font-size: 9px; }
+
 .buttons {
   display: flex;
   justify-content: space-between;

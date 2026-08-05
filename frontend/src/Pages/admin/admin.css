@@ -22,9 +22,11 @@
 .admin-primary, .admin-secondary { min-height: 42px; padding: 0 17px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .admin-primary { background: #c8941c; color: #fff; }
 .admin-secondary { background: #ededed; color: #444; }
-.admin-message { margin: 0 0 18px; padding: 12px 15px; border-radius: 9px; font-size: 12px; font-weight: 700; }
+.admin-message { position: fixed; right: 24px; bottom: 24px; z-index: 1000; display: flex; max-width: 380px; padding: 14px 14px 14px 17px; border: 1px solid; border-radius: 10px; box-shadow: 0 12px 34px rgba(0,0,0,.18); font-size: 12px; font-weight: 700; align-items: center; gap: 14px; animation: toast-in 180ms ease-out; }
 .admin-message.success { background: #edf8ee; color: #287333; }
 .admin-message.error { background: #fff0f0; color: #a52b2b; }
+.admin-message button { margin-left: auto; padding: 0; border: 0; background: transparent; color: inherit; font-size: 18px; cursor: pointer; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .admin-filters { display: flex; gap: 9px; }
 .admin-filters input { width: 220px; }
 .admin-table-wrap { overflow-x: auto; }
@@ -39,6 +41,22 @@
 .row-actions button.delete { background: #fff0f0; color: #a52b2b; }
 .admin-state { padding: 45px 20px; color: #777; text-align: center; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.schedule-groups { display: grid; padding: 18px; background: #f7f7f7; gap: 18px; }
+.schedule-year { overflow: hidden; border: 1px solid #e1e1e1; border-radius: 12px; background: #fff; }
+.schedule-year > header { display: flex; padding: 17px 20px; background: #292927; color: #fff; align-items: center; justify-content: space-between; }
+.schedule-year > header span { color: #d8ad4b; font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.schedule-year > header h3 { margin: 3px 0 0; font-size: 18px; }
+.schedule-year > header > strong { color: #d4d4d4; font-size: 10px; }
+.schedule-category { border-bottom: 1px solid #e9e9e9; }
+.schedule-category:last-child { border-bottom: 0; }
+.schedule-category-heading { display: flex; padding: 11px 20px; background: #fffaf0; align-items: center; justify-content: space-between; }
+.schedule-category-heading { cursor: pointer; list-style: none; user-select: none; }
+.schedule-category-heading::-webkit-details-marker { display: none; }
+.schedule-category-heading h4 { margin: 0; color: #785309; font-size: 12px; }
+.schedule-category-heading span { display: flex; color: #98886b; font-size: 9px; gap: 10px; align-items: center; }
+.schedule-category-heading i { color: #8d620d; font-size: 15px; font-style: normal; line-height: 1; transition: transform 150ms ease; }
+.schedule-category[open] .schedule-category-heading i { transform: rotate(180deg); }
+.schedule-category-heading:hover { background: #fff5df; }
 .schedule-list { display: grid; }
 .schedule-row { display: grid; padding: 13px 20px; border-bottom: 1px solid #eee; grid-template-columns: minmax(210px, 1.2fr) 105px minmax(170px, 1fr) minmax(190px, 1fr) auto; gap: 12px; align-items: end; }
 .schedule-row:last-child { border-bottom: 0; }
@@ -51,15 +69,49 @@
 .schedule-row label > span { color: #777; font-size: 9px; font-weight: 800; text-transform: uppercase; }
 .schedule-row select { width: 100%; min-width: 0; height: 38px; padding: 0 9px; border: 1px solid #ddd; border-radius: 7px; background: #fff; font: inherit; font-size: 10px; }
 .schedule-save { min-height: 38px; }
+.assignment-summary { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.assignment-summary span { color: #888; font-size: 8px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.assignment-summary strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.schedule-edit { min-height: 38px; padding: 0 16px; border: 1px solid #c8941c; border-radius: 7px; background: #fffaf0; color: #8d620d; font: inherit; font-size: 10px; font-weight: 800; cursor: pointer; }
+.schedule-edit:hover { background: #c8941c; color: #fff; }
+.schedule-offering-row { display: grid; padding: 14px 20px; border-bottom: 1px solid #eee; grid-template-columns: minmax(210px, .8fr) minmax(320px, 1.5fr) auto; gap: 15px; align-items: center; }
+.schedule-offering-row:last-child { border-bottom: 0; }
+.offering-list { display: flex; min-width: 0; flex-wrap: wrap; gap: 7px; }
+.offering-list button { position: relative; display: grid; min-width: 145px; padding: 8px 35px 8px 10px; border: 1px solid #e1e1e1; border-radius: 8px; background: #fafafa; color: #333; text-align: left; cursor: pointer; gap: 2px; }
+.offering-list button:hover { border-color: #c8941c; background: #fffaf0; }
+.offering-list button span { color: #9a6a0b; font-size: 8px; font-weight: 900; text-transform: uppercase; }
+.offering-list button strong { font-size: 9px; }
+.offering-list button small { color: #888; font-size: 8px; }
+.offering-list button i { position: absolute; top: 9px; right: 9px; color: #9a6a0b; font-size: 8px; font-style: normal; font-weight: 800; }
+.no-offerings { color: #999; font-size: 10px; }
+.assignment-modal-backdrop { position: fixed; inset: 0; z-index: 900; display: grid; padding: 20px; background: rgba(20,20,20,.58); place-items: center; }
+.assignment-modal { overflow: hidden; width: min(520px, 100%); border-radius: 14px; background: #fff; box-shadow: 0 24px 70px rgba(0,0,0,.3); }
+.assignment-modal > header { display: flex; padding: 21px 23px; border-bottom: 1px solid #ececec; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.assignment-modal h2 { margin: 4px 0; font-size: 20px; }
+.assignment-modal header p { margin: 0; color: #777; font-size: 10px; }
+.assignment-modal header > button { width: 32px; height: 32px; border: 0; border-radius: 7px; background: #f0f0f0; color: #555; font-size: 19px; cursor: pointer; }
+.assignment-modal form { display: grid; padding: 22px 23px 23px; gap: 15px; }
+.assignment-modal form label { display: flex; flex-direction: column; gap: 6px; }
+.assignment-modal form label > span { color: #555; font-size: 10px; font-weight: 800; }
+.assignment-modal form select { width: 100%; min-height: 43px; padding: 0 11px; border: 1px solid #d9d9d9; border-radius: 8px; outline: none; background: #fff; font: inherit; font-size: 11px; }
+.assignment-modal form select:focus { border-color: #c8941c; box-shadow: 0 0 0 3px rgba(200,148,28,.12); }
+.assignment-modal form small { color: #888; font-size: 9px; }
+.assignment-modal footer { display: flex; padding-top: 5px; justify-content: flex-end; gap: 9px; }
 .teacher-dashboard-grid { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 18px; align-items: start; }
 .teacher-picker { max-height: 690px; }
 .teacher-picker > input { width: calc(100% - 32px); min-height: 40px; margin: 14px 16px 8px; padding: 0 11px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font: inherit; font-size: 11px; }
 .teacher-list { overflow-y: auto; max-height: 580px; padding: 5px 9px 12px; }
+.teacher-kainga-group { padding: 5px 0 9px; border-bottom: 1px solid #ececec; }
+.teacher-kainga-group:last-child { border-bottom: 0; }
+.teacher-kainga-group > header { display: flex; padding: 7px 10px 5px; color: #91650b; align-items: center; justify-content: space-between; }
+.teacher-kainga-group > header strong { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.teacher-kainga-group > header span { display: grid; min-width: 20px; height: 20px; border-radius: 50%; background: #fff3d7; font-size: 8px; font-weight: 800; place-items: center; }
 .teacher-list button { display: flex; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: transparent; color: #333; text-align: left; cursor: pointer; flex-direction: column; gap: 3px; }
 .teacher-list button:hover { background: #f5f5f5; }
 .teacher-list button.active { background: #fff3d7; color: #835a08; }
 .teacher-list strong { font-size: 11px; }
 .teacher-list small { color: #888; font-size: 9px; }
+.teacher-empty { padding: 28px 10px; color: #888; font-size: 10px; text-align: center; }
 .teacher-profile { display: grid; padding: 24px; border-bottom: 1px solid #eee; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; }
 .teacher-avatar { display: grid; width: 50px; height: 50px; border-radius: 50%; background: #fff0cc; color: #94670b; font-size: 13px; font-weight: 900; place-items: center; }
 .teacher-profile h2 { margin: 3px 0; font-size: 21px; }
@@ -77,6 +129,8 @@
 .teacher-room-select { display: flex; margin-top: 13px; flex-direction: column; gap: 5px; }
 .teacher-room-select span { color: #777; font-size: 8px; font-weight: 800; text-transform: uppercase; }
 .teacher-room-select select { width: 100%; height: 36px; padding: 0 8px; border: 1px solid #d8d8d8; border-radius: 7px; background: #fff; font: inherit; font-size: 9px; }
+.delete-teacher-class { width: 100%; min-height: 34px; margin-top: 10px; border: 1px solid #e0b7b7; border-radius: 7px; background: #fff5f5; color: #a43f3f; font: inherit; font-size: 9px; font-weight: 800; cursor: pointer; }
+.delete-teacher-class:hover { border-color: #b94747; background: #b94747; color: #fff; }
 .request-count { padding: 7px 10px; border-radius: 20px; background: #fff3d7; color: #8d620d; font-size: 10px; font-weight: 800; }
 .deletion-list { display: grid; }
 .deletion-row { display: grid; padding: 15px 20px; border-bottom: 1px solid #eee; grid-template-columns: 40px minmax(180px, 1fr) minmax(250px, 1.4fr) auto minmax(185px, auto); gap: 13px; align-items: center; }
@@ -95,6 +149,7 @@
 .request-actions .approve { border: 1px solid #b94747; background: #b94747; color: #fff; }
 @media (max-width: 1100px) { .admin-editor form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-form-actions { grid-column: span 2; } }
 @media (max-width: 1100px) { .schedule-row { grid-template-columns: minmax(200px, 1fr) 100px minmax(160px, 1fr); } .schedule-row label:nth-of-type(3) { grid-column: 1 / span 2; } }
+@media (max-width: 900px) { .schedule-offering-row { grid-template-columns: minmax(190px, .8fr) 1fr; } .schedule-offering-row > .schedule-edit { grid-column: 2; justify-self: start; } }
 @media (max-width: 750px) { .teacher-dashboard-grid { grid-template-columns: 1fr; } .teacher-picker { max-height: 400px; } .teacher-list { max-height: 290px; } .teacher-class-grid { grid-template-columns: 1fr; } }
 @media (max-width: 900px) { .deletion-row { grid-template-columns: 40px 1fr auto; } .request-details { grid-column: 2 / span 2; } .request-actions, .reviewed-date { grid-column: 2 / span 2; justify-content: flex-start; } }
-@media (max-width: 650px) { .admin-heading, .admin-toolbar { align-items: stretch; flex-direction: column; } .admin-total { text-align: left; } .admin-tabs { overflow-x: auto; } .admin-tabs button { white-space: nowrap; } .admin-editor form, .schedule-row { grid-template-columns: 1fr; } .admin-form-actions, .schedule-row label:nth-of-type(3) { grid-column: auto; } .admin-filters { flex-direction: column; } .admin-filters input { width: 100%; } .admin-card th, .admin-card td { padding: 12px; } .teacher-profile { grid-template-columns: 52px 1fr; } .teacher-profile > strong { grid-column: 2; } }
+@media (max-width: 650px) { .admin-heading, .admin-toolbar { align-items: stretch; flex-direction: column; } .admin-total { text-align: left; } .admin-tabs { overflow-x: auto; } .admin-tabs button { white-space: nowrap; } .admin-editor form, .schedule-row, .schedule-offering-row { grid-template-columns: 1fr; } .admin-form-actions, .schedule-row label:nth-of-type(3), .schedule-offering-row > .schedule-edit { grid-column: auto; } .admin-filters { flex-direction: column; } .admin-filters input { width: 100%; } .admin-card th, .admin-card td { padding: 12px; } .teacher-profile { grid-template-columns: 52px 1fr; } .teacher-profile > strong { grid-column: 2; } .offering-list { flex-direction: column; } .offering-list button { width: 100%; } }

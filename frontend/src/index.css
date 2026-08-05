@@ -9,3 +9,202 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Persistent dark appearance */
+body.dark-mode {
+  color-scheme: dark;
+  background: #111214;
+  color: #ececec;
+}
+
+body.dark-mode .app-layout,
+body.dark-mode .app-content,
+body.dark-mode .login-page,
+body.dark-mode .setup-page {
+  background: #111214;
+}
+
+body.dark-mode .topbar,
+body.dark-mode .dashboard-panel,
+body.dark-mode .stat-card:not(.accent),
+body.dark-mode .timetable-card,
+body.dark-mode .settings-card,
+body.dark-mode .admin-card,
+body.dark-mode .schedule-year,
+body.dark-mode .teacher-class-grid article,
+body.dark-mode .ncea-summary > article:not(.rank-card),
+body.dark-mode .ncea-subject-card,
+body.dark-mode .login-card,
+body.dark-mode .setup-card,
+body.dark-mode .assignment-modal,
+body.dark-mode .standard-modal {
+  border-color: #34363a;
+  background: #1c1d20;
+  color: #ededed;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .24);
+}
+
+body.dark-mode .topbar h2,
+body.dark-mode .topbar-clock strong,
+body.dark-mode .dashboard,
+body.dark-mode .timetable-page,
+body.dark-mode .settings-page,
+body.dark-mode .admin-page,
+body.dark-mode .ncea-page,
+body.dark-mode .schedule-course b,
+body.dark-mode .teacher-list button,
+body.dark-mode .standards-table article span,
+body.dark-mode .ncea-subject-card h2 {
+  color: #ededed;
+}
+
+body.dark-mode .topbar-lesson,
+body.dark-mode .topbar-lesson strong,
+body.dark-mode .dashboard-heading p,
+body.dark-mode .timetable-heading p,
+body.dark-mode .settings-heading p,
+body.dark-mode .admin-heading p,
+body.dark-mode .ncea-heading p,
+body.dark-mode .lesson-time span,
+body.dark-mode .lesson-details span,
+body.dark-mode .subject-row small,
+body.dark-mode .schedule-course small,
+body.dark-mode .assignment-summary span,
+body.dark-mode .teacher-profile p,
+body.dark-mode .ncea-subject-card header p {
+  color: #a7a8ac;
+}
+
+body.dark-mode .topbar-clock,
+body.dark-mode .topbar-lesson > span:not(:first-child):not(.topbar-lesson-label),
+body.dark-mode .settings-card-heading,
+body.dark-mode .admin-card-heading,
+body.dark-mode .admin-toolbar,
+body.dark-mode .selected-day-heading,
+body.dark-mode .ncea-subject-card > header,
+body.dark-mode .assignment-modal > header,
+body.dark-mode .standard-modal > header {
+  border-color: #34363a;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode .settings-form-grid input,
+body.dark-mode .settings-form-grid select,
+body.dark-mode .settings-subject-grid select,
+body.dark-mode .admin-editor input,
+body.dark-mode .admin-editor select,
+body.dark-mode .admin-filters input,
+body.dark-mode .admin-filters select,
+body.dark-mode .assignment-modal form select,
+body.dark-mode .standard-modal input,
+body.dark-mode .standard-modal select,
+body.dark-mode .teacher-room-select select {
+  border-color: #44474d;
+  background: #25272b;
+  color: #eeeeee;
+}
+
+body.dark-mode input:disabled,
+body.dark-mode select:disabled,
+body.dark-mode input[readonly] {
+  background: #202226;
+  color: #aaa;
+}
+
+body.dark-mode .day-selector button,
+body.dark-mode .admin-tabs,
+body.dark-mode .settings-subject-grid label,
+body.dark-mode .subject-row,
+body.dark-mode .lesson-row,
+body.dark-mode .teacher-list button:hover,
+body.dark-mode .offering-list button,
+body.dark-mode .standard-head,
+body.dark-mode .tabs,
+body.dark-mode .gpa-scale span,
+body.dark-mode .credit-breakdown span {
+  border-color: #34363a;
+  background: #24262a;
+  color: #e5e5e5;
+}
+
+body.dark-mode .day-selector button.active,
+body.dark-mode .admin-tabs button.active,
+body.dark-mode .tabs .active {
+  background: #c8941c;
+  color: #fff;
+}
+
+body.dark-mode .schedule-groups {
+  background: #151619;
+}
+
+body.dark-mode .schedule-year > header {
+  background: #252629;
+}
+
+body.dark-mode .schedule-category,
+body.dark-mode .schedule-row,
+body.dark-mode .schedule-offering-row,
+body.dark-mode .deletion-row,
+body.dark-mode .standards-table article,
+body.dark-mode .lesson-row {
+  border-color: #34363a;
+}
+
+body.dark-mode .schedule-category-heading,
+body.dark-mode .ncea-info,
+body.dark-mode .student-summary,
+body.dark-mode .notice-panel {
+  border-color: #594921;
+  background: #2b261b;
+}
+
+body.dark-mode .schedule-category-heading:hover {
+  background: #342c1c;
+}
+
+body.dark-mode .teacher-list button.active,
+body.dark-mode .level-pill,
+body.dark-mode .session-badge,
+body.dark-mode .day-number,
+body.dark-mode .subject-code,
+body.dark-mode .schedule-course > strong,
+body.dark-mode .settings-line-number {
+  background: #3a301b;
+  color: #e2b653;
+}
+
+body.dark-mode table th,
+body.dark-mode .admin-card th {
+  border-color: #34363a;
+  background: #25272a;
+  color: #aaa;
+}
+
+body.dark-mode table td,
+body.dark-mode .admin-card td {
+  border-color: #34363a;
+}
+
+body.dark-mode .account-menu {
+  border-color: #4b4b4b;
+  background: #202124;
+}
+
+body.dark-mode .theme-setting-row p,
+body.dark-mode .deletion-request-row p,
+body.dark-mode .settings-card-heading p,
+body.dark-mode .admin-toolbar p,
+body.dark-mode .ncea-info p {
+  color: #aaa;
+}
+
+body.dark-mode .empty-standards,
+body.dark-mode .admin-state,
+body.dark-mode .ncea-state,
+body.dark-mode .settings-state,
+body.dark-mode .panel-empty {
+  color: #aaa;
+}

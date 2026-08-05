@@ -23,6 +23,7 @@ function Settings() {
   const [message, setMessage] = useState("");
   const [deletionRequest, setDeletionRequest] = useState(null);
   const [deletionBusy, setDeletionBusy] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
     if (!studentId) {
@@ -185,6 +186,13 @@ function Settings() {
     finally { setDeletionBusy(false); }
   };
 
+  const toggleDarkMode = () => {
+    const enabled = !darkMode;
+    setDarkMode(enabled);
+    localStorage.setItem("theme", enabled ? "dark" : "light");
+    document.body.classList.toggle("dark-mode", enabled);
+  };
+
   if (status === "loading") return <div className="settings-state">Loading account settings…</div>;
   if (status === "signed-out") return <div className="settings-state">Log in to edit your account.</div>;
   if (status === "error") return <div className="settings-state error">Your account settings could not be loaded.</div>;
@@ -287,6 +295,17 @@ function Settings() {
               <span>Confirm new password</span>
               <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={updateField} minLength="6" autoComplete="new-password" />
             </label>
+          </div>
+        </section>
+
+        <section className="settings-card appearance-card">
+          <div className="settings-card-heading">
+            <div><span>Appearance</span><h2>Dark mode</h2></div>
+            <p>Choose how StudentNET looks on this device.</p>
+          </div>
+          <div className="theme-setting-row">
+            <div><strong>Use dark appearance</strong><p>Reduce screen brightness with darker backgrounds and lighter text.</p></div>
+            <button type="button" className={`theme-switch${darkMode ? " active" : ""}`} role="switch" aria-checked={darkMode} onClick={toggleDarkMode}><span /></button>
           </div>
         </section>
 

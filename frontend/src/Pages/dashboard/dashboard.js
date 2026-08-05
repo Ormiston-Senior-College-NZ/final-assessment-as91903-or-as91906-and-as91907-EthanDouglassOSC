@@ -8,10 +8,13 @@ function toMinutes(time) {
   return hours * 60 + minutes;
 }
 
+const GRADE_POINTS = { NA: 0, A: 2, M: 3, E: 4 };
+
 function Dashboard() {
   const firstName = localStorage.getItem("firstName") || "Student";
   const [user, setUser] = useState(null);
   const [timetable, setTimetable] = useState([]);
+  const [standards, setStandards] = useState([]);
   const [status, setStatus] = useState("loading");
   const now = useMemo(() => new Date(), []);
 
@@ -28,17 +31,19 @@ function Dashboard() {
     Promise.all([
       fetch(`/user/${encodeURIComponent(studentId)}`, options),
       fetch(`/timetable/${encodeURIComponent(studentId)}`, options),
+      fetch(`/ncea/${encodeURIComponent(studentId)}`, options),
     ])
-      .then(async ([userResponse, timetableResponse]) => {
-        if (!userResponse.ok || !timetableResponse.ok) {
+      .then(async ([userResponse, timetableResponse, standardsResponse]) => {
+        if (!userResponse.ok || !timetableResponse.ok || !standardsResponse.ok) {
           throw new Error("Could not load dashboard");
         }
-        return Promise.all([userResponse.json(), timetableResponse.json()]);
+        return Promise.all([userResponse.json(), timetableResponse.json(), standardsResponse.json()]);
       })
-      .then(([userData, timetableData]) => {
+      .then(([userData, timetableData, standardData]) => {
         if (!userData.success) throw new Error("Student not found");
         setUser(userData);
         setTimetable(timetableData);
+        setStandards(standardData);
         setStatus("ready");
       })
       .catch((error) => {
@@ -68,6 +73,23 @@ function Dashboard() {
     return todayLessons.find((lesson) => toMinutes(lesson.end_time) > minutes) || null;
   }, [todayLessons, now]);
 
+  const nceaScores = useMemo(() => {
+    const recorded = standards.filter((standard) => standard.grade);
+    const attemptedCredits = recorded.reduce((sum, standard) => sum + standard.credits, 0);
+    const weightedPoints = recorded.reduce((sum, standard) => sum + GRADE_POINTS[standard.grade] * standard.credits, 0);
+    const gpa = attemptedCredits ? weightedPoints / attemptedCredits : 0;
+    const grouped = standards
+      .filter((standard) => standard.ue_approved && (standard.course_level === 3 || standard.course_level === 23) && ["A", "M", "E"].includes(standard.grade))
+      .reduce((groups, standard) => ({ ...groups, [standard.course_id]: [...(groups[standard.course_id] || []), standard] }), {});
+    const rankCredits = Object.values(grouped).flatMap((items) => items
+      .flatMap((standard) => Array(standard.credits).fill(GRADE_POINTS[standard.grade]))
+      .sort((first, second) => second - first)
+      .slice(0, 24))
+      .sort((first, second) => second - first)
+      .slice(0, 80);
+    return { gpa, attemptedCredits, rankScore: rankCredits.reduce((sum, points) => sum + points, 0), rankCredits: rankCredits.length };
+  }, [standards]);
+
   if (status === "loading") {
     return <div className="dashboard-state">Loading your dashboard…</div>;
   }
@@ -96,14 +118,14 @@ function Dashboard() {
 
       <section className="dashboard-stats" aria-label="Student summary">
         <article className="stat-card accent">
-          <span>Today’s classes</span>
-          <strong>{todayLessons.length}</strong>
-          <small>{todayLessons.length ? "Including LA / iTime" : "No classes today"}</small>
+          <span>Estimated rank score</span>
+          <strong className="score-number">{nceaScores.rankScore}</strong>
+          <small>{nceaScores.rankCredits} of 80 eligible credits counted</small>
         </article>
         <article className="stat-card">
-          <span>My subjects</span>
-          <strong>{subjects.length}</strong>
-          <small>Across five timetable lines</small>
+          <span>Current GPA</span>
+          <strong className="score-number">{nceaScores.gpa.toFixed(2)}</strong>
+          <small>{nceaScores.attemptedCredits ? `Across ${nceaScores.attemptedCredits} assessed credits` : "Add grades on the NCEA page"}</small>
         </article>
         <article className="stat-card">
           <span>Next up</span>

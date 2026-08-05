@@ -94,6 +94,10 @@
   line-height: 1.1;
 }
 
+.stat-card > strong.score-number {
+  font-size: 29px;
+}
+
 .stat-card.accent > strong {
   color: #fff;
 }

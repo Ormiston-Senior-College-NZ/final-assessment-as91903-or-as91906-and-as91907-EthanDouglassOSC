@@ -178,6 +178,13 @@
 .request-deletion-button { border: 1px solid #c55a5a; background: #fff0f0; color: #9f3030; }
 .cancel-deletion-button { border: 1px solid #d3d3d3; background: #f4f4f4; color: #555; }
 .request-deletion-button:disabled, .cancel-deletion-button:disabled { cursor: wait; opacity: .6; }
+.theme-setting-row { display: flex; padding: 22px; align-items: center; justify-content: space-between; gap: 20px; }
+.theme-setting-row strong { font-size: 13px; }
+.theme-setting-row p { margin: 5px 0 0; color: #777; font-size: 11px; }
+.theme-switch { position: relative; width: 50px; height: 28px; padding: 0; border: 0; border-radius: 20px; background: #ccc; cursor: pointer; transition: background 160ms ease; flex: 0 0 auto; }
+.theme-switch span { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,.22); transition: transform 160ms ease; }
+.theme-switch.active { background: #c8941c; }
+.theme-switch.active span { transform: translateX(22px); }
 
 .settings-message { color: #438153; font-size: 12px; font-weight: 700; }
 .settings-message.error { color: #ad3c3c; }

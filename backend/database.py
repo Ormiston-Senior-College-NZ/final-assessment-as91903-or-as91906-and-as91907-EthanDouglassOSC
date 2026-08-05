@@ -1,14 +1,39 @@
+"""StudentNET SQLite data-access layer.
+
+This module owns the database connection and all parameterised reads/writes for
+users, courses, student selections, teacher offerings, rooms, timetables,
+deletion requests, the NZQA catalogue, and individual student results.
+Functions return SQLite rows or plain values for conversion by ``app.py``.
+"""
+
 import sqlite3
 import os
+from teacher_codes import NAME_CORRECTIONS, build_teacher_codes
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "studentnet.db")
+_teacher_codes_ready = False
 
 
 def get_connection():
+    global _teacher_codes_ready
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
+    if not _teacher_codes_ready:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(teachers)")}
+        if "code" not in columns:
+            connection.execute("ALTER TABLE teachers ADD COLUMN code TEXT")
+        for old_name, corrected_name in NAME_CORRECTIONS.items():
+            connection.execute(
+                "UPDATE teachers SET name = ? WHERE name = ?",
+                (corrected_name, old_name),
+            )
+        rows = connection.execute("SELECT id, name FROM teachers").fetchall()
+        for teacher_id, code in build_teacher_codes(rows).items():
+            connection.execute("UPDATE teachers SET code = ? WHERE id = ?", (code, teacher_id))
+        connection.commit()
+        _teacher_codes_ready = True
     return connection
 
 
@@ -267,7 +292,7 @@ def is_admin(student_id):
 def get_scheduling_data():
     connection = get_connection()
     teachers = connection.execute("""
-        SELECT id, name, role, email, kainga
+        SELECT id, name, code, role, email, kainga
         FROM teachers
         ORDER BY name
     """).fetchall()
@@ -656,7 +681,7 @@ def get_student_subjects(student_id):
 def get_teachers():
     connection = get_connection()
     teachers = connection.execute("""
-        SELECT id, name, role, kainga
+        SELECT id, name, code, role, kainga
         FROM teachers
         ORDER BY kainga, name
     """).fetchall()

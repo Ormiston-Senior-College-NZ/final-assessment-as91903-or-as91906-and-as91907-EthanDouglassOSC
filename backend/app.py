@@ -1,3 +1,11 @@
+"""StudentNET HTTP API.
+
+This module creates the Flask application, enables frontend CORS requests, and
+maps JSON endpoints to the database layer. Route groups cover authentication,
+student setup/settings, courses, timetable generation, administration,
+account-deletion review, teachers/rooms, and NCEA standard tracking.
+"""
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 

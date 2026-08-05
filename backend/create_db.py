@@ -1,5 +1,14 @@
+"""Create and seed the complete local StudentNET database.
+
+Running this script removes the existing local database, creates every table and
+relationship, inserts course/teacher/room/timetable seed data, and prepares the
+application for a clean development run. It is intentionally destructive and is
+not imported by the Flask application at runtime.
+"""
+
 import sqlite3
 import os
+from teacher_codes import build_teacher_codes
 
 DATABASE = os.path.join(os.path.dirname(__file__), "studentnet.db")
 
@@ -44,7 +53,7 @@ CREATE TABLE courses (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-    code TEXT UNIQUE,
+    code TEXT,
     name TEXT,
     level INTEGER,
     category TEXT
@@ -62,6 +71,8 @@ CREATE TABLE teachers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
     name TEXT NOT NULL,
+
+    code TEXT UNIQUE,
 
     role TEXT NOT NULL,
 
@@ -425,7 +436,7 @@ teachers = [
     ("Kate Lambert", "Deputy Principal", "", "Kea"),
     ("Jerrika Samuel", "Kāinga Leader", "", "Kea"),
     ("David Rooney", "Kāinga Leader", "", "Kea"),
-    ("Cassandra Hill", "Kāinga Leader", "", "Kea"),
+    ("Cassandra Hii", "Kāinga Leader", "", "Kea"),
     ("Koriana Good", "Teacher", "", "Kea"),
     ("Kisa Leulua'i", "Teacher", "", "Kea"),
     ("George Mavunga", "Teacher", "", "Kea"),
@@ -459,7 +470,7 @@ teachers = [
     ("Vimal Singh", "Kāinga Leader", "", "Mokoroa"),
     ("Ziad Abdelmaksoud", "Teacher", "", "Mokoroa"),
     ("Boran Alkhudairi", "Teacher", "", "Mokoroa"),
-    ("Matthew Garrat", "Teacher", "", "Mokoroa"),
+    ("Matthew Garratt", "Teacher", "", "Mokoroa"),
     ("Pramod Gundu", "Teacher", "", "Mokoroa"),
     ("TK Hards", "Teacher", "", "Mokoroa"),
     ("Miu Hon", "Teacher", "", "Mokoroa"),
@@ -470,7 +481,7 @@ teachers = [
     ("Sangeeta Rao", "Teacher", "", "Mokoroa"),
     ("Nilesh Sharma", "Teacher", "", "Mokoroa"),
     ("Manish Tanna", "Teacher", "", "Mokoroa"),
-    ("To'asavilli Talea", "Teacher", "", "Mokoroa"),
+    ("To'asavili Telea", "Teacher", "", "Mokoroa"),
     ("Yoshna Reddy", "Teacher", "", "Mokoroa"),
     ("Jason Clarkson", "Teacher", "", "Mokoroa"),
     ("Jill de Roos", "Teacher", "", "Mokoroa"),
@@ -483,7 +494,7 @@ teachers = [
     # Pūkeko
     # ==========================
 
-    ("Michael Cylne", "Deputy Principal", "", "Pūkeko"),
+    ("Michael Clyne", "Deputy Principal", "", "Pūkeko"),
     ("Geraldine Jagesur-Singh", "Kāinga Leader", "", "Pūkeko"),
     ("Selina Yee", "Kāinga Leader", "", "Pūkeko"),
     ("Ritesh Sharma", "Kāinga Leader", "", "Pūkeko"),
@@ -494,10 +505,10 @@ teachers = [
     ("Barbara Ngawati-Salaivao", "Teacher", "", "Pūkeko"),
     ("Rakesh Prakash", "Teacher", "", "Pūkeko"),
     ("Raman Virk", "Teacher", "", "Pūkeko"),
-    ("Wille Ropata", "Teacher", "", "Pūkeko"),
+    ("Matua Willie Ropata", "Teacher", "", "Pūkeko"),
     ("Jeannine Ashford", "Teacher", "", "Pūkeko"),
     ("Sheenal Chandra", "Teacher", "", "Pūkeko"),
-    ("Nicole Tabolt Da-Silva", "Teacher", "", "Pūkeko"),
+    ("Nicole Tabolt Da Silva", "Teacher", "", "Pūkeko"),
     ("Stanley Eda", "Teacher", "", "Pūkeko"),
     ("Shital Juthani", "Teacher", "", "Pūkeko"),
     ("Nicola Brebner", "Teacher", "", "Pūkeko"),
@@ -548,6 +559,11 @@ INSERT INTO teachers
 (name, role, email, kainga)
 VALUES (?, ?, ?, ?)
 """, teachers)
+
+# Generate each code from the teacher's first and second names.
+teacher_rows = cursor.execute("SELECT id, name FROM teachers").fetchall()
+for teacher_id, code in build_teacher_codes(teacher_rows).items():
+    cursor.execute("UPDATE teachers SET code = ? WHERE id = ?", (code, teacher_id))
 
 # ==========================================================
 # ROOMS LIST

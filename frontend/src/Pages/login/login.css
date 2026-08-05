@@ -1,110 +1,115 @@
 body {
-    margin: 0;
-    font-family: monserrant, sans-serif;
-    background: #f4f6f9;
+  margin: 0;
+  font-family: monserrant, sans-serif;
+  background: #f4f6f9;
 }
 
+/*
+ * LOGIN AND REGISTRATION
+ * Styles the full-screen authentication background, form card, mode tabs,
+ * field labels and inputs, submit button, feedback messages, and small screens.
+ */
 .login-page {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .login-card {
-    width: 420px;
-    background: white;
-    padding: 40px;
-    border-radius: 18px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+  width: 420px;
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
 .login-card h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #c8941c;
-    font-size: 32px;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #c8941c;
+  font-size: 32px;
 }
 
 .tabs {
-    display: flex;
-    margin-bottom: 30px;
-    background: #f3f3f3;
-    border-radius: 10px;
-    overflow: hidden;
+  display: flex;
+  margin-bottom: 30px;
+  background: #f3f3f3;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .tabs button {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: .25s;
+  flex: 1;
+  padding: 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.25s;
 }
 
 .tabs button:hover {
-    background: #ececec;
+  background: #ececec;
 }
 
 .tabs .active {
-    background: #c8941c;
-    color: white;
+  background: #c8941c;
+  color: white;
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 input {
-    padding: 14px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    transition: .2s;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: 0.2s;
 }
 
 input:focus {
-    outline: none;
-    border-color: #c8941c;
-    box-shadow: 0 0 0 3px rgba(200,148,28,0.2);
+  outline: none;
+  border-color: #c8941c;
+  box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.2);
 }
 
 button[type="submit"] {
-    margin-top: 10px;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    background: #c8941c;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: .25s;
+  margin-top: 10px;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #c8941c;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
 button[type="submit"]:hover {
-    background: #a87912;
+  background: #a87912;
 }
 
 .error {
-    color: #d32f2f;
-    text-align: center;
-    font-size: 14px;
-    margin: 0;
+  color: #d32f2f;
+  text-align: center;
+  font-size: 14px;
+  margin: 0;
 }
 
 .success {
-    color: #2e7d32;
-    text-align: center;
-    font-size: 14px;
-    margin: 0;
+  color: #2e7d32;
+  text-align: center;
+  font-size: 14px;
+  margin: 0;
 }
 
 input::placeholder {
-    color: #999;
+  color: #999;
 }

@@ -1,3 +1,8 @@
+/*
+ * AUTHENTICATED LAYOUT
+ * Sidebar supplies navigation, Topbar supplies live student context, and Outlet
+ * is replaced by whichever signed-in child route is currently active.
+ */
 import { Outlet } from "react-router-dom";
 import Sidebar from "./sidebar";
 import Topbar from "./topbar";

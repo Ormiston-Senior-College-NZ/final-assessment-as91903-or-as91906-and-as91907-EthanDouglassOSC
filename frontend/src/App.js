@@ -1,3 +1,9 @@
+/*
+ * ROOT ROUTER
+ * Public routes render Login and Setup without navigation.
+ * Student pages are nested under Layout so they share Sidebar and Topbar.
+ * Each route maps one URL directly to its page component.
+ */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./Components/layout";
@@ -17,12 +23,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Login WITHOUT sidebar */}
         <Route path="/" element={<Login />} />
         <Route path="/setup" element={<Setup />} />
-
-        {/* ALL pages WITH sidebar */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/timetable" element={<Timetable />} />
@@ -32,7 +34,6 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   );

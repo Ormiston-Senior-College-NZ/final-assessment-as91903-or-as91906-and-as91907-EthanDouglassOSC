@@ -1,3 +1,10 @@
+/*
+ * APPLICATION LAYOUT
+ * .app-layout places the sidebar beside the page content.
+ * .app-content supplies safe outer spacing and allows content to shrink.
+ * .app-content-inner limits wide-screen line lengths and centres all pages.
+ * The media query stacks the navigation above the content on smaller screens.
+ */
 .app-layout {
   display: flex;
   min-height: 100vh;

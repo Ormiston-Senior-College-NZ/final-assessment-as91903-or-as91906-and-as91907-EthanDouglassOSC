@@ -1,3 +1,9 @@
+/*
+ * TIMETABLE PAGE
+ * Styles the heading, weekday selector, active/today states, selected-day card,
+ * lesson time column, subject/teacher/room details, current-lesson emphasis,
+ * empty/loading states, and responsive single-column lesson rows.
+ */
 .timetable-page {
   color: #1f1f1f;
 }
@@ -48,7 +54,10 @@
   text-align: left;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease;
 }
 
 .day-selector button:hover {

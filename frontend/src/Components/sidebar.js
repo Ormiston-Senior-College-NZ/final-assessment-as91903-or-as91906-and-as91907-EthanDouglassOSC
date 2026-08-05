@@ -1,7 +1,13 @@
+/*
+ * SIDEBAR COMPONENT
+ * Builds role-aware navigation, reads the student's identity, creates initials,
+ * controls the account menu, persists dark mode, and clears the session on logout.
+ */
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./sidebar.css";
 
+// Links shared by all students; the Admin link is added by role.
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard" },
   { to: "/timetable", label: "Timetable" },
@@ -11,6 +17,7 @@ const NAV_ITEMS = [
 ];
 
 function Sidebar() {
+  // Account, navigation, and appearance state
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
   const [profile, setProfile] = useState(() => ({
@@ -20,16 +27,21 @@ function Sidebar() {
   const { firstName, lastName } = profile;
   const initials = `${firstName[0] || "S"}${lastName[0] || ""}`.toUpperCase();
   const isAdmin = localStorage.getItem("isAdmin") === "true";
-  const navItems = isAdmin ? [...NAV_ITEMS, { to: "/admin", label: "Admin" }] : NAV_ITEMS;
+  const navItems = isAdmin
+    ? [...NAV_ITEMS, { to: "/admin", label: "Admin" }]
+    : NAV_ITEMS;
 
+  // Keep the document theme in sync with the stored preference.
   useEffect(() => {
-    const updateProfile = () => setProfile({
-      firstName: localStorage.getItem("firstName") || "Student",
-      lastName: localStorage.getItem("lastName") || "",
-    });
+    const updateProfile = () =>
+      setProfile({
+        firstName: localStorage.getItem("firstName") || "Student",
+        lastName: localStorage.getItem("lastName") || "",
+      });
 
     window.addEventListener("studentnet-profile-updated", updateProfile);
-    return () => window.removeEventListener("studentnet-profile-updated", updateProfile);
+    return () =>
+      window.removeEventListener("studentnet-profile-updated", updateProfile);
   }, []);
 
   const logout = () => {
@@ -40,6 +52,7 @@ function Sidebar() {
     navigate("/");
   };
 
+  // Sidebar layout
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -52,7 +65,9 @@ function Sidebar() {
       <nav className="sidebar-nav" aria-label="Main navigation">
         {navItems.map((item) => (
           <NavLink
-            className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+            className={({ isActive }) =>
+              `sidebar-link${isActive ? " active" : ""}`
+            }
             key={item.to}
             to={item.to}
           >
@@ -67,7 +82,9 @@ function Sidebar() {
             <NavLink to="/settings" onClick={() => setAccountOpen(false)}>
               Settings
             </NavLink>
-            <button type="button" onClick={logout}>Log out</button>
+            <button type="button" onClick={logout}>
+              Log out
+            </button>
           </div>
         )}
         <button
@@ -79,10 +96,14 @@ function Sidebar() {
         >
           <span className="profile-initials">{initials}</span>
           <span className="profile-copy">
-            <strong>{firstName} {lastName}</strong>
+            <strong>
+              {firstName} {lastName}
+            </strong>
             <small>{isAdmin ? "Administrator" : "Student account"}</small>
           </span>
-          <span className="account-chevron" aria-hidden="true">⌃</span>
+          <span className="account-chevron" aria-hidden="true">
+            ⌃
+          </span>
         </button>
       </div>
     </aside>

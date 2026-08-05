@@ -1,4 +1,12 @@
-.settings-page { color: #242424; }
+/*
+ * ACCOUNT SETTINGS
+ * Styles the profile form, LA teacher choice, five timetable-line selectors,
+ * save feedback, dark-mode control, deletion request/cancellation actions,
+ * signed-out/loading states, and responsive form/card layouts.
+ */
+.settings-page {
+  color: #242424;
+}
 
 .settings-heading {
   display: flex;
@@ -17,8 +25,14 @@
   text-transform: uppercase;
 }
 
-.settings-heading h1 { margin: 5px 0; font-size: 34px; }
-.settings-heading p { margin: 0; color: #777; }
+.settings-heading h1 {
+  margin: 5px 0;
+  font-size: 34px;
+}
+.settings-heading p {
+  margin: 0;
+  color: #777;
+}
 
 .settings-avatar {
   display: grid;
@@ -31,7 +45,10 @@
   place-items: center;
 }
 
-.settings-page form { display: grid; gap: 18px; }
+.settings-page form {
+  display: grid;
+  gap: 18px;
+}
 
 .settings-card {
   overflow: hidden;
@@ -50,8 +67,15 @@
   gap: 20px;
 }
 
-.settings-card-heading h2 { margin: 4px 0 0; font-size: 18px; }
-.settings-card-heading p { margin: 0; color: #828282; font-size: 12px; }
+.settings-card-heading h2 {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+.settings-card-heading p {
+  margin: 0;
+  color: #828282;
+  font-size: 12px;
+}
 
 .settings-form-grid {
   display: grid;
@@ -60,9 +84,20 @@
   padding: 24px 22px 26px;
 }
 
-.settings-form-grid label { display: flex; flex-direction: column; gap: 7px; }
-.settings-form-grid label > span { color: #4e4e4e; font-size: 12px; font-weight: 700; }
-.settings-form-grid label small { color: #929292; font-size: 10px; }
+.settings-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.settings-form-grid label > span {
+  color: #4e4e4e;
+  font-size: 12px;
+  font-weight: 700;
+}
+.settings-form-grid label small {
+  color: #929292;
+  font-size: 10px;
+}
 
 .settings-form-grid input,
 .settings-form-grid select {
@@ -85,8 +120,13 @@
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
 }
 
-.settings-form-grid input:disabled { background: #f7f7f7; color: #888; }
-.password-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.settings-form-grid input:disabled {
+  background: #f7f7f7;
+  color: #888;
+}
+.password-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 
 .settings-subject-grid {
   display: grid;
@@ -116,9 +156,19 @@
   place-items: center;
 }
 
-.settings-line-copy { display: flex; flex-direction: column; gap: 2px; }
-.settings-line-copy strong { font-size: 12px; }
-.settings-line-copy small { color: #8b8b8b; font-size: 9px; white-space: nowrap; }
+.settings-line-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-line-copy strong {
+  font-size: 12px;
+}
+.settings-line-copy small {
+  color: #8b8b8b;
+  font-size: 9px;
+  white-space: nowrap;
+}
 
 .settings-subject-grid select {
   width: 100%;
@@ -166,38 +216,149 @@
   margin: 0;
 }
 
-.save-button { border: 1px solid #c8941c; background: #c8941c; color: #fff; }
-.save-button:disabled { cursor: wait; opacity: 0.6; }
-.logout-button { border: 1px solid #e0b7b7; background: #fff; color: #a34343; }
-.danger-zone { border-color: #edd1d1; }
-.danger-zone .settings-card-heading span { color: #a34343; }
-.deletion-request-row { display: flex; padding: 22px; align-items: center; justify-content: space-between; gap: 20px; }
-.deletion-request-row strong { font-size: 13px; }
-.deletion-request-row p { max-width: 680px; margin: 5px 0 0; color: #777; font-size: 11px; line-height: 1.5; }
-.request-deletion-button, .cancel-deletion-button { min-width: 145px; min-height: 42px; padding: 0 15px; border-radius: 8px; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
-.request-deletion-button { border: 1px solid #c55a5a; background: #fff0f0; color: #9f3030; }
-.cancel-deletion-button { border: 1px solid #d3d3d3; background: #f4f4f4; color: #555; }
-.request-deletion-button:disabled, .cancel-deletion-button:disabled { cursor: wait; opacity: .6; }
-.theme-setting-row { display: flex; padding: 22px; align-items: center; justify-content: space-between; gap: 20px; }
-.theme-setting-row strong { font-size: 13px; }
-.theme-setting-row p { margin: 5px 0 0; color: #777; font-size: 11px; }
-.theme-switch { position: relative; width: 50px; height: 28px; padding: 0; border: 0; border-radius: 20px; background: #ccc; cursor: pointer; transition: background 160ms ease; flex: 0 0 auto; }
-.theme-switch span { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,.22); transition: transform 160ms ease; }
-.theme-switch.active { background: #c8941c; }
-.theme-switch.active span { transform: translateX(22px); }
+.save-button {
+  border: 1px solid #c8941c;
+  background: #c8941c;
+  color: #fff;
+}
+.save-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.logout-button {
+  border: 1px solid #e0b7b7;
+  background: #fff;
+  color: #a34343;
+}
+.danger-zone {
+  border-color: #edd1d1;
+}
+.danger-zone .settings-card-heading span {
+  color: #a34343;
+}
+.deletion-request-row {
+  display: flex;
+  padding: 22px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.deletion-request-row strong {
+  font-size: 13px;
+}
+.deletion-request-row p {
+  max-width: 680px;
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.request-deletion-button,
+.cancel-deletion-button {
+  min-width: 145px;
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.request-deletion-button {
+  border: 1px solid #c55a5a;
+  background: #fff0f0;
+  color: #9f3030;
+}
+.cancel-deletion-button {
+  border: 1px solid #d3d3d3;
+  background: #f4f4f4;
+  color: #555;
+}
+.request-deletion-button:disabled,
+.cancel-deletion-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.theme-setting-row {
+  display: flex;
+  padding: 22px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.theme-setting-row strong {
+  font-size: 13px;
+}
+.theme-setting-row p {
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 11px;
+}
+.theme-switch {
+  position: relative;
+  width: 50px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: #ccc;
+  cursor: pointer;
+  transition: background 160ms ease;
+  flex: 0 0 auto;
+}
+.theme-switch span {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+  transition: transform 160ms ease;
+}
+.theme-switch.active {
+  background: #c8941c;
+}
+.theme-switch.active span {
+  transform: translateX(22px);
+}
 
-.settings-message { color: #438153; font-size: 12px; font-weight: 700; }
-.settings-message.error { color: #ad3c3c; }
-.settings-state { padding: 70px 20px; color: #777; text-align: center; }
-.settings-state.error { color: #ad3c3c; }
+.settings-message {
+  color: #438153;
+  font-size: 12px;
+  font-weight: 700;
+}
+.settings-message.error {
+  color: #ad3c3c;
+}
+.settings-state {
+  padding: 70px 20px;
+  color: #777;
+  text-align: center;
+}
+.settings-state.error {
+  color: #ad3c3c;
+}
 
 @media (max-width: 700px) {
   .settings-form-grid,
   .password-grid,
-  .settings-subject-grid { grid-template-columns: 1fr; }
-  .settings-subject-grid label { grid-template-columns: 36px 96px minmax(0, 1fr); }
-  .settings-card-heading { align-items: flex-start; flex-direction: column; gap: 7px; }
-  .settings-actions { grid-template-columns: 1fr; align-items: stretch; }
+  .settings-subject-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-subject-grid label {
+    grid-template-columns: 36px 96px minmax(0, 1fr);
+  }
+  .settings-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .settings-actions {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
   .settings-actions > .logout-button,
   .settings-actions > .save-button {
     width: 100%;
@@ -205,6 +366,12 @@
     max-width: none;
     flex-basis: 48px;
   }
-  .settings-message { min-height: 18px; margin: 0; }
-  .deletion-request-row { align-items: stretch; flex-direction: column; }
+  .settings-message {
+    min-height: 18px;
+    margin: 0;
+  }
+  .deletion-request-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

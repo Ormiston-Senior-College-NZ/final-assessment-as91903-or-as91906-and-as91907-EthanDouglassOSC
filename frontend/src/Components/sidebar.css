@@ -1,3 +1,9 @@
+/*
+ * SIDEBAR
+ * Styles the StudentNET brand, primary navigation, active-link state,
+ * settings/logout menu, account identity, theme switch, and mobile layout.
+ * Interactive selectors include hover, focus, expanded-menu, and dark states.
+ */
 .sidebar {
   position: sticky;
   top: 0;
@@ -65,7 +71,10 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
   align-items: center;
 }
 
@@ -79,7 +88,6 @@
   background: #c8941c;
   color: #fff;
 }
-
 
 .sidebar-profile {
   width: 100%;

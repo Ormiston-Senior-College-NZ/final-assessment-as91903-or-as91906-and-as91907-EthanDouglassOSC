@@ -1,5 +1,12 @@
+/*
+ * DASHBOARD PAGE
+ * Loads timetable and NCEA records, derives today's/next lessons, calculates
+ * weighted GPA and rank score, groups subject information, and renders the
+ * student's high-level academic overview.
+ */
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import AdminView from "../../Components/adminView";
 import "./dashboard.css";
 
 function toMinutes(time) {
@@ -10,7 +17,8 @@ function toMinutes(time) {
 
 const GRADE_POINTS = { NA: 0, A: 2, M: 3, E: 4 };
 
-function Dashboard() {
+function StudentDashboard() {
+  // Student data and loading state
   const firstName = localStorage.getItem("firstName") || "Student";
   const [user, setUser] = useState(null);
   const [timetable, setTimetable] = useState([]);
@@ -18,6 +26,7 @@ function Dashboard() {
   const [status, setStatus] = useState("loading");
   const now = useMemo(() => new Date(), []);
 
+  // Load the timetable and NCEA results shown in the overview.
   useEffect(() => {
     const studentId = localStorage.getItem("studentId");
     if (!studentId) {
@@ -34,10 +43,18 @@ function Dashboard() {
       fetch(`/ncea/${encodeURIComponent(studentId)}`, options),
     ])
       .then(async ([userResponse, timetableResponse, standardsResponse]) => {
-        if (!userResponse.ok || !timetableResponse.ok || !standardsResponse.ok) {
+        if (
+          !userResponse.ok ||
+          !timetableResponse.ok ||
+          !standardsResponse.ok
+        ) {
           throw new Error("Could not load dashboard");
         }
-        return Promise.all([userResponse.json(), timetableResponse.json(), standardsResponse.json()]);
+        return Promise.all([
+          userResponse.json(),
+          timetableResponse.json(),
+          standardsResponse.json(),
+        ]);
       })
       .then(([userData, timetableData, standardData]) => {
         if (!userData.success) throw new Error("Student not found");
@@ -53,9 +70,10 @@ function Dashboard() {
     return () => controller.abort();
   }, []);
 
+  // Timetable and achievement summaries
   const todayLessons = useMemo(
     () => timetable.filter((lesson) => lesson.day === now.getDay()),
-    [timetable, now]
+    [timetable, now],
   );
 
   const subjects = useMemo(() => {
@@ -70,24 +88,57 @@ function Dashboard() {
 
   const nextLesson = useMemo(() => {
     const minutes = now.getHours() * 60 + now.getMinutes();
-    return todayLessons.find((lesson) => toMinutes(lesson.end_time) > minutes) || null;
+    return (
+      todayLessons.find((lesson) => toMinutes(lesson.end_time) > minutes) ||
+      null
+    );
   }, [todayLessons, now]);
 
   const nceaScores = useMemo(() => {
     const recorded = standards.filter((standard) => standard.grade);
-    const attemptedCredits = recorded.reduce((sum, standard) => sum + standard.credits, 0);
-    const weightedPoints = recorded.reduce((sum, standard) => sum + GRADE_POINTS[standard.grade] * standard.credits, 0);
+    const attemptedCredits = recorded.reduce(
+      (sum, standard) => sum + standard.credits,
+      0,
+    );
+    const weightedPoints = recorded.reduce(
+      (sum, standard) => sum + GRADE_POINTS[standard.grade] * standard.credits,
+      0,
+    );
     const gpa = attemptedCredits ? weightedPoints / attemptedCredits : 0;
     const grouped = standards
-      .filter((standard) => standard.ue_approved && (standard.course_level === 3 || standard.course_level === 23) && ["A", "M", "E"].includes(standard.grade))
-      .reduce((groups, standard) => ({ ...groups, [standard.course_id]: [...(groups[standard.course_id] || []), standard] }), {});
-    const rankCredits = Object.values(grouped).flatMap((items) => items
-      .flatMap((standard) => Array(standard.credits).fill(GRADE_POINTS[standard.grade]))
-      .sort((first, second) => second - first)
-      .slice(0, 24))
+      .filter(
+        (standard) =>
+          standard.ue_approved &&
+          (standard.course_level === 3 || standard.course_level === 23) &&
+          ["A", "M", "E"].includes(standard.grade),
+      )
+      .reduce(
+        (groups, standard) => ({
+          ...groups,
+          [standard.course_id]: [
+            ...(groups[standard.course_id] || []),
+            standard,
+          ],
+        }),
+        {},
+      );
+    const rankCredits = Object.values(grouped)
+      .flatMap((items) =>
+        items
+          .flatMap((standard) =>
+            Array(standard.credits).fill(GRADE_POINTS[standard.grade]),
+          )
+          .sort((first, second) => second - first)
+          .slice(0, 24),
+      )
       .sort((first, second) => second - first)
       .slice(0, 80);
-    return { gpa, attemptedCredits, rankScore: rankCredits.reduce((sum, points) => sum + points, 0), rankCredits: rankCredits.length };
+    return {
+      gpa,
+      attemptedCredits,
+      rankScore: rankCredits.reduce((sum, points) => sum + points, 0),
+      rankCredits: rankCredits.length,
+    };
   }, [standards]);
 
   if (status === "loading") {
@@ -95,20 +146,33 @@ function Dashboard() {
   }
 
   if (status === "signed-out") {
-    return <div className="dashboard-state">Log in to view your dashboard.</div>;
+    return (
+      <div className="dashboard-state">Log in to view your dashboard.</div>
+    );
   }
 
   if (status === "error") {
-    return <div className="dashboard-state error">Your dashboard could not be loaded. Check that the backend is running.</div>;
+    return (
+      <div className="dashboard-state error">
+        Your dashboard could not be loaded. Check that the backend is running.
+      </div>
+    );
   }
 
+  // Dashboard layout
   return (
     <main className="dashboard">
       <header className="dashboard-heading">
         <div>
           <span className="dashboard-eyebrow">Student overview</span>
           <h1>Welcome back, {firstName}</h1>
-          <p>{now.toLocaleDateString("en-NZ", { weekday: "long", day: "numeric", month: "long" })}</p>
+          <p>
+            {now.toLocaleDateString("en-NZ", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })}
+          </p>
         </div>
         <div className="student-summary">
           <span>Year {user.yearLevel || "—"}</span>
@@ -125,12 +189,22 @@ function Dashboard() {
         <article className="stat-card">
           <span>Current GPA</span>
           <strong className="score-number">{nceaScores.gpa.toFixed(2)}</strong>
-          <small>{nceaScores.attemptedCredits ? `Across ${nceaScores.attemptedCredits} assessed credits` : "Add grades on the NCEA page"}</small>
+          <small>
+            {nceaScores.attemptedCredits
+              ? `Across ${nceaScores.attemptedCredits} assessed credits`
+              : "Add grades on the NCEA page"}
+          </small>
         </article>
         <article className="stat-card">
           <span>Next up</span>
-          <strong className="stat-text">{nextLesson ? nextLesson.name : "All done"}</strong>
-          <small>{nextLesson ? `${nextLesson.start_time}–${nextLesson.end_time}` : "No more classes today"}</small>
+          <strong className="stat-text">
+            {nextLesson ? nextLesson.name : "All done"}
+          </strong>
+          <small>
+            {nextLesson
+              ? `${nextLesson.start_time}–${nextLesson.end_time}`
+              : "No more classes today"}
+          </small>
         </article>
       </section>
 
@@ -149,7 +223,10 @@ function Dashboard() {
           ) : (
             <div className="lesson-list">
               {todayLessons.map((lesson) => (
-                <article className="lesson-row" key={`${lesson.day}-${lesson.session}`}>
+                <article
+                  className="lesson-row"
+                  key={`${lesson.day}-${lesson.session}`}
+                >
                   <div className="lesson-time">
                     <strong>{lesson.start_time}</strong>
                     <span>{lesson.end_time}</span>
@@ -159,7 +236,9 @@ function Dashboard() {
                     <strong>{lesson.name}</strong>
                     <span>{lesson.teacher || "Teacher to be confirmed"}</span>
                   </div>
-                  <div className="lesson-room">{lesson.room_name || lesson.room || "Room TBC"}</div>
+                  <div className="lesson-room">
+                    {lesson.room_name || lesson.room || "Room TBC"}
+                  </div>
                 </article>
               ))}
             </div>
@@ -178,7 +257,10 @@ function Dashboard() {
               {subjects.map((subject) => (
                 <div className="subject-row" key={subject.code}>
                   <span className="subject-line-number">{subject.line}</span>
-                  <div><strong>{subject.name}</strong><small>{subject.code}</small></div>
+                  <div>
+                    <strong>{subject.name}</strong>
+                    <small>{subject.code}</small>
+                  </div>
                 </div>
               ))}
             </div>
@@ -192,6 +274,14 @@ function Dashboard() {
         </aside>
       </div>
     </main>
+  );
+}
+
+function Dashboard() {
+  return localStorage.getItem("isAdmin") === "true" ? (
+    <AdminView page="dashboard" />
+  ) : (
+    <StudentDashboard />
   );
 }
 

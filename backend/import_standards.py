@@ -1,3 +1,10 @@
+"""Import NZQA achievement standards into StudentNET.
+
+The importer reads the maintained CSV dataset, maps NZQA domains/subfields to
+local course-code prefixes, assigns each matching standard to the appropriate
+course and NCEA level, and stores catalogue records for student selection.
+"""
+
 import csv
 import os
 

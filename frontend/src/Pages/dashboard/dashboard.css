@@ -1,3 +1,9 @@
+/*
+ * STUDENT DASHBOARD
+ * Covers the page heading, GPA/rank-score feature cards, progress displays,
+ * today's lesson timeline, subject summary rows, empty states, links,
+ * loading state, and tablet/mobile grid changes.
+ */
 .dashboard {
   color: #202020;
 }

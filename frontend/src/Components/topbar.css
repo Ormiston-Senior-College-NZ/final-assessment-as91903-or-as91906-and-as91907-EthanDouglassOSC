@@ -1,3 +1,8 @@
+/*
+ * TOP BAR
+ * Styles the personalised greeting, live lesson status dot and metadata,
+ * right-aligned weekday/time display, muted no-lesson state, and mobile layout.
+ */
 .topbar {
   display: flex;
   min-height: 116px;
@@ -13,7 +18,9 @@
   gap: 24px;
 }
 
-.topbar-copy { min-width: 0; }
+.topbar-copy {
+  min-width: 0;
+}
 
 .topbar-label {
   color: #9a6a0b;
@@ -115,11 +122,19 @@
     padding: 5px 0 5px 14px;
   }
 
-  .topbar-clock strong { font-size: 24px; }
-  .topbar-lesson { gap: 6px; }
+  .topbar-clock strong {
+    font-size: 24px;
+  }
+  .topbar-lesson {
+    gap: 6px;
+  }
 }
 
 @media (max-width: 500px) {
-  .topbar h2 { max-width: 230px; }
-  .topbar-clock span { display: none; }
+  .topbar h2 {
+    max-width: 230px;
+  }
+  .topbar-clock span {
+    display: none;
+  }
 }

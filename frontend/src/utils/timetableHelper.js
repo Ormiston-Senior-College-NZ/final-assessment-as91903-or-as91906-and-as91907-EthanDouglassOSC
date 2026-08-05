@@ -1,9 +1,15 @@
+/*
+ * TIMETABLE TIME HELPERS
+ * Converts HH:MM strings to comparable minute values and finds the lesson whose
+ * weekday/start/end range contains a supplied Date object.
+ */
 function toMinutes(time) {
   if (!time) return null;
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
 }
 
+// Return the lesson whose day/time range contains the supplied date.
 export function getCurrentLesson(lessons, now = new Date()) {
   const day = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();

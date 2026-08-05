@@ -1,16 +1,25 @@
+/*
+ * TIMETABLE PAGE
+ * Loads generated lessons, selects the current weekday by default, filters the
+ * full schedule to the chosen day, and renders LA/iTime plus subject sessions
+ * with teacher, room, line, and time information.
+ */
 import { useEffect, useMemo, useState } from "react";
+import AdminView from "../../Components/adminView";
 import "./timetable.css";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
-function Timetable() {
+function StudentTimetable() {
+  // Selected day, lessons, and loading state
   const today = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(
-    today >= 1 && today <= 5 ? today : 1
+    today >= 1 && today <= 5 ? today : 1,
   );
   const [lessons, setLessons] = useState([]);
   const [status, setStatus] = useState("loading");
 
+  // Load the signed-in student's generated timetable.
   useEffect(() => {
     const studentId = localStorage.getItem("studentId");
 
@@ -39,11 +48,13 @@ function Timetable() {
     return () => controller.abort();
   }, []);
 
+  // Only render lessons for the selected weekday.
   const dayLessons = useMemo(
     () => lessons.filter((lesson) => lesson.day === selectedDay),
-    [lessons, selectedDay]
+    [lessons, selectedDay],
   );
 
+  // Timetable page layout
   return (
     <main className="timetable-page">
       <div className="timetable-heading">
@@ -78,18 +89,35 @@ function Timetable() {
             <span className="day-number">{selectedDay}</span>
             <div>
               <h2>{DAYS[selectedDay - 1]}</h2>
-              <p>{dayLessons.length} scheduled {dayLessons.length === 1 ? "class" : "classes"}</p>
+              <p>
+                {dayLessons.length} scheduled{" "}
+                {dayLessons.length === 1 ? "class" : "classes"}
+              </p>
             </div>
           </div>
         </div>
 
-        {status === "loading" && <div className="timetable-message">Loading your timetable…</div>}
-        {status === "error" && <div className="timetable-message error">Your timetable could not be loaded. Check that the backend is running.</div>}
-        {status === "signed-out" && <div className="timetable-message">Log in to view your timetable.</div>}
+        {status === "loading" && (
+          <div className="timetable-message">Loading your timetable…</div>
+        )}
+        {status === "error" && (
+          <div className="timetable-message error">
+            Your timetable could not be loaded. Check that the backend is
+            running.
+          </div>
+        )}
+        {status === "signed-out" && (
+          <div className="timetable-message">
+            Log in to view your timetable.
+          </div>
+        )}
         {status === "ready" && dayLessons.length === 0 && (
           <div className="timetable-message">
             <strong>No classes scheduled for this day.</strong>
-            <span>Your timetable will appear here once course scheduling is complete.</span>
+            <span>
+              Your timetable will appear here once course scheduling is
+              complete.
+            </span>
           </div>
         )}
 
@@ -108,9 +136,16 @@ function Timetable() {
               <tbody>
                 {dayLessons.map((lesson) => (
                   <tr key={`${lesson.day}-${lesson.session}-${lesson.code}`}>
-                    <td><span className="session-badge">{lesson.session}</span></td>
-                    <td className="time-cell">{lesson.start_time}–{lesson.end_time}</td>
-                    <td><strong>{lesson.name}</strong><small>{lesson.code}</small></td>
+                    <td>
+                      <span className="session-badge">{lesson.session}</span>
+                    </td>
+                    <td className="time-cell">
+                      {lesson.start_time}–{lesson.end_time}
+                    </td>
+                    <td>
+                      <strong>{lesson.name}</strong>
+                      <small>{lesson.code}</small>
+                    </td>
                     <td>{lesson.teacher || "To be confirmed"}</td>
                     <td>{lesson.room_name || lesson.room || "TBC"}</td>
                   </tr>
@@ -121,6 +156,14 @@ function Timetable() {
         )}
       </section>
     </main>
+  );
+}
+
+function Timetable() {
+  return localStorage.getItem("isAdmin") === "true" ? (
+    <AdminView page="timetable" />
+  ) : (
+    <StudentTimetable />
   );
 }
 

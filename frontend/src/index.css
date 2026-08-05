@@ -1,9 +1,59 @@
+:root {
+  --font-sans: Inter, Montserrat, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-page-title: 2.125rem;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.15;
+}
+
+html {
+  font-size: 16px;
+}
+
 body {
   margin: 0;
-  font-family: monserrant, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--line-height-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button,
+input,
+select,
+textarea,
+table {
+  font-size: var(--text-sm);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--line-height-heading);
+}
+
+h1 { font-size: var(--text-page-title); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-base); }
+p { font-size: var(--text-sm); }
+small,
+dt { font-size: var(--text-xs); }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
@@ -42,6 +92,51 @@ body.dark-mode .standard-modal {
   background: #1c1d20;
   color: #ededed;
   box-shadow: 0 4px 18px rgba(0, 0, 0, .24);
+}
+
+body.dark-mode .my-courses-section,
+body.dark-mode .course-catalogue,
+body.dark-mode .catalogue-group,
+body.dark-mode .course-modal {
+  border-color: #34363a;
+  background: #1c1d20;
+  color: #ededed;
+}
+
+body.dark-mode .courses-page,
+body.dark-mode .catalogue-course-grid > button,
+body.dark-mode .course-modal h2 {
+  color: #ededed;
+}
+
+body.dark-mode .my-course-grid article,
+body.dark-mode .catalogue-course-grid > button,
+body.dark-mode .course-modal-body dl div {
+  border-color: #34363a;
+  background: #24262a;
+}
+
+body.dark-mode .catalogue-groups {
+  background: #151619;
+}
+
+body.dark-mode .catalogue-course-grid,
+body.dark-mode .catalogue-group > summary,
+body.dark-mode .courses-section-heading,
+body.dark-mode .catalogue-toolbar,
+body.dark-mode .course-modal > header {
+  border-color: #34363a;
+}
+
+body.dark-mode .course-area,
+body.dark-mode .catalogue-course-grid > button:hover {
+  background: #2b261b;
+}
+
+body.dark-mode .course-modal-body > p,
+body.dark-mode .courses-heading p,
+body.dark-mode .my-course-grid > article > p {
+  color: #aaa;
 }
 
 body.dark-mode .topbar h2,
@@ -207,4 +302,86 @@ body.dark-mode .ncea-state,
 body.dark-mode .settings-state,
 body.dark-mode .panel-empty {
   color: #aaa;
+}
+
+/* Shared typography scale — kept last so legacy page styles inherit consistently. */
+.app-content main h1,
+.login-page h1,
+.setup-page h1 {
+  font-family: var(--font-sans) !important;
+  font-size: var(--text-page-title) !important;
+  line-height: var(--line-height-heading);
+}
+
+.app-content main h2,
+.login-page h2,
+.setup-page h2 {
+  font-size: var(--text-xl) !important;
+}
+
+.app-content main h3,
+.login-page h3,
+.setup-page h3 {
+  font-size: var(--text-base) !important;
+}
+
+.app-content main p,
+.app-content main dd,
+.app-content main td,
+.app-content main a,
+.login-page p,
+.setup-page p {
+  font-size: var(--text-sm) !important;
+}
+
+.app-content main small,
+.app-content main dt,
+.app-content main th,
+.app-content main span,
+.login-page small,
+.setup-page small,
+.courses-eyebrow,
+.settings-eyebrow,
+.admin-eyebrow,
+.ncea-eyebrow {
+  font-size: var(--text-xs) !important;
+}
+
+.app-content main button,
+.app-content main input,
+.app-content main select,
+.app-content main textarea,
+.login-page button,
+.login-page input,
+.login-page select,
+.setup-page button,
+.setup-page input,
+.setup-page select {
+  font-family: var(--font-sans) !important;
+  font-size: var(--text-sm) !important;
+  line-height: 1.35;
+}
+
+.topbar h2 {
+  font-size: clamp(1.5rem, 2.4vw, 1.8125rem) !important;
+}
+
+.topbar p,
+.topbar span,
+.sidebar a,
+.sidebar button {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs) !important;
+}
+
+.sidebar span,
+.sidebar small,
+.topbar small {
+  font-size: var(--text-xs) !important;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --text-page-title: 1.875rem;
+  }
 }

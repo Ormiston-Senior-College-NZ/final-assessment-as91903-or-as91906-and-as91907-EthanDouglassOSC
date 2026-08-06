@@ -18,6 +18,9 @@ import Settings from "./Pages/settings/settings";
 import Admin from "./Pages/admin/admin";
 
 import Login from "./Pages/login/login";
+import TeacherLayout from "./Components/teacherLayout";
+import TeacherPage from "./Pages/teacher/teacher";
+import TeacherPassword from "./Pages/teacher/teacherPassword";
 
 function App() {
   return (
@@ -25,6 +28,22 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/setup" element={<Setup />} />
+        <Route path="/teacher/change-password" element={<TeacherPassword />} />
+        <Route element={<TeacherLayout />}>
+          <Route path="/teacher" element={<TeacherPage />} />
+          <Route
+            path="/teacher/timetable"
+            element={<TeacherPage view="timetable" />}
+          />
+          <Route
+            path="/teacher/classes"
+            element={<TeacherPage view="classes" />}
+          />
+          <Route
+            path="/teacher/settings"
+            element={<TeacherPage view="settings" />}
+          />
+        </Route>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/timetable" element={<Timetable />} />

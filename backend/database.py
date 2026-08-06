@@ -24,6 +24,12 @@ def get_connection():
         columns = {row[1] for row in connection.execute("PRAGMA table_info(teachers)")}
         if "code" not in columns:
             connection.execute("ALTER TABLE teachers ADD COLUMN code TEXT")
+        if "password" not in columns:
+            connection.execute("ALTER TABLE teachers ADD COLUMN password TEXT NOT NULL DEFAULT 'osc'")
+        if "must_change_password" not in columns:
+            connection.execute(
+                "ALTER TABLE teachers ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 1"
+            )
         for old_name, corrected_name in NAME_CORRECTIONS.items():
             connection.execute(
                 "UPDATE teachers SET name = ? WHERE name = ?",
@@ -58,6 +64,132 @@ def login(student_id, password):
     connection.close()
 
     return user
+
+
+def teacher_login(identifier, password):
+    """Authenticate a teacher by staff code or full name."""
+    connection = get_connection()
+    teacher = connection.execute(
+        """
+        SELECT id, name, code, role, kainga, must_change_password
+        FROM teachers
+        WHERE (UPPER(code) = UPPER(?) OR LOWER(name) = LOWER(?))
+          AND password = ?
+        """,
+        (identifier, identifier, password),
+    ).fetchone()
+    connection.close()
+    return teacher
+
+
+def change_teacher_password(teacher_id, current_password, new_password):
+    """Replace a teacher password and clear the first-login requirement."""
+    connection = get_connection()
+    result = connection.execute(
+        "UPDATE teachers SET password = ?, must_change_password = 0 WHERE id = ? AND password = ?",
+        (new_password, teacher_id, current_password),
+    )
+    connection.commit()
+    connection.close()
+    return result.rowcount == 1
+
+
+def get_teacher_dashboard(teacher_id):
+    """Return a teacher profile and one row for each assigned class offering."""
+    connection = get_connection()
+    teacher = connection.execute(
+        "SELECT id, name, code, role, kainga FROM teachers WHERE id = ?",
+        (teacher_id,),
+    ).fetchone()
+    classes = connection.execute(
+        """
+        SELECT DISTINCT courses.id, courses.code, courses.name, courses.level,
+               courses.category, course_schedule.session AS line,
+               course_schedule.area, rooms.code AS room_code, rooms.name AS room_name
+        FROM course_schedule
+        JOIN courses ON courses.id = course_schedule.course_id
+        LEFT JOIN rooms ON rooms.id = course_schedule.room_id
+        WHERE course_schedule.teacher_id = ?
+        ORDER BY course_schedule.session, courses.code
+        """,
+        (teacher_id,),
+    ).fetchall()
+    lessons = connection.execute(
+        """
+        SELECT courses.id, courses.code, courses.name, courses.category,
+               course_schedule.day, course_schedule.session AS line,
+               course_schedule.area, rooms.code AS room_code,
+               rooms.name AS room_name, timetable_slots.start_time,
+               timetable_slots.end_time
+        FROM course_schedule
+        JOIN courses ON courses.id = course_schedule.course_id
+        JOIN timetable_slots
+          ON timetable_slots.day = course_schedule.day
+         AND timetable_slots.session = course_schedule.session
+        LEFT JOIN rooms ON rooms.id = course_schedule.room_id
+        WHERE course_schedule.teacher_id = ?
+        ORDER BY course_schedule.day, timetable_slots.start_time
+        """,
+        (teacher_id,),
+    ).fetchall()
+    rooms = connection.execute(
+        "SELECT id, code, name FROM rooms ORDER BY code"
+    ).fetchall()
+    slots = connection.execute(
+        """
+        SELECT day, session AS line, start_time, end_time
+        FROM timetable_slots
+        ORDER BY day, start_time
+        """
+    ).fetchall()
+    connection.close()
+    return teacher, classes, lessons, rooms, slots
+
+
+def update_teacher_class_location(teacher_id, course_id, day, line, area, room_id):
+    """Allow a teacher to move one of their weekly lessons within an area."""
+    connection = get_connection()
+    room = connection.execute(
+        "SELECT id, name FROM rooms WHERE id = ?", (room_id,)
+    ).fetchone()
+    assigned = connection.execute(
+        """
+        SELECT 1 FROM course_schedule
+        WHERE teacher_id = ? AND course_id = ? AND day = ? AND session = ?
+        LIMIT 1
+        """,
+        (teacher_id, course_id, day, line),
+    ).fetchone()
+    if not room or not assigned or not area or not room["name"].startswith(area):
+        connection.close()
+        return False, "That class or room is not available."
+
+    clash = connection.execute(
+        """
+        SELECT courses.code
+        FROM course_schedule
+        JOIN courses ON courses.id = course_schedule.course_id
+        WHERE course_schedule.room_id = ? AND course_schedule.day = ?
+          AND course_schedule.session = ?
+          AND NOT (course_schedule.teacher_id = ? AND course_schedule.course_id = ?)
+        LIMIT 1
+        """,
+        (room_id, day, line, teacher_id, course_id),
+    ).fetchone()
+    if clash:
+        connection.close()
+        return False, f"That room is already used by {clash['code']} on Line {line}."
+
+    connection.execute(
+        """
+        UPDATE course_schedule SET room_id = ?, area = ?
+        WHERE teacher_id = ? AND course_id = ? AND day = ? AND session = ?
+        """,
+        (room_id, area, teacher_id, course_id, day, line),
+    )
+    connection.commit()
+    connection.close()
+    return True, "Class location updated."
 
 
 # ==========================================================
@@ -705,6 +837,7 @@ def get_timetable(student_id):
                 ELSE courses.name
             END AS name,
             CASE WHEN timetable_slots.session = 6 THEN la_teacher.name ELSE teachers.name END AS teacher,
+            CASE WHEN timetable_slots.session = 6 THEN la_teacher.code ELSE teachers.code END AS teacher_code,
             CASE WHEN timetable_slots.session = 6 THEN '-' ELSE rooms.code END AS room,
             CASE WHEN timetable_slots.session = 6 THEN '-' ELSE rooms.name END AS room_name,
             timetable_slots.day,

@@ -259,7 +259,12 @@ function StudentDashboard() {
                   <span className="subject-line-number">{subject.line}</span>
                   <div>
                     <strong>{subject.name}</strong>
-                    <small>{subject.code}</small>
+                    <small>
+                      {subject.code}
+                      {subject.teacher_code
+                        ? ` · ${subject.teacher_code}`
+                        : " · Teacher TBC"}
+                    </small>
                   </div>
                 </div>
               ))}

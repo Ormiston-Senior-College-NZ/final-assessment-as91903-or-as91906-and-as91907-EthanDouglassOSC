@@ -64,12 +64,27 @@ function Login() {
       const data = await response.json();
 
       if (data.success) {
+        localStorage.setItem(
+          "accountType",
+          data.accountType || (data.isAdmin ? "admin" : "student"),
+        );
         localStorage.setItem("studentId", data.studentId);
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
         localStorage.setItem("isAdmin", String(data.isAdmin));
 
-        if (data.isAdmin) {
+        if (data.accountType === "teacher") {
+          localStorage.removeItem("studentId");
+          localStorage.setItem("teacherId", String(data.teacherId));
+          localStorage.setItem("teacherCode", data.teacherCode);
+          localStorage.setItem(
+            "mustChangePassword",
+            String(data.mustChangePassword),
+          );
+          navigate(
+            data.mustChangePassword ? "/teacher/change-password" : "/teacher",
+          );
+        } else if (data.isAdmin) {
           navigate("/admin");
         } else if (data.setupComplete) {
           navigate("/dashboard");
@@ -77,7 +92,7 @@ function Login() {
           navigate("/setup");
         }
       } else {
-        setError("Invalid Student ID or Password.");
+        setError("Invalid student ID, teacher code/name, or password.");
       }
     } catch {
       setError("Cannot connect to the server.");
@@ -175,9 +190,9 @@ function Login() {
           <form onSubmit={handleLogin}>
             <input
               type="text"
-              placeholder="Student ID"
+              placeholder="Student ID, teacher code, or teacher name"
               value={studentId}
-              onChange={(e) => setStudentId(e.target.value.replace(/^st/i, ""))}
+              onChange={(e) => setStudentId(e.target.value)}
             />
 
             <input

@@ -17,8 +17,8 @@ export function getCurrentLesson(lessons, now = new Date()) {
   for (const lesson of lessons) {
     if (lesson.day !== day) continue;
 
-    const start = toMinutes(lesson.start);
-    const end = toMinutes(lesson.end);
+    const start = toMinutes(lesson.start_time);
+    const end = toMinutes(lesson.end_time);
 
     if (currentMinutes >= start && currentMinutes < end) {
       return lesson;

@@ -74,6 +74,10 @@ CREATE TABLE teachers (
 
     code TEXT UNIQUE,
 
+    password TEXT NOT NULL DEFAULT 'osc',
+
+    must_change_password INTEGER NOT NULL DEFAULT 1,
+
     role TEXT NOT NULL,
 
     email TEXT,

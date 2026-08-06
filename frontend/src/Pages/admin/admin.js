@@ -24,6 +24,7 @@ function Admin() {
   const studentId = localStorage.getItem("studentId");
   const adminHeaders = { "X-Student-ID": studentId };
   const [tab, setTab] = useState("scheduling");
+  const [scheduleMode, setScheduleMode] = useState("class");
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -412,15 +413,49 @@ function Admin() {
               <h2>Assign classes</h2>
               <p>Use Edit to choose a line, teacher, and common area.</p>
             </div>
-            <AdminFilters
-              query={query}
-              setQuery={setQuery}
-              level={level}
-              setLevel={setLevel}
-            />
+            <div className="schedule-toolbar-actions">
+              <div
+                className="schedule-mode-switch"
+                aria-label="Scheduling workflow"
+              >
+                <button
+                  className={scheduleMode === "class" ? "active" : ""}
+                  onClick={() => setScheduleMode("class")}
+                >
+                  By class
+                </button>
+                <button
+                  className={scheduleMode === "teacher" ? "active" : ""}
+                  onClick={() => setScheduleMode("teacher")}
+                >
+                  By teacher
+                </button>
+              </div>
+              <AdminFilters
+                query={query}
+                setQuery={setQuery}
+                level={level}
+                setLevel={setLevel}
+              />
+            </div>
           </div>
           {loading ? (
             <p className="admin-state">Loading classes…</p>
+          ) : scheduleMode === "teacher" ? (
+            <TeacherFirstScheduler
+              courses={visibleCourses}
+              teachers={teachers}
+              selectedTeacher={selectedTeacher}
+              setSelectedTeacher={setSelectedTeacher}
+              assignments={assignments}
+              onChoose={(course) =>
+                setAssignmentCourse({
+                  course,
+                  assignment: null,
+                  initialTeacherId: selectedTeacher,
+                })
+              }
+            />
           ) : scheduleGroups.length === 0 ? (
             <p className="admin-state">No matching courses.</p>
           ) : (
@@ -831,6 +866,7 @@ function Admin() {
         <AssignmentModal
           course={assignmentCourse.course}
           assignment={assignmentCourse.assignment}
+          initialTeacherId={assignmentCourse.initialTeacherId}
           teachers={teachers}
           roomAreas={roomAreas}
           onSave={saveAssignment}
@@ -838,6 +874,109 @@ function Admin() {
         />
       )}
     </main>
+  );
+}
+
+// Alternative scheduling workflow that starts with a teacher, then a course.
+function TeacherFirstScheduler({
+  courses,
+  teachers,
+  selectedTeacher,
+  setSelectedTeacher,
+  assignments,
+  onChoose,
+}) {
+  const teacher = teachers.find((item) => String(item.id) === selectedTeacher);
+  const grouped = Object.entries(
+    courses.reduce(
+      (result, course) => ({
+        ...result,
+        [course.category]: [...(result[course.category] || []), course],
+      }),
+      {},
+    ),
+  ).sort(([a], [b]) => a.localeCompare(b));
+  return (
+    <div className="teacher-first-scheduler">
+      <aside>
+        <label>
+          <span>1. Select teacher</span>
+          <select
+            value={selectedTeacher}
+            onChange={(event) => setSelectedTeacher(event.target.value)}
+          >
+            <option value="">Choose a teacher</option>
+            {teachers.map((item) => (
+              <option value={item.id} key={item.id}>
+                {item.code} — {item.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {teacher && (
+          <div className="teacher-first-profile">
+            <b>{teacher.code}</b>
+            <div>
+              <strong>{teacher.name}</strong>
+              <span>
+                {teacher.role} · {teacher.kainga}
+              </span>
+            </div>
+          </div>
+        )}
+      </aside>
+      <section>
+        <header>
+          <div>
+            <span className="admin-eyebrow">2. Choose classes</span>
+            <h3>
+              {teacher
+                ? `Assign classes to ${teacher.name}`
+                : "Select a teacher first"}
+            </h3>
+          </div>
+        </header>
+        {teacher ? (
+          <div className="teacher-course-groups">
+            {grouped.map(([category, items]) => (
+              <section key={category}>
+                <h4>{category}</h4>
+                <div>
+                  {items.map((course) => {
+                    const existing = (assignments[course.id] || []).filter(
+                      (assignment) => assignment.teacherId === selectedTeacher,
+                    );
+                    return (
+                      <button
+                        type="button"
+                        key={course.id}
+                        onClick={() => onChoose(course)}
+                      >
+                        <b>{course.code}</b>
+                        <span>{course.name}</span>
+                        <small>
+                          {course.level === 23
+                            ? "Levels 2 & 3"
+                            : `Level ${course.level}`}
+                          {existing.length
+                            ? ` · Already Line ${existing.map((item) => item.line).join(", ")}`
+                            : ""}
+                        </small>
+                        <i>+ Assign</i>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <p className="admin-state">
+            Choose a teacher to see the available course catalogue.
+          </p>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -891,13 +1030,19 @@ function ScheduleCourseRow({ course, offerings, teachers, onAdd, onEdit }) {
 function AssignmentModal({
   course,
   assignment,
+  initialTeacherId,
   teachers,
   roomAreas,
   onSave,
   onClose,
 }) {
   const [draft, setDraft] = useState(
-    assignment || { line: "", teacherId: "", roomId: "", area: "" },
+    assignment || {
+      line: "",
+      teacherId: initialTeacherId || "",
+      roomId: "",
+      area: "",
+    },
   );
   const update = (field, value) =>
     setDraft((current) => ({

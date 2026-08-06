@@ -11,6 +11,10 @@ from flask_cors import CORS
 
 from database import (
     login,
+    teacher_login,
+    change_teacher_password,
+    get_teacher_dashboard,
+    update_teacher_class_location,
     signup,
     get_courses,
     get_student_subjects,
@@ -34,7 +38,7 @@ from database import (
     get_student_standards,
     get_standard_catalog,
     save_student_standard,
-    delete_student_standard
+    delete_student_standard,
 )
 
 app = Flask(__name__)
@@ -65,20 +69,82 @@ def login_route():
     password = data.get("password")
 
     user = login(student_id, password)
+    if not user and str(student_id).lower().startswith("st"):
+        user = login(str(student_id)[2:], password)
 
     if not user:
+        teacher = teacher_login(student_id, password)
+        if not teacher:
+            return jsonify({"success": False})
+        first_name, _, last_name = teacher["name"].partition(" ")
         return jsonify({
-            "success": False
+            "success": True,
+            "accountType": "teacher",
+            "teacherId": teacher["id"],
+            "teacherCode": teacher["code"],
+            "firstName": first_name,
+            "lastName": last_name,
+            "mustChangePassword": bool(teacher["must_change_password"]),
         })
 
     return jsonify({
         "success": True,
+        "accountType": "admin" if bool(user["is_admin"]) else "student",
         "studentId": user["student_id"],
         "firstName": user["first_name"],
         "lastName": user["last_name"],
         "isAdmin": bool(user["is_admin"]),
         "setupComplete": bool(user["setup_complete"])
     })
+
+
+@app.route("/teacher/<int:teacher_id>/password", methods=["PUT"])
+def teacher_password(teacher_id):
+    data = request.get_json(silent=True) or {}
+    current_password = str(data.get("currentPassword", ""))
+    new_password = str(data.get("newPassword", ""))
+    if len(new_password) < 3 or new_password == "osc":
+        return jsonify({
+            "success": False,
+            "message": "Choose at least 3 characters and do not reuse osc.",
+        }), 400
+    success = change_teacher_password(teacher_id, current_password, new_password)
+    return jsonify({
+        "success": success,
+        "message": "Password updated." if success else "Current password is incorrect.",
+    }), 200 if success else 401
+
+
+@app.route("/teacher/<int:teacher_id>/dashboard")
+def teacher_dashboard(teacher_id):
+    teacher, classes, lessons, rooms, slots = get_teacher_dashboard(teacher_id)
+    if not teacher:
+        return jsonify({"success": False, "message": "Teacher not found."}), 404
+    return jsonify({
+        "success": True,
+        "teacher": dict(teacher),
+        "classes": [dict(item) for item in classes],
+        "lessons": [dict(item) for item in lessons],
+        "rooms": [dict(item) for item in rooms],
+        "slots": [dict(item) for item in slots],
+    })
+
+
+@app.route(
+    "/teacher/<int:teacher_id>/classes/<int:course_id>/<int:day>/<int:line>/location",
+    methods=["PUT"],
+)
+def teacher_class_location(teacher_id, course_id, day, line):
+    data = request.get_json(silent=True) or {}
+    try:
+        room_id = int(data.get("roomId"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Select a classroom."}), 400
+    area = str(data.get("area", "")).strip()
+    success, message = update_teacher_class_location(
+        teacher_id, course_id, day, line, area, room_id
+    )
+    return jsonify({"success": success, "message": message}), 200 if success else 409
 
 
 # ==========================================

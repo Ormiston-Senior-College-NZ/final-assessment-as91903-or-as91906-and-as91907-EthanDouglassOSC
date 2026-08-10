@@ -5,7 +5,7 @@
  * scheduling endpoints and is presented differently for each requested page.
  */
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./adminView.css";
 
 const PAGE_COPY = {
@@ -34,16 +34,10 @@ const PAGE_COPY = {
     "Kāinga",
     "View teaching staff grouped by their Kāinga.",
   ],
-  settings: [
-    "Administrator account",
-    "Settings",
-    "Manage your local appearance and administration shortcuts.",
-  ],
 };
 
 function AdminView({ page }) {
   // Shared administration data and display state
-  const navigate = useNavigate();
   const studentId = localStorage.getItem("studentId");
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -135,14 +129,6 @@ function AdminView({ page }) {
       {page === "ncea" && <AdminNcea {...context} />}
       {page === "courses" && <AdminCourses {...context} />}
       {page === "kainga" && <AdminKainga {...context} />}
-      {page === "settings" && (
-        <AdminSettings
-          onLogout={() => {
-            localStorage.clear();
-            navigate("/");
-          }}
-        />
-      )}
     </main>
   );
 }
@@ -387,28 +373,6 @@ function AdminKainga({ teachers }) {
         })}
       </section>
     </>
-  );
-}
-
-function AdminSettings({ onLogout }) {
-  return (
-    <section className="admin-view-panel admin-settings-panel">
-      <div>
-        <h2>Administration</h2>
-        <p>
-          Course, scheduling, staffing, room, and deletion-request controls are
-          kept in the dedicated workspace.
-        </p>
-      </div>
-      <Link to="/admin">Open admin workspace</Link>
-      <div>
-        <h2>Session</h2>
-        <p>Sign out of this administrator account on this device.</p>
-      </div>
-      <button type="button" className="danger" onClick={onLogout}>
-        Log out
-      </button>
-    </section>
   );
 }
 

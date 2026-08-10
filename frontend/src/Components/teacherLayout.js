@@ -1,18 +1,19 @@
-/* Teacher-only application shell with navigation separate from student/admin. */
+/* Teacher-only application shell with navigation and shared account controls. */
+import { useState } from "react";
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
+import Topbar from "./topbar";
 import "./teacherLayout.css";
 
 const LINKS = [
   ["/teacher", "Dashboard"],
   ["/teacher/timetable", "Timetable"],
-  ["/teacher/classes", "My classes"],
   ["/teacher/tutorials", "LA requests"],
   ["/teacher/tutorial-spaces", "Tutorial spaces"],
-  ["/teacher/settings", "Settings"],
 ];
 
 function TeacherLayout() {
   const navigate = useNavigate();
+  const [accountOpen, setAccountOpen] = useState(false);
   if (localStorage.getItem("accountType") !== "teacher")
     return <Navigate to="/" replace />;
   const name =
@@ -31,38 +32,35 @@ function TeacherLayout() {
             </NavLink>
           ))}
         </nav>
-        <footer>
-          <b>{localStorage.getItem("teacherCode")}</b>
-          <span>{name}</span>
+        <div className="teacher-account">
+          {accountOpen && (
+            <div className="teacher-account-menu">
+              <NavLink to="/teacher/settings" onClick={() => setAccountOpen(false)}>
+                Settings
+              </NavLink>
+              <button type="button" onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}>
+                Log out
+              </button>
+            </div>
+          )}
           <button
-            onClick={() => {
-              localStorage.clear();
-              navigate("/");
-            }}
+            type="button"
+            className="teacher-profile"
+            aria-expanded={accountOpen}
+            aria-haspopup="menu"
+            onClick={() => setAccountOpen((open) => !open)}
           >
-            Log out
+            <b>{localStorage.getItem("teacherCode")}</b>
+            <span><strong>{name}</strong><small>Teacher account</small></span>
+            <i aria-hidden="true">⌃</i>
           </button>
-        </footer>
+        </div>
       </aside>
       <div className="teacher-content">
-        <header className="teacher-topbar">
-          <div>
-            <span>Teacher workspace</span>
-            <strong>{name}</strong>
-          </div>
-          <div>
-            <span>
-              {new Date().toLocaleDateString("en-NZ", { weekday: "short" })}
-            </span>
-            <strong>
-              {new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}
-            </strong>
-          </div>
-        </header>
+        <Topbar />
         <Outlet />
       </div>
     </div>

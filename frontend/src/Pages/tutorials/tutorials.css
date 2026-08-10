@@ -32,7 +32,7 @@
 .tutorial-status { color: #777; font-size: 13px; text-transform: capitalize; }
 .tutorial-status.approved { color: #26733a; }
 .tutorial-status.denied { color: #a52e2e; }
-.tutorial-status.pending { color: #8a650f; }
+.tutorial-status.pending { color: #a18702; }
 
 .tutorial-booking-panel {
   overflow: hidden;
@@ -117,7 +117,7 @@
 .tutorial-choice-field label:has(input:checked) {
   border-color: #a18702;
   background: #fff8e8;
-  color: #76550c;
+  color: #a18702;
 }
 .tutorial-choice-field input {
   position: absolute;

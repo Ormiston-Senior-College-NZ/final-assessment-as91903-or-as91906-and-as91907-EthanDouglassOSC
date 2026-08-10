@@ -5,8 +5,7 @@
  * administrator-reviewed account-deletion request.
  */
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import AdminView from "../../Components/adminView";
+import { Navigate, useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../Components/confirmDialog";
 import "./settings.css";
 
@@ -499,7 +498,7 @@ function StudentSettings() {
 
 function Settings() {
   return localStorage.getItem("isAdmin") === "true" ? (
-    <AdminView page="settings" />
+    <Navigate to="/admin" replace />
   ) : (
     <StudentSettings />
   );

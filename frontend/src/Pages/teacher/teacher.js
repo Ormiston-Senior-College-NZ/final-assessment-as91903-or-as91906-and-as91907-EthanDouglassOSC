@@ -1,4 +1,4 @@
-/* Teacher dashboard variants for overview, timetable, classes, and settings. */
+/* Teacher dashboard variants for overview, timetable, tutorials, and settings. */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ConfirmDialog from "../../Components/confirmDialog";
 import "./teacher.css";
@@ -75,7 +75,6 @@ function TeacherPage({ view = "dashboard" }) {
   const titles = {
     dashboard: "Dashboard",
     timetable: "My timetable",
-    classes: "My classes",
     tutorials: "LA requests",
     tutorialSpaces: "Tutorial spaces",
     settings: "Teacher settings",
@@ -97,7 +96,6 @@ function TeacherPage({ view = "dashboard" }) {
           onLocationChange={changeLocation}
         />
       )}
-      {view === "classes" && <Classes classes={data.classes} />}
       {view === "tutorials" && <TutorialApprovals teacherId={teacherId} />}
       {view === "tutorialSpaces" && <TutorialSpaces teacherId={teacherId} />}
       {view === "settings" && <Settings teacher={data.teacher} />}
@@ -410,34 +408,6 @@ function LocationModal({ lesson, rooms, onClose, onSave }) {
         </form>
       </section>
     </div>
-  );
-}
-
-function Classes({ classes }) {
-  return (
-    <section className="teacher-class-grid">
-      {classes.length ? (
-        classes.map((item) => (
-          <article key={`${item.id}-${item.line}`}>
-            <header>
-              <b>{item.code}</b>
-              <span>Line {item.line}</span>
-            </header>
-            <h2>{item.name}</h2>
-            <p>
-              {item.category} ·{" "}
-              {item.level === 23 ? "Levels 2 & 3" : `Level ${item.level}`}
-            </p>
-            <footer>
-              <span>Locations</span>
-              <strong>Managed in weekly timetable</strong>
-            </footer>
-          </article>
-        ))
-      ) : (
-        <div className="teacher-state">No classes are assigned.</div>
-      )}
-    </section>
   );
 }
 

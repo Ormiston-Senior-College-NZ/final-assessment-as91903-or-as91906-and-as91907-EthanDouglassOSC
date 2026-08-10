@@ -12,6 +12,7 @@ function Topbar() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timetable, setTimetable] = useState([]);
   const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const isTeacher = localStorage.getItem("accountType") === "teacher";
 
   const firstName = localStorage.getItem("firstName") || "Student";
 
@@ -22,7 +23,7 @@ function Topbar() {
 
   // Load lessons used to determine what is happening now.
   useEffect(() => {
-    if (isAdmin) return undefined;
+    if (isAdmin || isTeacher) return undefined;
     const studentId = localStorage.getItem("studentId");
     if (!studentId) return undefined;
 
@@ -50,7 +51,7 @@ function Topbar() {
       });
 
     return () => controller.abort();
-  }, [isAdmin]);
+  }, [isAdmin, isTeacher]);
 
   // Align updates to the start of each minute.
   useEffect(() => {
@@ -93,11 +94,11 @@ function Topbar() {
           {greeting()}, {firstName}
         </h2>
 
-        {isAdmin ? (
+        {isAdmin || isTeacher ? (
           <div className="topbar-lesson">
             <span className="lesson-status-dot" aria-hidden="true"></span>
-            <strong>Administration workspace</strong>
-            <span>School-wide view</span>
+            <strong>{isAdmin ? "Administration workspace" : "Teacher workspace"}</strong>
+            <span>{isAdmin ? "School-wide view" : localStorage.getItem("teacherCode")}</span>
           </div>
         ) : lesson ? (
           <div className="topbar-lesson">

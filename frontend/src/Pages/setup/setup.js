@@ -120,6 +120,7 @@ function Setup() {
       }),
     });
 
+    localStorage.setItem("setupComplete", "true");
     navigate("/dashboard");
   };
 

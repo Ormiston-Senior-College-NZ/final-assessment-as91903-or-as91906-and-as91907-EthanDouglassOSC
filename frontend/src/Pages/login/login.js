@@ -8,6 +8,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 
+// Present signup names consistently before they are sent to the server.
+function toNameCase(value) {
+  return value
+    .trim()
+    .toLocaleLowerCase("en-NZ")
+    .replace(/(^|[\s'-])([^\s'-])/gu, (match, separator, letter) =>
+      `${separator}${letter.toLocaleUpperCase("en-NZ")}`,
+    );
+}
+
 function Login() {
   // Login/register form state
   const navigate = useNavigate();
@@ -73,6 +83,7 @@ function Login() {
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
         localStorage.setItem("isAdmin", String(data.isAdmin));
+        localStorage.setItem("setupComplete", String(data.setupComplete !== false));
 
         if (data.accountType === "teacher") {
           localStorage.removeItem("studentId");
@@ -131,8 +142,8 @@ function Login() {
 
         body: JSON.stringify({
           studentId: signupStudentId,
-          firstName: firstName,
-          lastName: lastName,
+          firstName: toNameCase(firstName),
+          lastName: toNameCase(lastName),
           password: signupPassword,
         }),
       });
@@ -146,6 +157,7 @@ function Login() {
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
         localStorage.setItem("isAdmin", "false");
+        localStorage.setItem("setupComplete", "false");
         navigate("/setup");
       } else {
         setError(data.message);
@@ -191,7 +203,7 @@ function Login() {
             <input
               id="login-identifier"
               type="text"
-              placeholder="Student ID, teacher code, or teacher name"
+              placeholder="Student ID or Teacher code"
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
             />

@@ -202,8 +202,9 @@ def signup_route():
     data = request.get_json()
 
     student_id = data.get("studentId")
-    first_name = data.get("firstName")
-    last_name = data.get("lastName")
+    # Store names consistently even when the signup form is entered in lowercase.
+    first_name = str(data.get("firstName", "")).strip().title()
+    last_name = str(data.get("lastName", "")).strip().title()
     password = data.get("password")
 
     email = f"st{student_id}@ormiston.school.nz"

@@ -4,7 +4,7 @@
  * Student pages are nested under Layout so they share Sidebar and Topbar.
  * Each route maps one URL directly to its page component.
  */
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 
 import Layout from "./Components/layout";
 
@@ -22,11 +22,37 @@ import TeacherLayout from "./Components/teacherLayout";
 import TeacherPage from "./Pages/teacher/teacher";
 import TeacherPassword from "./Pages/teacher/teacherPassword";
 
+// Reuse the saved browser session when the base address is opened again.
+function HomeRoute() {
+  if (!localStorage.getItem("authToken")) return <Login />;
+
+  const accountType = localStorage.getItem("accountType");
+  if (accountType === "teacher") {
+    return (
+      <Navigate
+        to={localStorage.getItem("mustChangePassword") === "true"
+          ? "/teacher/change-password"
+          : "/teacher"}
+        replace
+      />
+    );
+  }
+  if (accountType === "admin" || localStorage.getItem("isAdmin") === "true") {
+    return <Navigate to="/admin" replace />;
+  }
+  return (
+    <Navigate
+      to={localStorage.getItem("setupComplete") === "false" ? "/setup" : "/dashboard"}
+      replace
+    />
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/setup" element={<Setup />} />
         <Route path="/teacher/change-password" element={<TeacherPassword />} />
         <Route element={<TeacherLayout />}>
@@ -37,7 +63,7 @@ function App() {
           />
           <Route
             path="/teacher/classes"
-            element={<TeacherPage view="classes" />}
+            element={<Navigate to="/teacher" replace />}
           />
           <Route
             path="/teacher/tutorials"

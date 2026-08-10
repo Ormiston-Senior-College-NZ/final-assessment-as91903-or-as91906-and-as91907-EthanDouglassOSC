@@ -8,7 +8,7 @@
   padding: 6px 0 22px;
 }
 .teacher-heading > span {
-  color: #94670b;
+  color: #a18702;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -27,8 +27,7 @@
   gap: 12px;
 }
 .teacher-stats article,
-.teacher-panel,
-.teacher-class-grid article {
+.teacher-panel {
   border: 1px solid #e3e3e3;
   border-radius: 13px;
   background: #fff;
@@ -40,7 +39,7 @@
   flex-direction: column;
 }
 .teacher-stats strong {
-  color: #94670b;
+  color: #a18702;
   font-size: 25px;
 }
 .teacher-stats span {
@@ -88,7 +87,7 @@
   height: 34px;
   border-radius: 7px;
   background: #f2f2f2;
-  color: #94670b;
+  color: #a18702;
   place-items: center;
 }
 .teacher-lesson-heading > div {
@@ -102,37 +101,6 @@
   white-space: nowrap;
 }
 .teacher-lesson-heading span {
-  color: #888;
-}
-.teacher-class-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.teacher-class-grid article {
-  padding: 18px;
-}
-.teacher-class-grid header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.teacher-class-grid header b {
-  color: #94670b;
-}
-.teacher-class-grid h2 {
-  margin: 18px 0 5px;
-}
-.teacher-class-grid p {
-  color: #777;
-}
-.teacher-class-grid footer {
-  display: grid;
-  padding-top: 13px;
-  border-top: 1px solid #eee;
-  grid-template-columns: 1fr 1fr;
-}
-.teacher-class-grid footer span {
   color: #888;
 }
 .teacher-location-picker {
@@ -200,8 +168,7 @@
   color: #a43f3f;
 }
 @media (max-width: 900px) {
-  .teacher-stats,
-  .teacher-class-grid {
+  .teacher-stats {
     grid-template-columns: 1fr;
   }
   .teacher-line-summary {
@@ -322,7 +289,7 @@
   justify-content: space-between;
 }
 .teacher-location-modal > header span {
-  color: #94670b;
+  color: #a18702;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -670,7 +637,7 @@
 }
 .teacher-tutorial-status.approved { color: #26733a; }
 .teacher-tutorial-status.denied { color: #a52e2e; }
-.teacher-tutorial-status.pending { color: #8a650f; }
+.teacher-tutorial-status.pending { color: #a18702; }
 .teacher-tutorial-status.missing { color: #888884; }
 .tutorial-review-buttons {
   display: flex;

@@ -92,7 +92,7 @@ function StudentDashboard() {
   const nextLesson = useMemo(() => {
     const minutes = now.getHours() * 60 + now.getMinutes();
     return (
-      todayLessons.find((lesson) => toMinutes(lesson.end_time) > minutes) ||
+      todayLessons.find((lesson) => toMinutes(lesson.start_time) > minutes) ||
       null
     );
   }, [todayLessons, now]);

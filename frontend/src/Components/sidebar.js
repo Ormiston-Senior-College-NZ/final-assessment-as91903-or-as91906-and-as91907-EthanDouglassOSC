@@ -86,9 +86,11 @@ function Sidebar() {
       <div className="sidebar-account">
         {accountOpen && (
           <div className="account-menu">
-            <NavLink to="/settings" onClick={() => setAccountOpen(false)}>
-              Settings
-            </NavLink>
+            {!isAdmin && (
+              <NavLink to="/settings" onClick={() => setAccountOpen(false)}>
+                Settings
+              </NavLink>
+            )}
             <button type="button" onClick={logout}>
               Log out
             </button>

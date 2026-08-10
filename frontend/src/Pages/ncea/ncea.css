@@ -115,6 +115,10 @@
   font-weight: 800;
   text-align: center;
 }
+.gpa-scale span.active {
+  background: #a18702;
+  color: #fff;
+}
 .credit-breakdown {
   display: flex;
   margin-top: auto;
@@ -144,7 +148,7 @@
   align-items: center;
 }
 .ncea-info strong {
-  color: #8d620d;
+  color: #a18702;
   font-size: 13px;
   white-space: nowrap;
 }
@@ -183,7 +187,7 @@
   height: 40px;
   border-radius: 8px;
   background: #fff3d7;
-  color: #8d620d;
+  color: #a18702;
   font-size: 9px;
   font-weight: 900;
   place-items: center;
@@ -214,7 +218,7 @@
 .standards-table article {
   display: grid;
   padding: 14px 20px;
-  grid-template-columns: minmax(260px, 2fr) 105px 60px 150px 110px;
+  grid-template-columns: minmax(235px, 2fr) 105px 60px 145px 136px;
   gap: 12px;
   align-items: center;
 }
@@ -236,7 +240,7 @@
   gap: 2px;
 }
 .standards-table article strong {
-  color: #8d620d;
+  color: #a18702;
   font-size: 14px;
 }
 .standards-table article span {
@@ -282,7 +286,7 @@
 .grade-E {
   border-color: #ddb34f;
   background: #fff8e8;
-  color: #8d620d;
+  color: #a18702;
 }
 .grade-M {
   background: #eef6ff;
@@ -329,7 +333,7 @@
   border: 1px solid #a18702;
   border-radius: 7px;
   background: #fffaf0;
-  color: #8d620d;
+  color: #a18702;
   font: inherit;
   font-size: 9px;
   font-weight: 800;

@@ -240,14 +240,14 @@
   border-bottom: 0;
 }
 .course-code {
-  color: #8d620d;
+  color: #a18702;
 }
 .level-pill {
   display: inline-block;
   padding: 5px 8px;
   border-radius: 20px;
   background: #fff3d7;
-  color: #8d620d;
+  color: #a18702;
   font-size: 10px;
   font-weight: 800;
   white-space: nowrap;
@@ -306,7 +306,7 @@
   justify-content: space-between;
 }
 .schedule-year > header span {
-  color: #d8ad4b;
+  color: #a18702;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -343,7 +343,7 @@
 }
 .schedule-category-heading h4 {
   margin: 0;
-  color: #785309;
+  color: #a18702;
   font-size: 12px;
 }
 .schedule-category-heading span {
@@ -354,7 +354,7 @@
   align-items: center;
 }
 .schedule-category-heading i {
-  color: #8d620d;
+  color: #a18702;
   font-size: 15px;
   font-style: normal;
   line-height: 1;
@@ -394,7 +394,7 @@
   height: 38px;
   border-radius: 8px;
   background: #fff3d7;
-  color: #8d620d;
+  color: #a18702;
   font-size: 10px;
   flex: 0 0 auto;
   place-items: center;
@@ -466,7 +466,7 @@
   border: 1px solid #a18702;
   border-radius: 7px;
   background: #fffaf0;
-  color: #8d620d;
+  color: #a18702;
   font: inherit;
   font-size: 10px;
   font-weight: 800;
@@ -654,7 +654,7 @@
 .teacher-kainga-group > header {
   display: flex;
   padding: 7px 10px 5px;
-  color: #91650b;
+  color: #a18702;
   align-items: center;
   justify-content: space-between;
 }
@@ -691,7 +691,7 @@
 }
 .teacher-list button.active {
   background: #fff3d7;
-  color: #835a08;
+  color: #a18702;
 }
 .teacher-list strong {
   font-size: 11px;
@@ -720,7 +720,7 @@
   height: 50px;
   border-radius: 50%;
   background: #fff0cc;
-  color: #94670b;
+  color: #a18702;
   font-size: 13px;
   font-weight: 900;
   place-items: center;
@@ -829,7 +829,7 @@
   padding: 7px 10px;
   border-radius: 20px;
   background: #fff3d7;
-  color: #8d620d;
+  color: #a18702;
   font-size: 10px;
   font-weight: 800;
 }
@@ -889,7 +889,7 @@
 }
 .request-status.pending {
   background: #fff3d7;
-  color: #8d620d;
+  color: #a18702;
 }
 .request-status.denied {
   background: #f0f0f0;
@@ -1046,7 +1046,7 @@
 }
 .schedule-mode-switch button.active {
   background: #fff;
-  color: #94670b;
+  color: #a18702;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 .teacher-first-scheduler {
@@ -1092,7 +1092,7 @@
   height: 38px;
   border-radius: 7px;
   background: #f1f1f1;
-  color: #94670b;
+  color: #a18702;
   place-items: center;
 }
 .teacher-first-profile > div {
@@ -1153,7 +1153,7 @@
   display: grid;
   border-radius: 6px;
   background: #f1f1f1;
-  color: #94670b;
+  color: #a18702;
   grid-row: 1 / 4;
   place-items: center;
 }
@@ -1167,7 +1167,7 @@
   color: #888;
 }
 .teacher-course-groups button i {
-  color: #94670b;
+  color: #a18702;
   font-style: normal;
   font-weight: 800;
 }

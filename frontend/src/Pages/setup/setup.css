@@ -91,7 +91,7 @@
 }
 
 .progress-step.active {
-  color: #96670a;
+  color: #a18702;
 }
 
 .progress-step.active span {
@@ -141,7 +141,7 @@
 .setup-card button.selected {
   border-color: #a18702;
   background: #fff5dc;
-  color: #8a5e08;
+  color: #a18702;
   box-shadow: inset 0 0 0 1px #a18702;
 }
 

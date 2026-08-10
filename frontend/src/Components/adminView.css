@@ -10,7 +10,7 @@
   gap: 20px;
 }
 .admin-view-heading span {
-  color: #94670b;
+  color: #a18702;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -24,7 +24,7 @@
 }
 .admin-view-heading a,
 .admin-view-panel a {
-  color: #94670b;
+  color: #a18702;
   font-weight: 800;
   text-decoration: none;
 }
@@ -101,7 +101,7 @@
 }
 .admin-line-class b,
 .admin-category-grid b {
-  color: #94670b;
+  color: #a18702;
 }
 .admin-line-class small,
 .admin-category-grid small {
@@ -143,7 +143,7 @@
   border-right: 0;
 }
 .kainga-overview strong {
-  color: #94670b;
+  color: #a18702;
   font-size: 22px;
 }
 .kainga-overview span {
@@ -230,7 +230,7 @@
   height: 34px;
   border-radius: 7px;
   background: #f2f2f2;
-  color: #8d620d;
+  color: #a18702;
   place-items: center;
 }
 .kainga-staff-row > div {
@@ -245,32 +245,6 @@
 }
 .kainga-staff-row small {
   color: #888;
-}
-.admin-settings-panel {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 22px;
-}
-.admin-settings-panel p {
-  margin-bottom: 0;
-}
-.admin-settings-panel button,
-.admin-settings-panel a {
-  min-width: 150px;
-  padding: 12px 15px;
-  border: 0;
-  border-radius: 8px;
-  background: #a18702;
-  color: #fff;
-  font: inherit;
-  font-weight: 800;
-  text-align: center;
-  cursor: pointer;
-}
-.admin-settings-panel .danger {
-  background: #fff0f0;
-  color: #a43f3f;
 }
 .admin-view-state {
   padding: 70px 20px;
@@ -299,8 +273,7 @@
   }
   .admin-view-stats,
   .admin-line-grid,
-  .admin-category-grid,
-  .admin-settings-panel {
+  .admin-category-grid {
     grid-template-columns: 1fr;
   }
   .kainga-admin-grid {

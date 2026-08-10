@@ -31,7 +31,7 @@ body {
   font-size: 32px;
 }
 
-.tabs {
+.login-page .tabs {
   display: flex;
   margin-bottom: 30px;
   background: #f3f3f3;
@@ -39,7 +39,7 @@ body {
   overflow: hidden;
 }
 
-.tabs button {
+.login-page .tabs button {
   flex: 1;
   padding: 14px;
   border: none;
@@ -50,16 +50,16 @@ body {
   transition: 0.25s;
 }
 
-.tabs button:hover {
+.login-page .tabs button:hover {
   background: #ececec;
 }
 
-.tabs .active {
+.login-page .tabs .active {
   background: #a18702;
   color: white;
 }
 
-form {
+.login-card form {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -72,7 +72,7 @@ form {
   font-weight: 600;
 }
 
-input {
+.login-card input {
   padding: 14px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -80,13 +80,13 @@ input {
   transition: 0.2s;
 }
 
-input:focus {
+.login-card input:focus {
   outline: none;
   border-color: #a18702;
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.2);
 }
 
-button[type="submit"] {
+.login-card button[type="submit"] {
   margin-top: 10px;
   padding: 14px;
   border: none;
@@ -99,24 +99,24 @@ button[type="submit"] {
   transition: 0.25s;
 }
 
-button[type="submit"]:hover {
+.login-card button[type="submit"]:hover {
   background: #a87912;
 }
 
-.error {
+.login-card .error {
   color: #d32f2f;
   text-align: center;
   font-size: 14px;
   margin: 0;
 }
 
-.success {
+.login-card .success {
   color: #2e7d32;
   text-align: center;
   font-size: 14px;
   margin: 0;
 }
 
-input::placeholder {
+.login-card input::placeholder {
   color: #999;
 }

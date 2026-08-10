@@ -73,6 +73,10 @@ function StudentNCEA() {
 
   // GPA, rank score, credit totals, and subject grouping
   const calculations = useMemo(() => {
+    const totalCredits = standards.reduce(
+      (sum, item) => sum + item.credits,
+      0,
+    );
     const recorded = standards.filter((item) => item.grade);
     const attemptedCredits = recorded.reduce(
       (sum, item) => sum + item.credits,
@@ -88,6 +92,15 @@ function StudentNCEA() {
       0,
     );
     const gpa = attemptedCredits ? gpaPoints / attemptedCredits : 0;
+    const gpaEquivalent = !attemptedCredits
+      ? ""
+      : gpa < 1
+        ? "N"
+        : gpa < 2.5
+          ? "A"
+          : gpa < 3.5
+            ? "M"
+            : "E";
 
     const bySubject = standards
       .filter(
@@ -116,7 +129,9 @@ function StudentNCEA() {
     return {
       attemptedCredits,
       achievedCredits,
+      totalCredits,
       gpa,
+      gpaEquivalent,
       rankScore: eligibleCredits.reduce((sum, points) => sum + points, 0),
       rankCredits: eligibleCredits.length,
     };
@@ -235,17 +250,21 @@ function StudentNCEA() {
           <strong>{calculations.gpa.toFixed(2)}</strong>
           <small>4.00 credit-weighted scale</small>
           <div className="gpa-scale">
-            <span>N</span>
-            <span>A</span>
-            <span>M</span>
-            <span>E</span>
+            {["N", "A", "M", "E"].map((grade) => (
+              <span
+                className={calculations.gpaEquivalent === grade ? "active" : ""}
+                key={grade}
+              >
+                {grade}
+              </span>
+            ))}
           </div>
         </article>
         <article>
           <span>Credits achieved</span>
           <strong>{calculations.achievedCredits}</strong>
           <small>
-            {calculations.attemptedCredits} assessed credits recorded
+            {calculations.achievedCredits} of {calculations.totalCredits} available credits achieved
           </small>
           <div className="credit-breakdown">
             {["E", "M", "A"].map((grade) => (

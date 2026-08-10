@@ -13,7 +13,7 @@ import Dashboard from "./Pages/dashboard/dashboard";
 import Timetable from "./Pages/timetable/timetable";
 import NCEA from "./Pages/ncea/ncea";
 import Courses from "./Pages/courses/courses";
-import Kainga from "./Pages/kainga/kainga";
+import Tutorials from "./Pages/tutorials/tutorials";
 import Settings from "./Pages/settings/settings";
 import Admin from "./Pages/admin/admin";
 
@@ -40,6 +40,14 @@ function App() {
             element={<TeacherPage view="classes" />}
           />
           <Route
+            path="/teacher/tutorials"
+            element={<TeacherPage view="tutorials" />}
+          />
+          <Route
+            path="/teacher/tutorial-spaces"
+            element={<TeacherPage view="tutorialSpaces" />}
+          />
+          <Route
             path="/teacher/settings"
             element={<TeacherPage view="settings" />}
           />
@@ -49,7 +57,8 @@ function App() {
           <Route path="/timetable" element={<Timetable />} />
           <Route path="/ncea" element={<NCEA />} />
           <Route path="/courses" element={<Courses />} />
-          <Route path="/kainga" element={<Kainga />} />
+          <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/kainga" element={<Tutorials />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<Admin />} />
         </Route>

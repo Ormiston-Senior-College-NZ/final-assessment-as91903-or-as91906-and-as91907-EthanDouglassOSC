@@ -10,10 +10,10 @@
 
 .dashboard-heading {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-end;
-  gap: 20px;
-  padding: 8px 0 28px;
+  gap: 24px;
+  padding: 2px 0 22px;
 }
 
 .dashboard-heading h1 {
@@ -25,15 +25,6 @@
 .dashboard-heading p {
   margin: 0;
   color: #747474;
-}
-
-.dashboard-eyebrow,
-.panel-label {
-  color: #a06f0e;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 .student-summary {
@@ -55,7 +46,7 @@
 
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -70,16 +61,16 @@
 
 .stat-card {
   display: flex;
-  min-height: 120px;
-  padding: 20px 22px;
+  min-height: 112px;
+  padding: 18px 20px;
   box-sizing: border-box;
   flex-direction: column;
 }
 
 .stat-card.accent {
-  border-color: #c8941c;
-  background: linear-gradient(135deg, #c8941c, #e3ad3a);
-  color: #fff;
+  border-color: #e8e8e8;
+  background: #fff;
+  color: #252525;
 }
 
 .stat-card > span {
@@ -90,12 +81,12 @@
 
 .stat-card.accent > span,
 .stat-card.accent small {
-  color: rgba(255, 255, 255, 0.82);
+  color: #787878;
 }
 
 .stat-card > strong {
   margin: auto 0 2px;
-  color: #b17a0d;
+  color: #a18702;
   font-size: 36px;
   line-height: 1.1;
 }
@@ -105,7 +96,7 @@
 }
 
 .stat-card.accent > strong {
-  color: #fff;
+  color: #a18702;
 }
 
 .stat-card > strong.stat-text {
@@ -121,13 +112,13 @@
 
 .dashboard-content-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 2.15fr) minmax(260px, 0.85fr);
   gap: 20px;
   align-items: start;
 }
 
 .schedule-panel {
-  grid-column: span 2;
+  min-width: 0;
 }
 
 .dashboard-panel {
@@ -142,14 +133,13 @@
   margin-bottom: 18px;
 }
 
-.panel-heading h2,
-.notice-panel h2 {
+.panel-heading h2 {
   margin: 4px 0 0;
   font-size: 20px;
 }
 
 .panel-heading a {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -161,7 +151,7 @@
 
 .lesson-row {
   display: grid;
-  grid-template-columns: 65px 34px minmax(150px, 1fr) minmax(100px, auto);
+  grid-template-columns: 65px minmax(150px, 1fr) minmax(100px, auto);
   gap: 14px;
   padding: 16px 2px;
   border-bottom: 1px solid #eeeeee;
@@ -191,21 +181,6 @@
   font-size: 12px;
 }
 
-.lesson-line,
-.subject-line-number {
-  display: inline-grid;
-  place-items: center;
-  border-radius: 8px;
-  background: #fff3d7;
-  color: #94670b;
-  font-weight: 800;
-}
-
-.lesson-line {
-  width: 32px;
-  height: 32px;
-}
-
 .lesson-room {
   color: #686868;
   font-size: 13px;
@@ -231,25 +206,39 @@
   align-items: center;
 }
 
-.subject-line-number {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 auto;
-}
-
 .subject-row strong {
   font-size: 13px;
 }
 
-.notice-panel {
-  background: #fffaf0;
+.tutorial-summary-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.notice-panel p {
-  margin: 8px 0 0;
-  color: #746b5b;
+.tutorial-summary-heading > span {
+  color: #787878;
   font-size: 13px;
-  line-height: 1.55;
+  font-weight: 700;
+}
+
+.tutorial-summary-heading a {
+  color: #a18702;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tutorial-summary-card small {
+  text-transform: capitalize;
+}
+
+.tutorial-summary-card .tutorial-denied-note {
+  margin-top: 4px;
+  color: #a52e2e;
+  font-weight: 700;
+  text-transform: none;
 }
 
 .panel-empty,
@@ -263,18 +252,21 @@
   color: #a52b2b;
 }
 
+@media (max-width: 1100px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .dashboard-heading {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .dashboard-content-grid {
     grid-template-columns: 1fr;
   }
 
-  .schedule-panel {
-    grid-column: auto;
-  }
 }
 
 @media (max-width: 700px) {
@@ -294,11 +286,11 @@
   }
 
   .lesson-row {
-    grid-template-columns: 55px 32px 1fr;
+    grid-template-columns: 58px minmax(0, 1fr);
   }
 
   .lesson-room {
-    grid-column: 3;
+    grid-column: 2;
     text-align: left;
   }
 }

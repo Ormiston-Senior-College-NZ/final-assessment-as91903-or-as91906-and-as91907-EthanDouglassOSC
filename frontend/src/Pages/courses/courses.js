@@ -221,7 +221,6 @@ function StudentCourses() {
     <main className="courses-page">
       <header className="courses-heading">
         <div>
-          <span className="courses-eyebrow">Learning programme</span>
           <h1>Courses</h1>
           <p>
             View your current classes and explore the StudentNET course
@@ -264,10 +263,6 @@ function StudentCourses() {
                   <div>
                     <dt>Teacher</dt>
                     <dd>{detail.teacher || "To be confirmed"}</dd>
-                  </div>
-                  <div>
-                    <dt>Room</dt>
-                    <dd>{detail.room || "To be confirmed"}</dd>
                   </div>
                 </dl>
                 <button type="button">View course</button>

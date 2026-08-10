@@ -5,8 +5,7 @@
  * student's high-level academic overview.
  */
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import AdminView from "../../Components/adminView";
+import { Link, Navigate } from "react-router-dom";
 import "./dashboard.css";
 
 function toMinutes(time) {
@@ -19,10 +18,10 @@ const GRADE_POINTS = { NA: 0, A: 2, M: 3, E: 4 };
 
 function StudentDashboard() {
   // Student data and loading state
-  const firstName = localStorage.getItem("firstName") || "Student";
   const [user, setUser] = useState(null);
   const [timetable, setTimetable] = useState([]);
   const [standards, setStandards] = useState([]);
+  const [tutorialBookings, setTutorialBookings] = useState([]);
   const [status, setStatus] = useState("loading");
   const now = useMemo(() => new Date(), []);
 
@@ -41,12 +40,14 @@ function StudentDashboard() {
       fetch(`/user/${encodeURIComponent(studentId)}`, options),
       fetch(`/timetable/${encodeURIComponent(studentId)}`, options),
       fetch(`/ncea/${encodeURIComponent(studentId)}`, options),
+      fetch(`/tutorials/student/${encodeURIComponent(studentId)}`, options),
     ])
-      .then(async ([userResponse, timetableResponse, standardsResponse]) => {
+      .then(async ([userResponse, timetableResponse, standardsResponse, tutorialsResponse]) => {
         if (
           !userResponse.ok ||
           !timetableResponse.ok ||
-          !standardsResponse.ok
+          !standardsResponse.ok ||
+          !tutorialsResponse.ok
         ) {
           throw new Error("Could not load dashboard");
         }
@@ -54,13 +55,15 @@ function StudentDashboard() {
           userResponse.json(),
           timetableResponse.json(),
           standardsResponse.json(),
+          tutorialsResponse.json(),
         ]);
       })
-      .then(([userData, timetableData, standardData]) => {
+      .then(([userData, timetableData, standardData, tutorialData]) => {
         if (!userData.success) throw new Error("Student not found");
         setUser(userData);
         setTimetable(timetableData);
         setStandards(standardData);
+        setTutorialBookings(tutorialData.bookings || []);
         setStatus("ready");
       })
       .catch((error) => {
@@ -141,6 +144,20 @@ function StudentDashboard() {
     };
   }, [standards]);
 
+  // Find the student's nearest upcoming Tuesday or Friday tutorial booking.
+  const nextTutorial = useMemo(() => {
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return tutorialBookings
+      .filter((booking) => new Date(`${booking.tutorial_date}T12:00:00`) >= today)
+      .sort((first, second) => first.tutorial_date.localeCompare(second.tutorial_date))[0] || null;
+  }, [tutorialBookings, now]);
+
+  const nextTutorialDate = useMemo(() => {
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    while (date.getDay() !== 2 && date.getDay() !== 5) date.setDate(date.getDate() + 1);
+    return date;
+  }, [now]);
+
   if (status === "loading") {
     return <div className="dashboard-state">Loading your dashboard…</div>;
   }
@@ -164,8 +181,7 @@ function StudentDashboard() {
     <main className="dashboard">
       <header className="dashboard-heading">
         <div>
-          <span className="dashboard-eyebrow">Student overview</span>
-          <h1>Welcome back, {firstName}</h1>
+          <h1>Dashboard</h1>
           <p>
             {now.toLocaleDateString("en-NZ", {
               weekday: "long",
@@ -206,6 +222,33 @@ function StudentDashboard() {
               : "No more classes today"}
           </small>
         </article>
+        <article className="stat-card tutorial-summary-card">
+          <div className="tutorial-summary-heading">
+            <span>Next tutorial</span>
+            <Link to="/tutorials">View →</Link>
+          </div>
+          <strong className="stat-text">
+            {nextTutorial ? nextTutorial.learning_area : "Not booked"}
+          </strong>
+          <small>
+            {nextTutorial
+              ? `${new Date(`${nextTutorial.tutorial_date}T12:00:00`).toLocaleDateString("en-NZ", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })} · ${nextTutorial.status}`
+              : `${nextTutorialDate.toLocaleDateString("en-NZ", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })} · Submit your destination`}
+          </small>
+          {nextTutorial?.status === "denied" && (
+            <small className="tutorial-denied-note">
+              Please talk to your Learning Advisor.
+            </small>
+          )}
+        </article>
       </section>
 
       <div className="dashboard-content-grid">
@@ -231,7 +274,6 @@ function StudentDashboard() {
                     <strong>{lesson.start_time}</strong>
                     <span>{lesson.end_time}</span>
                   </div>
-                  <span className="lesson-line">{lesson.session}</span>
                   <div className="lesson-details">
                     <strong>{lesson.name}</strong>
                     <span>{lesson.teacher || "Teacher to be confirmed"}</span>
@@ -256,7 +298,6 @@ function StudentDashboard() {
             <div className="subject-list">
               {subjects.map((subject) => (
                 <div className="subject-row" key={subject.code}>
-                  <span className="subject-line-number">{subject.line}</span>
                   <div>
                     <strong>{subject.name}</strong>
                     <small>
@@ -270,12 +311,6 @@ function StudentDashboard() {
               ))}
             </div>
           </section>
-
-          <section className="dashboard-panel notice-panel">
-            <span className="panel-label">Notices</span>
-            <h2>You’re all caught up</h2>
-            <p>There are no new school notices at the moment.</p>
-          </section>
         </aside>
       </div>
     </main>
@@ -284,7 +319,7 @@ function StudentDashboard() {
 
 function Dashboard() {
   return localStorage.getItem("isAdmin") === "true" ? (
-    <AdminView page="dashboard" />
+    <Navigate to="/admin" replace />
   ) : (
     <StudentDashboard />
   );

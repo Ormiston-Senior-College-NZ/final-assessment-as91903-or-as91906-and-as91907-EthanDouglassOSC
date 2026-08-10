@@ -39,7 +39,7 @@
   text-decoration: none;
 }
 .teacher-sidebar nav a.active {
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
 }
 .teacher-sidebar footer {
@@ -100,15 +100,6 @@
 }
 .teacher-topbar strong {
   font-size: 18px;
-}
-body.dark-mode .teacher-layout,
-body.dark-mode .teacher-content {
-  background: #111214;
-}
-body.dark-mode .teacher-topbar {
-  border-color: #34363a;
-  background: #1c1d20;
-  color: #eee;
 }
 @media (max-width: 800px) {
   .teacher-layout {

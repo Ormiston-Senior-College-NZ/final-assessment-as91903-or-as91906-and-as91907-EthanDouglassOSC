@@ -80,9 +80,9 @@ function Topbar() {
   const greeting = () => {
     const hour = currentTime.getHours();
 
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon";
-    return "Good Evening";
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
   };
 
   // Top bar layout
@@ -90,7 +90,7 @@ function Topbar() {
     <header className="topbar">
       <div className="topbar-copy">
         <h2>
-          {greeting()}, {firstName} 👋
+          {greeting()}, {firstName}
         </h2>
 
         {isAdmin ? (

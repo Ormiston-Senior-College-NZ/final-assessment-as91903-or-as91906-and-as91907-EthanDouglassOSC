@@ -6,6 +6,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
+import ConfirmDialog from "../../Components/confirmDialog";
 import "./admin.css";
 
 // Configuration and timetable labels
@@ -39,6 +40,7 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [deletionRequests, setDeletionRequests] = useState([]);
   const [assignmentCourse, setAssignmentCourse] = useState(null);
+  const [confirmation, setConfirmation] = useState(null);
 
   // Load every dataset used by the administration workspace.
   const loadData = async () => {
@@ -239,28 +241,26 @@ function Admin() {
     }
   };
 
-  const deleteTeacherClass = async (course, offering) => {
-    if (
-      !window.confirm(
-        `Delete ${course.code} from Line ${offering.line}? This removes only this class offering.`,
-      )
-    )
-      return;
-    try {
-      const response = await fetch(
-        `/admin/scheduling/${course.id}/${offering.line}`,
-        {
-          method: "DELETE",
-          headers: adminHeaders,
-        },
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      notify(data.message);
-      await loadData();
-    } catch (requestError) {
-      notify(requestError.message || "Could not delete the class.", true);
-    }
+  const deleteTeacherClass = (course, offering) => {
+    setConfirmation({
+      title: "Delete class offering",
+      message: `Delete ${course.code} from Line ${offering.line}? This removes only this class offering.`,
+      confirmLabel: "Delete class",
+      action: async () => {
+        try {
+          const response = await fetch(
+            `/admin/scheduling/${course.id}/${offering.line}`,
+            { method: "DELETE", headers: adminHeaders },
+          );
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message);
+          notify(data.message);
+          await loadData();
+        } catch (requestError) {
+          notify(requestError.message || "Could not delete the class.", true);
+        }
+      },
+    });
   };
 
   const saveCourse = async (event) => {
@@ -294,20 +294,26 @@ function Admin() {
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const removeCourse = async (course) => {
-    if (!window.confirm(`Delete ${course.code} — ${course.name}?`)) return;
-    try {
-      const response = await fetch(`/admin/courses/${course.id}`, {
-        method: "DELETE",
-        headers: adminHeaders,
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      notify("Course deleted.");
-      await loadData();
-    } catch (requestError) {
-      notify(requestError.message || "Could not delete the course.", true);
-    }
+  const removeCourse = (course) => {
+    setConfirmation({
+      title: "Delete course",
+      message: `Delete ${course.code} — ${course.name}?`,
+      confirmLabel: "Delete course",
+      action: async () => {
+        try {
+          const response = await fetch(`/admin/courses/${course.id}`, {
+            method: "DELETE",
+            headers: adminHeaders,
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message);
+          notify("Course deleted.");
+          await loadData();
+        } catch (requestError) {
+          notify(requestError.message || "Could not delete the course.", true);
+        }
+      },
+    });
   };
 
   const selectedTeacherData = teachers.find(
@@ -321,28 +327,29 @@ function Admin() {
     (item) => item.status === "pending",
   );
 
-  const reviewDeletion = async (item, decision) => {
+  const reviewDeletion = (item, decision) => {
     const action =
       decision === "approve" ? "permanently delete" : "deny the request for";
-    if (
-      !window.confirm(
-        `${action} ${item.first_name} ${item.last_name}'s account?`,
-      )
-    )
-      return;
-    try {
-      const response = await fetch(`/admin/account-deletions/${item.id}`, {
-        method: "PUT",
-        headers: { ...adminHeaders, "Content-Type": "application/json" },
-        body: JSON.stringify({ decision }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      notify(data.message);
-      await loadData();
-    } catch (requestError) {
-      notify(requestError.message || "Could not review the request.", true);
-    }
+    setConfirmation({
+      title: decision === "approve" ? "Approve deletion" : "Deny deletion",
+      message: `${action} ${item.first_name} ${item.last_name}'s account?`,
+      confirmLabel: decision === "approve" ? "Delete account" : "Deny request",
+      action: async () => {
+        try {
+          const response = await fetch(`/admin/account-deletions/${item.id}`, {
+            method: "PUT",
+            headers: { ...adminHeaders, "Content-Type": "application/json" },
+            body: JSON.stringify({ decision }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message);
+          notify(data.message);
+          await loadData();
+        } catch (requestError) {
+          notify(requestError.message || "Could not review the request.", true);
+        }
+      },
+    });
   };
 
   // Administration page layout
@@ -350,7 +357,6 @@ function Admin() {
     <main className="admin-page">
       <header className="admin-heading">
         <div>
-          <span className="admin-eyebrow">Administration</span>
           <h1>School scheduling</h1>
           <p>Set course lines, teachers, and classroom locations.</p>
         </div>
@@ -871,6 +877,19 @@ function Admin() {
           roomAreas={roomAreas}
           onSave={saveAssignment}
           onClose={() => setAssignmentCourse(null)}
+        />
+      )}
+      {confirmation && (
+        <ConfirmDialog
+          title={confirmation.title}
+          message={confirmation.message}
+          confirmLabel={confirmation.confirmLabel}
+          onCancel={() => setConfirmation(null)}
+          onConfirm={() => {
+            const action = confirmation.action;
+            setConfirmation(null);
+            action();
+          }}
         />
       )}
     </main>

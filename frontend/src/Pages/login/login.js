@@ -64,6 +64,7 @@ function Login() {
       const data = await response.json();
 
       if (data.success) {
+        localStorage.setItem("authToken", data.token);
         localStorage.setItem(
           "accountType",
           data.accountType || (data.isAdmin ? "admin" : "student"),
@@ -139,15 +140,13 @@ function Login() {
       const data = await response.json();
 
       if (data.success) {
-        setSuccess("Account created successfully! Please log in.");
-
-        setFirstName("");
-        setLastName("");
-        setSignupStudentId("");
-        setSignupPassword("");
-        setConfirmPassword("");
-
-        setMode("login");
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("accountType", "student");
+        localStorage.setItem("studentId", data.studentId);
+        localStorage.setItem("firstName", data.firstName);
+        localStorage.setItem("lastName", data.lastName);
+        localStorage.setItem("isAdmin", "false");
+        navigate("/setup");
       } else {
         setError(data.message);
       }
@@ -188,14 +187,18 @@ function Login() {
 
         {mode === "login" ? (
           <form onSubmit={handleLogin}>
+            <label htmlFor="login-identifier">Student ID or staff login</label>
             <input
+              id="login-identifier"
               type="text"
               placeholder="Student ID, teacher code, or teacher name"
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
             />
 
+            <label htmlFor="login-password">Password</label>
             <input
+              id="login-password"
               type="password"
               placeholder="Password"
               value={loginPassword}
@@ -209,21 +212,27 @@ function Login() {
           </form>
         ) : (
           <form onSubmit={handleSignup}>
+            <label htmlFor="signup-first-name">First name</label>
             <input
+              id="signup-first-name"
               type="text"
               placeholder="First Name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
 
+            <label htmlFor="signup-last-name">Last name</label>
             <input
+              id="signup-last-name"
               type="text"
               placeholder="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
 
+            <label htmlFor="signup-student-id">Student ID</label>
             <input
+              id="signup-student-id"
               type="text"
               placeholder="Student ID"
               value={signupStudentId}
@@ -242,14 +251,18 @@ function Login() {
               </strong>
             </p>
 
+            <label htmlFor="signup-password">Password</label>
             <input
+              id="signup-password"
               type="password"
               placeholder="Password"
               value={signupPassword}
               onChange={(e) => setSignupPassword(e.target.value)}
             />
 
+            <label htmlFor="signup-confirm-password">Confirm password</label>
             <input
+              id="signup-confirm-password"
               type="password"
               placeholder="Confirm Password"
               value={confirmPassword}

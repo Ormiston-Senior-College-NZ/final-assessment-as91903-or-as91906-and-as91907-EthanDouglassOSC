@@ -1,7 +1,7 @@
 /*
  * SIDEBAR COMPONENT
  * Builds role-aware navigation, reads the student's identity, creates initials,
- * controls the account menu, persists dark mode, and clears the session on logout.
+ * controls the account menu and clears the session on logout.
  */
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -12,6 +12,13 @@ const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard" },
   { to: "/timetable", label: "Timetable" },
   { to: "/ncea", label: "NCEA" },
+  { to: "/courses", label: "Courses" },
+  { to: "/tutorials", label: "Tutorials" },
+];
+
+// Administrators use a smaller navigation set focused on management pages.
+const ADMIN_NAV_ITEMS = [
+  { to: "/admin", label: "Admin" },
   { to: "/courses", label: "Courses" },
   { to: "/kainga", label: "Kāinga" },
 ];
@@ -27,11 +34,9 @@ function Sidebar() {
   const { firstName, lastName } = profile;
   const initials = `${firstName[0] || "S"}${lastName[0] || ""}`.toUpperCase();
   const isAdmin = localStorage.getItem("isAdmin") === "true";
-  const navItems = isAdmin
-    ? [...NAV_ITEMS, { to: "/admin", label: "Admin" }]
-    : NAV_ITEMS;
+  const navItems = isAdmin ? ADMIN_NAV_ITEMS : NAV_ITEMS;
 
-  // Keep the document theme in sync with the stored preference.
+  // Refresh the displayed profile after account details are edited.
   useEffect(() => {
     const updateProfile = () =>
       setProfile({
@@ -45,6 +50,8 @@ function Sidebar() {
   }, []);
 
   const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("accountType");
     localStorage.removeItem("studentId");
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");

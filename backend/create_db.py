@@ -87,6 +87,48 @@ CREATE TABLE teachers (
 )
 """)
 
+# Teachers publish the tutorial spaces students may select.
+cursor.execute("""
+CREATE TABLE tutorial_offerings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tutorial_date TEXT NOT NULL,
+    teacher_id INTEGER NOT NULL,
+    learning_area TEXT NOT NULL,
+    details TEXT NOT NULL,
+    room_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tutorial_date, teacher_id, learning_area, room_id),
+    FOREIGN KEY(teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
+    FOREIGN KEY(room_id) REFERENCES rooms(id)
+)
+""")
+
+# Students submit one tutorial or independent-learning destination per date.
+cursor.execute("""
+CREATE TABLE tutorial_bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    tutorial_date TEXT NOT NULL,
+    learning_area TEXT NOT NULL,
+    details TEXT NOT NULL,
+    room_id INTEGER NOT NULL,
+    supervising_teacher_id INTEGER NOT NULL,
+    booking_type TEXT NOT NULL DEFAULT 'independent',
+    offering_id INTEGER,
+    status TEXT NOT NULL DEFAULT 'pending',
+    reviewed_by INTEGER,
+    reviewed_at TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(student_id, tutorial_date),
+    FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE,
+    FOREIGN KEY(room_id) REFERENCES rooms(id),
+    FOREIGN KEY(supervising_teacher_id) REFERENCES teachers(id),
+    FOREIGN KEY(offering_id) REFERENCES tutorial_offerings(id),
+    FOREIGN KEY(reviewed_by) REFERENCES teachers(id)
+)
+""")
+
 # ==========================================================
 # ROOMS
 # ==========================================================
@@ -580,48 +622,56 @@ rooms = [
     ("PapaO","Papatūānuku Outer"),
     ("PapaPS","Papatūānuku Presentation"),
     ("PapaPD","Papatūānuku Pod"),
+    ("PapaC","Papatūānuku Commons"),
 
     ("Pung1","Pūngāwerewere Inner 1"),
     ("Pung2","Pūngāwerewere Inner 2"),
     ("PungO","Pūngāwerewere Outer"),
     ("PungPS","Pūngāwerewere Presentation"),
     ("PungPD","Pūngāwerewere Pod"),
+    ("PungC","Pūngāwerewere Commons"),
 
     ("Kahi1","Kahikatea Inner 1"),
     ("Kahi2","Kahikatea Inner 2"),
     ("KahiO","Kahikatea Outer"),
     ("KahiPS","Kahikatea Presentation"),
     ("KahiPD","Kahikatea Pod"),
+    ("KahiC","Kahikatea Commons"),
 
     ("Puke1","Pūkeko Inner 1"),
     ("Puke2","Pūkeko Inner 2"),
     ("PukeO","Pūkeko Outer"),
     ("PukePS","Pūkeko Presentation"),
     ("PukePD","Pūkeko Pod"),
+    ("PukeC","Pūkeko Commons"),
 
     ("Hara1","Harakeke Inner 1"),
     ("Hara2","Harakeke Inner 2"),
     ("HaraO","Harakeke Outer"),
     ("HaraPS","Harakeke Presentation"),
     ("HaraPD","Harakeke Pod"),
+    ("HaraC","Harakeke Commons"),
 
     ("Moko1","Mokoroa Inner 1"),
     ("Moko2","Mokoroa Inner 2"),
     ("MokoO","Mokoroa Outer"),
     ("MokoPS","Mokoroa Presentation"),
     ("MokoPD","Mokoroa Pod"),
+    ("MokoC","Mokoroa Commons"),
 
     ("Waka1","Waka Inner 1"),
     ("Waka2","Waka Inner 2"),
     ("WakaO","Waka Outer"),
     ("WakaPS","Waka Presentation"),
     ("WakaPD","Waka Pod"),
+    ("WakaC","Waka Commons"),
 
     ("Kea1","Kea Inner 1"),
     ("Kea2","Kea Inner 2"),
     ("KeaO","Kea Outer"),
     ("KeaPS","Kea Presentation"),
     ("KeaPD","Kea Pod"),
+    ("KeaC","Kea Commons"),
 
     ("Ngah1","Ngahere Inner 1"),
     ("Ngah2","Ngahere Inner 2"),

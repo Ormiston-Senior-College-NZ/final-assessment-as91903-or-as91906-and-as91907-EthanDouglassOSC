@@ -127,8 +127,6 @@ function Setup() {
   return (
     <div className="setup-page">
       <div className="setup-card">
-        <span className="setup-eyebrow">Account setup</span>
-
         <h1>Welcome to StudentNET</h1>
 
         <p>Let's personalise your account.</p>

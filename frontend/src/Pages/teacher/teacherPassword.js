@@ -32,7 +32,6 @@ function TeacherPassword() {
   return (
     <main className="teacher-password-page">
       <form onSubmit={submit}>
-        <span>Teacher account security</span>
         <h1>{firstLogin ? "Create your password" : "Change password"}</h1>
         <p>
           {firstLogin

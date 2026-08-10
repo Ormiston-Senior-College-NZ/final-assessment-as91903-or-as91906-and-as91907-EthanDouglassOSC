@@ -50,9 +50,6 @@ function AdminView({ page }) {
   const [rooms, setRooms] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [darkMode, setDarkMode] = useState(
-    () => localStorage.getItem("theme") === "dark",
-  );
   const [status, setStatus] = useState("loading");
 
   // Load the school-wide datasets used across all administrator variants.
@@ -127,7 +124,6 @@ function AdminView({ page }) {
     <main className="admin-view-page">
       <header className="admin-view-heading">
         <div>
-          <span>{copy[0]}</span>
           <h1>{copy[1]}</h1>
           <p>{copy[2]}</p>
         </div>
@@ -141,13 +137,6 @@ function AdminView({ page }) {
       {page === "kainga" && <AdminKainga {...context} />}
       {page === "settings" && (
         <AdminSettings
-          darkMode={darkMode}
-          onThemeChange={() => {
-            const next = !darkMode;
-            setDarkMode(next);
-            document.body.classList.toggle("dark-mode", next);
-            localStorage.setItem("theme", next ? "dark" : "light");
-          }}
           onLogout={() => {
             localStorage.clear();
             navigate("/");
@@ -401,19 +390,9 @@ function AdminKainga({ teachers }) {
   );
 }
 
-function AdminSettings({ darkMode, onThemeChange, onLogout }) {
+function AdminSettings({ onLogout }) {
   return (
     <section className="admin-view-panel admin-settings-panel">
-      <div>
-        <h2>Appearance</h2>
-        <p>
-          Use the same saved light or dark appearance across every administrator
-          page.
-        </p>
-      </div>
-      <button type="button" onClick={onThemeChange}>
-        {darkMode ? "Use light mode" : "Use dark mode"}
-      </button>
       <div>
         <h2>Administration</h2>
         <p>

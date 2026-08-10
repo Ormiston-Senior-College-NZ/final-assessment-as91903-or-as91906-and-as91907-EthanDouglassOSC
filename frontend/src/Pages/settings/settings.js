@@ -1,18 +1,19 @@
 /*
  * SETTINGS PAGE
  * Loads and edits student identity, year, Kāinga, LA teacher, and five course
- * lines; persists theme preference; signs out; and submits or cancels an
+ * lines; signs out; and submits or cancels an
  * administrator-reviewed account-deletion request.
  */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminView from "../../Components/adminView";
+import ConfirmDialog from "../../Components/confirmDialog";
 import "./settings.css";
 
 const KAINGAS = ["Pūngāwerewere", "Pūkeko", "Mokoroa", "Kea"];
 
 function StudentSettings() {
-  // Profile, course, theme, and deletion-request state
+  // Profile, course, and deletion-request state
   const navigate = useNavigate();
   const studentId = localStorage.getItem("studentId");
   const [form, setForm] = useState({
@@ -31,9 +32,7 @@ function StudentSettings() {
   const [message, setMessage] = useState("");
   const [deletionRequest, setDeletionRequest] = useState(null);
   const [deletionBusy, setDeletionBusy] = useState(false);
-  const [darkMode, setDarkMode] = useState(
-    () => localStorage.getItem("theme") === "dark",
-  );
+  const [confirmation, setConfirmation] = useState(null);
 
   // Load the student's account and all editable selection options.
   useEffect(() => {
@@ -172,8 +171,10 @@ function StudentSettings() {
     return false;
   });
 
-  // Account, theme, and deletion-request actions
+  // Account and deletion-request actions
   const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("accountType");
     localStorage.removeItem("studentId");
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");
@@ -181,31 +182,30 @@ function StudentSettings() {
     navigate("/");
   };
 
-  const requestDeletion = async () => {
-    if (
-      !window.confirm(
-        "Send an account deletion request to an administrator? Your account will remain active until it is approved.",
-      )
-    )
-      return;
-    setDeletionBusy(true);
-    try {
-      const response = await fetch(
-        `/account-deletion/${encodeURIComponent(studentId)}`,
-        { method: "POST" },
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      const statusResponse = await fetch(
-        `/account-deletion/${encodeURIComponent(studentId)}`,
-      );
-      setDeletionRequest((await statusResponse.json()).request);
-      setMessage(data.message);
-    } catch (error) {
-      setMessage(error.message || "Could not send the deletion request.");
-    } finally {
-      setDeletionBusy(false);
-    }
+  const requestDeletion = () => {
+    setConfirmation({
+      message: "Send an account deletion request to an administrator? Your account remains active until it is approved.",
+      action: async () => {
+        setDeletionBusy(true);
+        try {
+          const response = await fetch(
+            `/account-deletion/${encodeURIComponent(studentId)}`,
+            { method: "POST" },
+          );
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message);
+          const statusResponse = await fetch(
+            `/account-deletion/${encodeURIComponent(studentId)}`,
+          );
+          setDeletionRequest((await statusResponse.json()).request);
+          setMessage(data.message);
+        } catch (error) {
+          setMessage(error.message || "Could not send the deletion request.");
+        } finally {
+          setDeletionBusy(false);
+        }
+      },
+    });
   };
 
   const cancelDeletion = async () => {
@@ -226,13 +226,6 @@ function StudentSettings() {
     }
   };
 
-  const toggleDarkMode = () => {
-    const enabled = !darkMode;
-    setDarkMode(enabled);
-    localStorage.setItem("theme", enabled ? "dark" : "light");
-    document.body.classList.toggle("dark-mode", enabled);
-  };
-
   if (status === "loading")
     return <div className="settings-state">Loading account settings…</div>;
   if (status === "signed-out")
@@ -249,7 +242,6 @@ function StudentSettings() {
     <main className="settings-page">
       <header className="settings-heading">
         <div>
-          <span className="settings-eyebrow">Account</span>
           <h1>Settings</h1>
           <p>Manage your profile and sign-in details.</p>
         </div>
@@ -422,34 +414,6 @@ function StudentSettings() {
           </div>
         </section>
 
-        <section className="settings-card appearance-card">
-          <div className="settings-card-heading">
-            <div>
-              <span>Appearance</span>
-              <h2>Dark mode</h2>
-            </div>
-            <p>Choose how StudentNET looks on this device.</p>
-          </div>
-          <div className="theme-setting-row">
-            <div>
-              <strong>Use dark appearance</strong>
-              <p>
-                Reduce screen brightness with darker backgrounds and lighter
-                text.
-              </p>
-            </div>
-            <button
-              type="button"
-              className={`theme-switch${darkMode ? " active" : ""}`}
-              role="switch"
-              aria-checked={darkMode}
-              onClick={toggleDarkMode}
-            >
-              <span />
-            </button>
-          </div>
-        </section>
-
         <section className="settings-card danger-zone">
           <div className="settings-card-heading">
             <div>
@@ -516,6 +480,19 @@ function StudentSettings() {
           </button>
         </div>
       </form>
+      {confirmation && (
+        <ConfirmDialog
+          title="Request account deletion"
+          message={confirmation.message}
+          confirmLabel="Send request"
+          onCancel={() => setConfirmation(null)}
+          onConfirm={() => {
+            const action = confirmation.action;
+            setConfirmation(null);
+            action();
+          }}
+        />
+      )}
     </main>
   );
 }

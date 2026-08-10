@@ -6,6 +6,8 @@ const LINKS = [
   ["/teacher", "Dashboard"],
   ["/teacher/timetable", "Timetable"],
   ["/teacher/classes", "My classes"],
+  ["/teacher/tutorials", "LA requests"],
+  ["/teacher/tutorial-spaces", "Tutorial spaces"],
   ["/teacher/settings", "Settings"],
 ];
 

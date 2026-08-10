@@ -23,7 +23,7 @@
   color: #777;
 }
 .ncea-eyebrow {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -34,7 +34,7 @@
   padding: 0 18px;
   border: 0;
   border-radius: 9px;
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
   font: inherit;
   font-size: 11px;
@@ -64,7 +64,7 @@
 }
 .ncea-summary article > strong {
   margin: 13px 0 2px;
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 34px;
 }
 .ncea-summary article > small {
@@ -72,28 +72,29 @@
   font-size: 13px;
 }
 .rank-card {
-  background: linear-gradient(135deg, #292927, #3a3935) !important;
-  color: #fff;
+  border-color: #e8e8e8 !important;
+  background: #fff !important;
+  color: #252525;
 }
 .rank-card > span,
 .rank-card > small,
 .rank-card p {
-  color: #ccc !important;
+  color: #6c6658 !important;
 }
 .rank-card > strong {
-  color: #e3b34c !important;
+  color: #a18702 !important;
 }
 .score-bar {
   overflow: hidden;
   height: 6px;
   margin-top: auto;
   border-radius: 8px;
-  background: #555;
+  background: #d5d1c8;
 }
 .score-bar i {
   display: block;
   height: 100%;
-  background: #d7a438;
+  background: #a18702;
 }
 .rank-card p {
   margin: 7px 0 0;
@@ -202,7 +203,7 @@
   text-align: right;
 }
 .ncea-subject-card > header > div:last-child strong {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 20px;
 }
 .ncea-subject-card > header > div:last-child span {
@@ -325,7 +326,7 @@
 }
 .empty-standards button {
   padding: 8px 12px;
-  border: 1px solid #c8941c;
+  border: 1px solid #a18702;
   border-radius: 7px;
   background: #fffaf0;
   color: #8d620d;
@@ -440,7 +441,7 @@
   padding: 0 15px;
   border: 0;
   border-radius: 7px;
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
   font: inherit;
   font-size: 11px;

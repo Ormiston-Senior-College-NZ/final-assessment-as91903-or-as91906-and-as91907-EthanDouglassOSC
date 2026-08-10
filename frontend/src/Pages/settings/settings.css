@@ -1,7 +1,7 @@
 /*
  * ACCOUNT SETTINGS
  * Styles the profile form, LA teacher choice, five timetable-line selectors,
- * save feedback, dark-mode control, deletion request/cancellation actions,
+ * save feedback, deletion request/cancellation actions,
  * signed-out/loading states, and responsive form/card layouts.
  */
 .settings-page {
@@ -18,7 +18,7 @@
 
 .settings-eyebrow,
 .settings-card-heading span {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -116,7 +116,7 @@
 
 .settings-form-grid input:focus,
 .settings-form-grid select:focus {
-  border-color: #c8941c;
+  border-color: #a18702;
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
 }
 
@@ -184,7 +184,7 @@
 }
 
 .settings-subject-grid select:focus {
-  border-color: #c8941c;
+  border-color: #a18702;
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
 }
 
@@ -217,8 +217,8 @@
 }
 
 .save-button {
-  border: 1px solid #c8941c;
-  background: #c8941c;
+  border: 1px solid #a18702;
+  background: #a18702;
   color: #fff;
 }
 .save-button:disabled {
@@ -279,51 +279,6 @@
   cursor: wait;
   opacity: 0.6;
 }
-.theme-setting-row {
-  display: flex;
-  padding: 22px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-.theme-setting-row strong {
-  font-size: 13px;
-}
-.theme-setting-row p {
-  margin: 5px 0 0;
-  color: #777;
-  font-size: 11px;
-}
-.theme-switch {
-  position: relative;
-  width: 50px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  border-radius: 20px;
-  background: #ccc;
-  cursor: pointer;
-  transition: background 160ms ease;
-  flex: 0 0 auto;
-}
-.theme-switch span {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
-  transition: transform 160ms ease;
-}
-.theme-switch.active {
-  background: #c8941c;
-}
-.theme-switch.active span {
-  transform: translateX(22px);
-}
-
 .settings-message {
   color: #438153;
   font-size: 12px;

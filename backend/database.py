@@ -7,6 +7,8 @@ Functions return SQLite rows or plain values for conversion by ``app.py``.
 """
 
 import sqlite3
+import hmac
+from werkzeug.security import check_password_hash, generate_password_hash
 import os
 from teacher_codes import NAME_CORRECTIONS, build_teacher_codes
 
@@ -38,6 +40,64 @@ def get_connection():
         rows = connection.execute("SELECT id, name FROM teachers").fetchall()
         for teacher_id, code in build_teacher_codes(rows).items():
             connection.execute("UPDATE teachers SET code = ? WHERE id = ?", (code, teacher_id))
+        connection.executescript("""
+            CREATE TABLE IF NOT EXISTS tutorial_offerings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tutorial_date TEXT NOT NULL,
+                teacher_id INTEGER NOT NULL,
+                learning_area TEXT NOT NULL,
+                details TEXT NOT NULL,
+                room_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(tutorial_date, teacher_id, learning_area, room_id),
+                FOREIGN KEY(teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
+                FOREIGN KEY(room_id) REFERENCES rooms(id)
+            );
+            CREATE TABLE IF NOT EXISTS tutorial_bookings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                student_id TEXT NOT NULL,
+                tutorial_date TEXT NOT NULL,
+                learning_area TEXT NOT NULL,
+                details TEXT NOT NULL,
+                room_id INTEGER NOT NULL,
+                supervising_teacher_id INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending',
+                reviewed_by INTEGER,
+                reviewed_at TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(student_id, tutorial_date),
+                FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE,
+                FOREIGN KEY(room_id) REFERENCES rooms(id),
+                FOREIGN KEY(supervising_teacher_id) REFERENCES teachers(id),
+                FOREIGN KEY(reviewed_by) REFERENCES teachers(id)
+            );
+        """)
+        booking_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(tutorial_bookings)")
+        }
+        if "booking_type" not in booking_columns:
+            connection.execute(
+                "ALTER TABLE tutorial_bookings ADD COLUMN booking_type TEXT NOT NULL DEFAULT 'independent'"
+            )
+        if "offering_id" not in booking_columns:
+            connection.execute(
+                "ALTER TABLE tutorial_bookings ADD COLUMN offering_id INTEGER REFERENCES tutorial_offerings(id)"
+            )
+        connection.execute("DROP INDEX IF EXISTS one_student_per_tutorial_space")
+        commons = (
+            ("PapaC", "Papatūānuku Commons"),
+            ("PungC", "Pūngāwerewere Commons"),
+            ("KahiC", "Kahikatea Commons"),
+            ("PukeC", "Pūkeko Commons"),
+            ("HaraC", "Harakeke Commons"),
+            ("MokoC", "Mokoroa Commons"),
+            ("WakaC", "Waka Commons"),
+            ("KeaC", "Kea Commons"),
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO rooms (code, name) VALUES (?, ?)", commons
+        )
         connection.commit()
         _teacher_codes_ready = True
     return connection
@@ -46,6 +106,14 @@ def get_connection():
 # ==========================================================
 # LOGIN
 # ==========================================================
+
+def _password_matches(stored_password, supplied_password):
+    """Verify hashed credentials while supporting one-time legacy upgrades."""
+    stored = str(stored_password or "")
+    supplied = str(supplied_password or "")
+    if stored.startswith(("scrypt:", "pbkdf2:")):
+        return check_password_hash(stored, supplied)
+    return hmac.compare_digest(stored, supplied)
 
 def login(student_id, password):
 
@@ -56,10 +124,20 @@ def login(student_id, password):
         SELECT *
         FROM users
         WHERE student_id = ?
-        AND password = ?
-    """, (student_id, password))
+    """, (student_id,))
 
     user = cursor.fetchone()
+
+    if not user or not _password_matches(user["password"], password):
+        connection.close()
+        return None
+
+    if not str(user["password"]).startswith(("scrypt:", "pbkdf2:")):
+        connection.execute(
+            "UPDATE users SET password = ? WHERE student_id = ?",
+            (generate_password_hash(str(password)), student_id),
+        )
+        connection.commit()
 
     connection.close()
 
@@ -71,13 +149,21 @@ def teacher_login(identifier, password):
     connection = get_connection()
     teacher = connection.execute(
         """
-        SELECT id, name, code, role, kainga, must_change_password
+        SELECT id, name, code, role, kainga, must_change_password, password
         FROM teachers
         WHERE (UPPER(code) = UPPER(?) OR LOWER(name) = LOWER(?))
-          AND password = ?
         """,
-        (identifier, identifier, password),
+        (identifier, identifier),
     ).fetchone()
+    if not teacher or not _password_matches(teacher["password"], password):
+        connection.close()
+        return None
+    if not str(teacher["password"]).startswith(("scrypt:", "pbkdf2:")):
+        connection.execute(
+            "UPDATE teachers SET password = ? WHERE id = ?",
+            (generate_password_hash(str(password)), teacher["id"]),
+        )
+        connection.commit()
     connection.close()
     return teacher
 
@@ -85,9 +171,15 @@ def teacher_login(identifier, password):
 def change_teacher_password(teacher_id, current_password, new_password):
     """Replace a teacher password and clear the first-login requirement."""
     connection = get_connection()
+    teacher = connection.execute(
+        "SELECT password FROM teachers WHERE id = ?", (teacher_id,)
+    ).fetchone()
+    if not teacher or not _password_matches(teacher["password"], current_password):
+        connection.close()
+        return False
     result = connection.execute(
-        "UPDATE teachers SET password = ?, must_change_password = 0 WHERE id = ? AND password = ?",
-        (new_password, teacher_id, current_password),
+        "UPDATE teachers SET password = ?, must_change_password = 0 WHERE id = ?",
+        (generate_password_hash(str(new_password)), teacher_id),
     )
     connection.commit()
     connection.close()
@@ -104,11 +196,9 @@ def get_teacher_dashboard(teacher_id):
     classes = connection.execute(
         """
         SELECT DISTINCT courses.id, courses.code, courses.name, courses.level,
-               courses.category, course_schedule.session AS line,
-               course_schedule.area, rooms.code AS room_code, rooms.name AS room_name
+               courses.category, course_schedule.session AS line
         FROM course_schedule
         JOIN courses ON courses.id = course_schedule.course_id
-        LEFT JOIN rooms ON rooms.id = course_schedule.room_id
         WHERE course_schedule.teacher_id = ?
         ORDER BY course_schedule.session, courses.code
         """,
@@ -193,6 +283,237 @@ def update_teacher_class_location(teacher_id, course_id, day, line, area, room_i
 
 
 # ==========================================================
+# TUTORIAL BOOKINGS
+# ==========================================================
+
+def get_student_tutorial_bookings(student_id):
+    """Return every tutorial destination submitted by one student."""
+    connection = get_connection()
+    rows = connection.execute(
+        """
+        SELECT tutorial_bookings.*, rooms.code AS room_code,
+               rooms.name AS room_name, teachers.name AS teacher_name,
+               teachers.code AS teacher_code
+        FROM tutorial_bookings
+        JOIN rooms ON rooms.id = tutorial_bookings.room_id
+        JOIN teachers ON teachers.id = tutorial_bookings.supervising_teacher_id
+        WHERE tutorial_bookings.student_id = ?
+        ORDER BY tutorial_bookings.tutorial_date
+        """,
+        (student_id,),
+    ).fetchall()
+    connection.close()
+    return rows
+
+
+def get_tutorial_offerings(tutorial_date=None, student_id=None):
+    """Return published group tutorial spaces available to every student."""
+    connection = get_connection()
+    query = """
+        SELECT tutorial_offerings.*, teachers.name AS teacher_name,
+               teachers.code AS teacher_code, rooms.code AS room_code,
+               rooms.name AS room_name
+        FROM tutorial_offerings
+        JOIN teachers ON teachers.id = tutorial_offerings.teacher_id
+        JOIN rooms ON rooms.id = tutorial_offerings.room_id
+    """
+    parameters = ()
+    if tutorial_date:
+        query += " WHERE tutorial_offerings.tutorial_date = ?"
+        parameters = (tutorial_date,)
+    query += " ORDER BY tutorial_offerings.tutorial_date, tutorial_offerings.learning_area, teachers.name"
+    rows = connection.execute(query, parameters).fetchall()
+    connection.close()
+    return rows
+
+
+def create_tutorial_offering(teacher_id, tutorial_date, learning_area, details, room_id):
+    """Publish a tutorial destination owned and supervised by the teacher."""
+    connection = get_connection()
+    room = connection.execute("SELECT id FROM rooms WHERE id = ?", (room_id,)).fetchone()
+    if not room:
+        connection.close()
+        return False, "Select a valid location."
+    try:
+        connection.execute(
+            """
+            INSERT INTO tutorial_offerings
+                (tutorial_date, teacher_id, learning_area, details, room_id)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (tutorial_date, teacher_id, learning_area, details, room_id),
+        )
+        connection.commit()
+    except sqlite3.IntegrityError:
+        connection.close()
+        return False, "That tutorial space already exists."
+    connection.close()
+    return True, "Tutorial space added."
+
+
+def delete_tutorial_offering(teacher_id, offering_id):
+    """Remove a teacher-owned space and cancel its linked student booking."""
+    connection = get_connection()
+    offering = connection.execute(
+        "SELECT id FROM tutorial_offerings WHERE id = ? AND teacher_id = ?",
+        (offering_id, teacher_id),
+    ).fetchone()
+    if not offering:
+        connection.close()
+        return False
+    connection.execute(
+        "DELETE FROM tutorial_bookings WHERE offering_id = ?", (offering_id,)
+    )
+    connection.execute(
+        "DELETE FROM tutorial_offerings WHERE id = ? AND teacher_id = ?",
+        (offering_id, teacher_id),
+    )
+    connection.commit()
+    connection.close()
+    return True
+
+
+def save_tutorial_booking(student_id, tutorial_date, booking_type, learning_area,
+                          details, room_id, offering_id=None):
+    """Create or replace a tutorial or independent-learning request."""
+    connection = get_connection()
+    student = connection.execute(
+        "SELECT student_id, la_teacher_id FROM users WHERE student_id = ?", (student_id,)
+    ).fetchone()
+    if not student:
+        connection.close()
+        return False, "Student account could not be found."
+    if booking_type == "tutorial":
+        offering = connection.execute(
+            """
+            SELECT tutorial_offerings.id,
+                   tutorial_offerings.learning_area,
+                   tutorial_offerings.details,
+                   tutorial_offerings.room_id,
+                   tutorial_offerings.teacher_id
+            FROM tutorial_offerings
+            WHERE tutorial_offerings.id = ? AND tutorial_offerings.tutorial_date = ?
+            """,
+            (offering_id, tutorial_date),
+        ).fetchone()
+        if not offering:
+            connection.close()
+            return False, "Select an available tutorial space."
+        learning_area, details = offering["learning_area"], offering["details"]
+        room_id, teacher_id = offering["room_id"], offering["teacher_id"]
+    else:
+        room = connection.execute("SELECT id FROM rooms WHERE id = ?", (room_id,)).fetchone()
+        teacher_id = student["la_teacher_id"]
+        offering_id = None
+        if not room or not teacher_id:
+            connection.close()
+            return False, "Select a valid independent-learning location."
+    try:
+        connection.execute(
+            """
+        INSERT INTO tutorial_bookings
+            (student_id, tutorial_date, learning_area, details, room_id,
+             supervising_teacher_id, status, booking_type, offering_id)
+        VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+        ON CONFLICT(student_id, tutorial_date) DO UPDATE SET
+            learning_area = excluded.learning_area,
+            details = excluded.details,
+            room_id = excluded.room_id,
+            supervising_teacher_id = excluded.supervising_teacher_id,
+            booking_type = excluded.booking_type,
+            offering_id = excluded.offering_id,
+            status = 'pending', reviewed_by = NULL, reviewed_at = NULL,
+            updated_at = CURRENT_TIMESTAMP
+            """,
+            (student_id, tutorial_date, learning_area, details, room_id, teacher_id,
+             booking_type, offering_id),
+        )
+    except sqlite3.IntegrityError:
+        connection.close()
+        return False, "That tutorial booking could not be saved."
+    connection.commit()
+    connection.close()
+    return True, "Tutorial request sent to your Learning Advisor."
+
+
+def get_la_tutorial_data(teacher_id):
+    """Return LA requests plus teacher offerings and destination totals."""
+    connection = get_connection()
+    students = connection.execute(
+        """
+        SELECT student_id, first_name, last_name, year_level, kainga
+        FROM users
+        WHERE la_teacher_id = ?
+        ORDER BY last_name, first_name
+        """,
+        (teacher_id,),
+    ).fetchall()
+    bookings = connection.execute(
+        """
+        SELECT tutorial_bookings.*, users.first_name, users.last_name,
+               users.year_level, rooms.code AS room_code, rooms.name AS room_name,
+               teachers.name AS teacher_name, teachers.code AS teacher_code
+        FROM tutorial_bookings
+        JOIN users ON users.student_id = tutorial_bookings.student_id
+        JOIN rooms ON rooms.id = tutorial_bookings.room_id
+        JOIN teachers ON teachers.id = tutorial_bookings.supervising_teacher_id
+        WHERE users.la_teacher_id = ?
+        ORDER BY tutorial_bookings.tutorial_date, users.last_name, users.first_name
+        """,
+        (teacher_id,),
+    ).fetchall()
+    offerings = connection.execute(
+        """
+        SELECT tutorial_offerings.*, rooms.code AS room_code, rooms.name AS room_name,
+               COUNT(tutorial_bookings.id) AS visitor_count,
+               GROUP_CONCAT(users.first_name || ' ' || users.last_name, ', ') AS booked_students,
+               GROUP_CONCAT(users.student_id, ', ') AS booked_student_ids
+        FROM tutorial_offerings
+        JOIN rooms ON rooms.id = tutorial_offerings.room_id
+        LEFT JOIN tutorial_bookings
+         ON tutorial_bookings.offering_id = tutorial_offerings.id
+         AND tutorial_bookings.status != 'denied'
+        LEFT JOIN users ON users.student_id = tutorial_bookings.student_id
+        WHERE tutorial_offerings.teacher_id = ?
+        GROUP BY tutorial_offerings.id
+        ORDER BY tutorial_offerings.tutorial_date, tutorial_offerings.learning_area
+        """,
+        (teacher_id,),
+    ).fetchall()
+    area_counts = connection.execute(
+        """
+        SELECT tutorial_date, learning_area, COUNT(*) AS visitor_count
+        FROM tutorial_bookings
+        WHERE status != 'denied'
+        GROUP BY tutorial_date, learning_area
+        ORDER BY learning_area
+        """
+    ).fetchall()
+    connection.close()
+    return students, bookings, offerings, area_counts
+
+
+def review_tutorial_booking(teacher_id, booking_id, decision):
+    """Approve or deny a request only when the student belongs to the teacher's LA."""
+    connection = get_connection()
+    result = connection.execute(
+        """
+        UPDATE tutorial_bookings
+        SET status = ?, reviewed_by = ?, reviewed_at = CURRENT_TIMESTAMP,
+            offering_id = CASE WHEN ? = 'denied' THEN NULL ELSE offering_id END,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ? AND student_id IN (
+            SELECT student_id FROM users WHERE la_teacher_id = ?
+        )
+        """,
+        (decision, teacher_id, decision, booking_id, teacher_id),
+    )
+    connection.commit()
+    connection.close()
+    return result.rowcount == 1
+
+
+# ==========================================================
 # SIGN UP
 # ==========================================================
 
@@ -217,7 +538,7 @@ def signup(student_id, email, password, first_name, last_name):
         """, (
             student_id,
             email,
-            password,
+            generate_password_hash(str(password)),
             first_name,
             last_name
         ))
@@ -275,7 +596,7 @@ def update_user(
         if not user:
             return False, "Student not found."
 
-        if new_password and user["password"] != current_password:
+        if new_password and not _password_matches(user["password"], current_password):
             return False, "Current password is incorrect."
 
         selected_courses = connection.execute("""
@@ -307,7 +628,7 @@ def update_user(
                 last_name,
                 year_level,
                 kainga,
-                new_password,
+                generate_password_hash(str(new_password)),
                 student_id
             ))
         else:

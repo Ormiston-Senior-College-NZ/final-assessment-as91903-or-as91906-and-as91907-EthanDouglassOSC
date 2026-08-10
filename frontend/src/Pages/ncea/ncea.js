@@ -5,7 +5,8 @@
  * grading, and deleting each student's selected achievement standards.
  */
 import { useEffect, useMemo, useState } from "react";
-import AdminView from "../../Components/adminView";
+import { Navigate } from "react-router-dom";
+import ConfirmDialog from "../../Components/confirmDialog";
 import "./ncea.css";
 
 // NCEA grade values and the blank standard editor model
@@ -38,6 +39,7 @@ function StudentNCEA() {
   const [status, setStatus] = useState("loading");
   const [modal, setModal] = useState(null);
   const [notice, setNotice] = useState("");
+  const [confirmation, setConfirmation] = useState(null);
 
   // Load saved results and available standards together.
   const loadData = async () => {
@@ -160,14 +162,19 @@ function StudentNCEA() {
     }
   };
 
-  const deleteStandard = async (standard) => {
-    if (!window.confirm(`Remove standard ${standard.standard_number}?`)) return;
-    const response = await fetch(`/ncea/${studentId}/${standard.id}`, {
-      method: "DELETE",
+  const deleteStandard = (standard) => {
+    setConfirmation({
+      message: `Remove standard ${standard.standard_number}?`,
+      confirmLabel: "Remove standard",
+      action: async () => {
+        const response = await fetch(`/ncea/${studentId}/${standard.id}`, {
+          method: "DELETE",
+        });
+        const data = await response.json();
+        setNotice(data.message);
+        if (response.ok) await loadData();
+      },
     });
-    const data = await response.json();
-    setNotice(data.message);
-    if (response.ok) await loadData();
   };
 
   if (status === "loading")
@@ -186,7 +193,6 @@ function StudentNCEA() {
     <main className="ncea-page">
       <header className="ncea-heading">
         <div>
-          <span className="ncea-eyebrow">Achievement tracker</span>
           <h1>NCEA results</h1>
           <p>Track standards and model your current academic progress.</p>
         </div>
@@ -254,16 +260,6 @@ function StudentNCEA() {
             ))}
           </div>
         </article>
-      </section>
-
-      <section className="ncea-info">
-        <strong>How estimates work</strong>
-        <p>
-          GPA uses N=0, A=2, M=3 and E=4, weighted by credits. Rank score uses
-          the best 80 eligible Level 3 credits, capped at 24 credits per
-          approved subject. Always confirm official results and entry
-          requirements with NZQA and your chosen provider.
-        </p>
       </section>
 
       <div className="ncea-subjects">
@@ -392,13 +388,26 @@ function StudentNCEA() {
           onSave={saveStandard}
         />
       )}
+      {confirmation && (
+        <ConfirmDialog
+          title="Remove standard"
+          message={confirmation.message}
+          confirmLabel={confirmation.confirmLabel}
+          onCancel={() => setConfirmation(null)}
+          onConfirm={() => {
+            const action = confirmation.action;
+            setConfirmation(null);
+            action();
+          }}
+        />
+      )}
     </main>
   );
 }
 
 function NCEA() {
   return localStorage.getItem("isAdmin") === "true" ? (
-    <AdminView page="ncea" />
+    <Navigate to="/admin" replace />
   ) : (
     <StudentNCEA />
   );

@@ -25,7 +25,7 @@
 }
 .admin-eyebrow,
 .admin-card-heading span {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -42,7 +42,7 @@
   text-align: right;
 }
 .admin-total strong {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 25px;
 }
 .admin-total span {
@@ -97,7 +97,7 @@
   cursor: pointer;
 }
 .admin-tabs button.active {
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
 }
 .admin-editor form {
@@ -137,7 +137,7 @@
 .admin-editor select:focus,
 .admin-filters input:focus,
 .admin-filters select:focus {
-  border-color: #c8941c;
+  border-color: #a18702;
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
 }
 .admin-form-actions {
@@ -157,7 +157,7 @@
   white-space: nowrap;
 }
 .admin-primary {
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
 }
 .admin-secondary {
@@ -463,7 +463,7 @@
 .schedule-edit {
   min-height: 38px;
   padding: 0 16px;
-  border: 1px solid #c8941c;
+  border: 1px solid #a18702;
   border-radius: 7px;
   background: #fffaf0;
   color: #8d620d;
@@ -473,7 +473,7 @@
   cursor: pointer;
 }
 .schedule-edit:hover {
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
 }
 .schedule-offering-row {
@@ -507,11 +507,11 @@
   gap: 2px;
 }
 .offering-list button:hover {
-  border-color: #c8941c;
+  border-color: #a18702;
   background: #fffaf0;
 }
 .offering-list button span {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 8px;
   font-weight: 900;
   text-transform: uppercase;
@@ -527,7 +527,7 @@
   position: absolute;
   top: 9px;
   right: 9px;
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 8px;
   font-style: normal;
   font-weight: 800;
@@ -606,7 +606,7 @@
   font-size: 11px;
 }
 .assignment-modal form select:focus {
-  border-color: #c8941c;
+  border-color: #a18702;
   box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
 }
 .assignment-modal form small {
@@ -735,7 +735,7 @@
   font-size: 11px;
 }
 .teacher-profile > strong {
-  color: #9a6a0b;
+  color: #a18702;
   font-size: 12px;
 }
 .teacher-class-grid {
@@ -1147,7 +1147,7 @@
   gap: 3px 8px;
 }
 .teacher-course-groups button:hover {
-  border-color: #c8941c;
+  border-color: #a18702;
 }
 .teacher-course-groups button b {
   display: grid;
@@ -1170,20 +1170,6 @@
   color: #94670b;
   font-style: normal;
   font-weight: 800;
-}
-body.dark-mode .schedule-mode-switch,
-body.dark-mode .teacher-first-scheduler > aside,
-body.dark-mode .teacher-course-groups h4 {
-  border-color: #34363a;
-  background: #24262a;
-}
-body.dark-mode .teacher-first-profile,
-body.dark-mode .teacher-course-groups > section,
-body.dark-mode .teacher-course-groups button,
-body.dark-mode .schedule-mode-switch button.active {
-  border-color: #34363a;
-  background: #1c1d20;
-  color: #eee;
 }
 @media (max-width: 1050px) {
   .schedule-toolbar-actions {

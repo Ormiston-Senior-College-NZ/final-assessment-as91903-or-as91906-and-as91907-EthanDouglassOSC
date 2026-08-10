@@ -1,7 +1,7 @@
 /*
  * SIDEBAR
  * Styles the StudentNET brand, primary navigation, active-link state,
- * settings/logout menu, account identity, theme switch, and mobile layout.
+ * settings/logout menu, account identity, and mobile layout.
  * Interactive selectors include hover, focus, expanded-menu, and dark states.
  */
 .sidebar {
@@ -73,19 +73,17 @@
   text-decoration: none;
   transition:
     background 150ms ease,
-    color 150ms ease,
-    transform 150ms ease;
+    color 150ms ease;
   align-items: center;
 }
 
 .sidebar-link:hover {
   background: #2c2c2b;
   color: #fff;
-  transform: translateX(2px);
 }
 
 .sidebar-link.active {
-  background: #c8941c;
+  background: #a18702;
   color: #fff;
 }
 

@@ -2,7 +2,7 @@
  * GLOBAL STYLES
  * - Defines the shared font family and type scale.
  * - Applies default typography to native HTML controls.
- * - Contains every dark-mode colour override used across the application.
+ * - Provides shared colours and accessibility-sized typography.
  * - Finishes with accessibility-sized typography overrides for legacy pages.
  */
 :root {
@@ -79,251 +79,6 @@ code {
 }
 
 /* Persistent dark appearance */
-body.dark-mode {
-  color-scheme: dark;
-  background: #111214;
-  color: #ececec;
-}
-
-body.dark-mode .app-layout,
-body.dark-mode .app-content,
-body.dark-mode .login-page,
-body.dark-mode .setup-page {
-  background: #111214;
-}
-
-body.dark-mode .topbar,
-body.dark-mode .dashboard-panel,
-body.dark-mode .stat-card:not(.accent),
-body.dark-mode .timetable-card,
-body.dark-mode .settings-card,
-body.dark-mode .admin-card,
-body.dark-mode .schedule-year,
-body.dark-mode .teacher-class-grid article,
-body.dark-mode .ncea-summary > article:not(.rank-card),
-body.dark-mode .ncea-subject-card,
-body.dark-mode .login-card,
-body.dark-mode .setup-card,
-body.dark-mode .assignment-modal,
-body.dark-mode .standard-modal {
-  border-color: #34363a;
-  background: #1c1d20;
-  color: #ededed;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.24);
-}
-
-body.dark-mode .my-courses-section,
-body.dark-mode .course-catalogue,
-body.dark-mode .catalogue-group,
-body.dark-mode .course-modal {
-  border-color: #34363a;
-  background: #1c1d20;
-  color: #ededed;
-}
-
-body.dark-mode .courses-page,
-body.dark-mode .catalogue-course-grid > button,
-body.dark-mode .course-modal h2 {
-  color: #ededed;
-}
-
-body.dark-mode .my-course-grid article,
-body.dark-mode .catalogue-course-grid > button,
-body.dark-mode .course-modal-body dl div {
-  border-color: #34363a;
-  background: #24262a;
-}
-
-body.dark-mode .catalogue-groups {
-  background: #151619;
-}
-
-body.dark-mode .catalogue-course-grid,
-body.dark-mode .catalogue-group > summary,
-body.dark-mode .courses-section-heading,
-body.dark-mode .catalogue-toolbar,
-body.dark-mode .course-modal > header {
-  border-color: #34363a;
-}
-
-body.dark-mode .course-area,
-body.dark-mode .catalogue-course-grid > button:hover {
-  background: #2b261b;
-}
-
-body.dark-mode .course-modal-body > p,
-body.dark-mode .courses-heading p,
-body.dark-mode .my-course-grid > article > p {
-  color: #aaa;
-}
-
-body.dark-mode .topbar h2,
-body.dark-mode .topbar-clock strong,
-body.dark-mode .dashboard,
-body.dark-mode .timetable-page,
-body.dark-mode .settings-page,
-body.dark-mode .admin-page,
-body.dark-mode .ncea-page,
-body.dark-mode .schedule-course b,
-body.dark-mode .teacher-list button,
-body.dark-mode .standards-table article span,
-body.dark-mode .ncea-subject-card h2 {
-  color: #ededed;
-}
-
-body.dark-mode .topbar-lesson,
-body.dark-mode .topbar-lesson strong,
-body.dark-mode .dashboard-heading p,
-body.dark-mode .timetable-heading p,
-body.dark-mode .settings-heading p,
-body.dark-mode .admin-heading p,
-body.dark-mode .ncea-heading p,
-body.dark-mode .lesson-time span,
-body.dark-mode .lesson-details span,
-body.dark-mode .subject-row small,
-body.dark-mode .schedule-course small,
-body.dark-mode .assignment-summary span,
-body.dark-mode .teacher-profile p,
-body.dark-mode .ncea-subject-card header p {
-  color: #a7a8ac;
-}
-
-body.dark-mode .topbar-clock,
-body.dark-mode
-  .topbar-lesson
-  > span:not(:first-child):not(.topbar-lesson-label),
-body.dark-mode .settings-card-heading,
-body.dark-mode .admin-card-heading,
-body.dark-mode .admin-toolbar,
-body.dark-mode .selected-day-heading,
-body.dark-mode .ncea-subject-card > header,
-body.dark-mode .assignment-modal > header,
-body.dark-mode .standard-modal > header {
-  border-color: #34363a;
-}
-
-body.dark-mode input,
-body.dark-mode select,
-body.dark-mode textarea,
-body.dark-mode .settings-form-grid input,
-body.dark-mode .settings-form-grid select,
-body.dark-mode .settings-subject-grid select,
-body.dark-mode .admin-editor input,
-body.dark-mode .admin-editor select,
-body.dark-mode .admin-filters input,
-body.dark-mode .admin-filters select,
-body.dark-mode .assignment-modal form select,
-body.dark-mode .standard-modal input,
-body.dark-mode .standard-modal select,
-body.dark-mode .teacher-room-select select {
-  border-color: #44474d;
-  background: #25272b;
-  color: #eeeeee;
-}
-
-body.dark-mode input:disabled,
-body.dark-mode select:disabled,
-body.dark-mode input[readonly] {
-  background: #202226;
-  color: #aaa;
-}
-
-body.dark-mode .day-selector button,
-body.dark-mode .admin-tabs,
-body.dark-mode .settings-subject-grid label,
-body.dark-mode .subject-row,
-body.dark-mode .lesson-row,
-body.dark-mode .teacher-list button:hover,
-body.dark-mode .offering-list button,
-body.dark-mode .standard-head,
-body.dark-mode .tabs,
-body.dark-mode .gpa-scale span,
-body.dark-mode .credit-breakdown span {
-  border-color: #34363a;
-  background: #24262a;
-  color: #e5e5e5;
-}
-
-body.dark-mode .day-selector button.active,
-body.dark-mode .admin-tabs button.active,
-body.dark-mode .tabs .active {
-  background: #c8941c;
-  color: #fff;
-}
-
-body.dark-mode .schedule-groups {
-  background: #151619;
-}
-
-body.dark-mode .schedule-year > header {
-  background: #252629;
-}
-
-body.dark-mode .schedule-category,
-body.dark-mode .schedule-row,
-body.dark-mode .schedule-offering-row,
-body.dark-mode .deletion-row,
-body.dark-mode .standards-table article,
-body.dark-mode .lesson-row {
-  border-color: #34363a;
-}
-
-body.dark-mode .schedule-category-heading,
-body.dark-mode .ncea-info,
-body.dark-mode .student-summary,
-body.dark-mode .notice-panel {
-  border-color: #594921;
-  background: #2b261b;
-}
-
-body.dark-mode .schedule-category-heading:hover {
-  background: #342c1c;
-}
-
-body.dark-mode .teacher-list button.active,
-body.dark-mode .level-pill,
-body.dark-mode .session-badge,
-body.dark-mode .day-number,
-body.dark-mode .subject-code,
-body.dark-mode .schedule-course > strong,
-body.dark-mode .settings-line-number {
-  background: #3a301b;
-  color: #e2b653;
-}
-
-body.dark-mode table th,
-body.dark-mode .admin-card th {
-  border-color: #34363a;
-  background: #25272a;
-  color: #aaa;
-}
-
-body.dark-mode table td,
-body.dark-mode .admin-card td {
-  border-color: #34363a;
-}
-
-body.dark-mode .account-menu {
-  border-color: #4b4b4b;
-  background: #202124;
-}
-
-body.dark-mode .theme-setting-row p,
-body.dark-mode .deletion-request-row p,
-body.dark-mode .settings-card-heading p,
-body.dark-mode .admin-toolbar p,
-body.dark-mode .ncea-info p {
-  color: #aaa;
-}
-
-body.dark-mode .empty-standards,
-body.dark-mode .admin-state,
-body.dark-mode .ncea-state,
-body.dark-mode .settings-state,
-body.dark-mode .panel-empty {
-  color: #aaa;
-}
-
 /* Shared typography scale — kept last so legacy page styles inherit consistently. */
 .app-content main h1,
 .login-page h1,
@@ -429,5 +184,279 @@ body.dark-mode .panel-empty {
 @media (max-width: 600px) {
   :root {
     --text-page-title: 1.875rem;
+  }
+}
+
+/*
+ * SIMPLE VISUAL SYSTEM
+ * Keeps the portal practical and familiar: flat surfaces, thin borders,
+ * restrained colour, conventional controls, and fewer decorative labels.
+ */
+:root {
+  --page-background: #f5f5f3;
+  --surface: #ffffff;
+  --surface-muted: #f7f7f6;
+  --border: #ddddda;
+  --text: #252525;
+  --muted: #6c6c68;
+  --accent: #a18702;
+  --accent-dark: #a18702;
+  --simple-radius: 6px;
+}
+
+body,
+.app-layout,
+.app-content {
+  background: var(--page-background);
+  color: var(--text);
+}
+
+.app-content {
+  padding: 20px 24px 32px;
+}
+
+.app-content-inner {
+  max-width: 1380px;
+}
+
+/* Use headings as headings, without decorative tracking or slogans. */
+.courses-eyebrow,
+.settings-eyebrow,
+.admin-eyebrow,
+.ncea-eyebrow,
+.setup-eyebrow,
+.teacher-heading > span,
+.admin-view-heading > span,
+.panel-label,
+.topbar-label {
+  display: none !important;
+}
+
+.app-content main h1 {
+  margin-bottom: 6px;
+  letter-spacing: -0.015em !important;
+}
+
+/* Shared sections are flat containers instead of floating cards. */
+.topbar,
+.dashboard-panel,
+.stat-card,
+.timetable-card,
+.settings-card,
+.admin-card,
+.admin-view-panel,
+.teacher-panel,
+.teacher-class-grid article,
+.ncea-summary > article,
+.ncea-subject-card,
+.my-courses-section,
+.course-catalogue,
+.catalogue-group,
+.login-card,
+.setup-card,
+.teacher-password-card {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--simple-radius) !important;
+  background: var(--surface) !important;
+  box-shadow: none !important;
+}
+
+.topbar {
+  min-height: 78px;
+  margin-bottom: 24px;
+  padding: 14px 18px;
+}
+
+.topbar h2 {
+  margin: 0 0 5px;
+  color: #8a650f;
+  font-size: 1.625rem !important;
+  font-weight: 650;
+  letter-spacing: 0 !important;
+}
+
+.topbar-clock {
+  min-width: 96px;
+  padding: 5px 8px 5px 18px;
+}
+
+.topbar-clock strong {
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+.lesson-status-dot {
+  box-shadow: none;
+}
+
+/* A compact, conventional navigation treatment. */
+.sidebar {
+  width: 220px;
+  padding: 22px 14px 16px;
+  flex-basis: 220px;
+}
+
+.sidebar-brand {
+  margin: 0 10px 28px;
+}
+
+.sidebar-nav {
+  gap: 2px;
+}
+
+.sidebar-link {
+  min-height: 40px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  font-weight: 550;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.sidebar-link:hover {
+  transform: none;
+}
+
+.sidebar-link.active {
+  background: var(--accent);
+}
+
+.account-menu,
+.account-menu a,
+.account-menu button {
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+/* Buttons and fields use one predictable shape across every page. */
+.app-content main button,
+.app-content main input,
+.app-content main select,
+.app-content main textarea,
+.login-page button,
+.login-page input,
+.login-page select,
+.setup-page button,
+.setup-page input,
+.setup-page select {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.app-content main button {
+  font-weight: 600;
+}
+
+/* Remove decorative gradients and oversized metric styling. */
+.stat-card.accent,
+.rank-card {
+  border-color: var(--border) !important;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+.stat-card.accent span,
+.stat-card.accent small,
+.rank-card span,
+.rank-card small,
+.rank-card p {
+  color: var(--muted) !important;
+}
+
+.stat-card.accent strong,
+.rank-card strong {
+  color: var(--accent-dark) !important;
+}
+
+.student-summary,
+.schedule-category-heading,
+.ncea-info,
+.course-area {
+  border-radius: 4px !important;
+  background: #f4efe3 !important;
+  box-shadow: none !important;
+}
+
+/* Modals remain clearly layered without the exaggerated floating effect. */
+.assignment-modal,
+.standard-modal,
+.course-modal,
+.teacher-location-modal {
+  border: 1px solid #cfcfcb !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+  }
+
+  .app-content {
+    padding: 14px;
+  }
+}
+
+/* Keep the same restrained hierarchy in dark mode. */
+.kainga-page > header p {
+  margin-top: 0;
+  color: var(--muted);
+}
+
+.kainga-details {
+  display: grid;
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.kainga-details > div {
+  display: flex;
+  min-height: 90px;
+  padding: 18px;
+  border-right: 1px solid var(--border);
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.kainga-details > div:last-child {
+  border-right: 0;
+}
+
+.kainga-details span,
+.kainga-note p {
+  color: var(--muted);
+}
+
+.kainga-note {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.kainga-note h2,
+.kainga-note p {
+  margin: 0;
+}
+
+.kainga-note p {
+  margin-top: 7px;
+}
+
+@media (max-width: 700px) {
+  .kainga-details {
+    grid-template-columns: 1fr;
+  }
+
+  .kainga-details > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .kainga-details > div:last-child {
+    border-bottom: 0;
   }
 }

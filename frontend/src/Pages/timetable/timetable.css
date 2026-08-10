@@ -61,13 +61,13 @@
 }
 
 .day-selector button:hover {
-  border-color: #c8941c;
+  border-color: #a18702;
   transform: translateY(-1px);
 }
 
 .day-selector button.active {
-  border-color: #c8941c;
-  background: #c8941c;
+  border-color: #a18702;
+  background: #a18702;
   color: #fff;
 }
 
@@ -114,21 +114,20 @@
 .session-badge {
   display: inline-grid;
   place-items: center;
-  border-radius: 9px;
-  background: #fff3d7;
-  color: #94670b;
-  font-weight: 800;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
 }
 
 .day-number {
-  width: 44px;
-  height: 44px;
-  font-size: 20px;
+  width: auto;
+  height: auto;
+  font-size: 16px;
 }
 
 .session-badge {
-  width: 32px;
-  height: 32px;
+  width: auto;
+  height: auto;
 }
 
 .table-scroll {

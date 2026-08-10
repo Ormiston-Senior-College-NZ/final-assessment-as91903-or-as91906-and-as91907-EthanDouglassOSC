@@ -5,7 +5,7 @@
  * with teacher, room, line, and time information.
  */
 import { useEffect, useMemo, useState } from "react";
-import AdminView from "../../Components/adminView";
+import { Navigate } from "react-router-dom";
 import "./timetable.css";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -86,7 +86,6 @@ function StudentTimetable() {
       <section className="timetable-card" aria-live="polite">
         <div className="selected-day-heading">
           <div>
-            <span className="day-number">{selectedDay}</span>
             <div>
               <h2>{DAYS[selectedDay - 1]}</h2>
               <p>
@@ -161,7 +160,7 @@ function StudentTimetable() {
 
 function Timetable() {
   return localStorage.getItem("isAdmin") === "true" ? (
-    <AdminView page="timetable" />
+    <Navigate to="/admin" replace />
   ) : (
     <StudentTimetable />
   );

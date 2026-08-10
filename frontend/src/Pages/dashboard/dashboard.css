@@ -1,0 +1,296 @@
+/*
+ * STUDENT DASHBOARD
+ * Covers the page heading, GPA/rank-score feature cards, progress displays,
+ * today's lesson timeline, subject summary rows, empty states, links,
+ * loading state, and tablet/mobile grid changes.
+ */
+.dashboard {
+  color: #202020;
+}
+
+.dashboard-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 2px 0 22px;
+}
+
+.dashboard-heading h1 {
+  margin: 6px 0 7px;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.035em;
+}
+
+.dashboard-heading p {
+  margin: 0;
+  color: #747474;
+}
+
+.student-summary {
+  display: flex;
+  min-width: 170px;
+  padding: 14px 18px;
+  border: 1px solid #eadfca;
+  border-radius: 12px;
+  background: #fffaf0;
+  flex-direction: column;
+  gap: 4px;
+  justify-self: end;
+}
+
+.student-summary span {
+  color: #81745d;
+  font-size: 12px;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card,
+.dashboard-panel {
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.055);
+}
+
+.stat-card {
+  display: flex;
+  min-height: 112px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+  flex-direction: column;
+}
+
+.stat-card.accent {
+  border-color: #e8e8e8;
+  background: #fff;
+  color: #252525;
+}
+
+.stat-card > span {
+  color: #787878;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stat-card.accent > span,
+.stat-card.accent small {
+  color: #787878;
+}
+
+.stat-card > strong {
+  margin: auto 0 2px;
+  color: #a18702;
+  font-size: 36px;
+  line-height: 1.1;
+}
+
+.stat-card > strong.score-number {
+  font-size: 29px;
+}
+
+.stat-card.accent > strong {
+  color: #a18702;
+}
+
+.stat-card > strong.stat-text {
+  overflow: hidden;
+  font-size: 21px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stat-card small {
+  color: #8a8a8a;
+}
+
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.15fr) minmax(260px, 0.85fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.schedule-panel {
+  min-width: 0;
+}
+
+.dashboard-panel {
+  padding: 22px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+  margin: 4px 0 0;
+  font-size: 20px;
+}
+
+.panel-heading a {
+  color: #a18702;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lesson-list {
+  border-top: 1px solid #eeeeee;
+}
+
+.lesson-row {
+  display: grid;
+  grid-template-columns: 65px minmax(150px, 1fr) minmax(100px, auto);
+  gap: 14px;
+  padding: 16px 2px;
+  border-bottom: 1px solid #eeeeee;
+  align-items: center;
+}
+
+.lesson-row:last-child {
+  border-bottom: 0;
+}
+
+.lesson-time,
+.lesson-details,
+.subject-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.lesson-time strong {
+  font-size: 14px;
+}
+
+.lesson-time span,
+.lesson-details span,
+.subject-row small {
+  color: #858585;
+  font-size: 12px;
+}
+
+.lesson-room {
+  color: #686868;
+  font-size: 13px;
+  text-align: right;
+}
+
+.dashboard-side {
+  display: grid;
+  gap: 20px;
+}
+
+.subject-list {
+  display: grid;
+  gap: 8px;
+}
+
+.subject-row {
+  display: flex;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fafafa;
+  gap: 11px;
+  align-items: center;
+}
+
+.subject-row strong {
+  font-size: 13px;
+}
+
+.tutorial-summary-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tutorial-summary-heading > span {
+  color: #787878;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tutorial-summary-heading a {
+  color: #a18702;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tutorial-summary-card small {
+  text-transform: capitalize;
+}
+
+.tutorial-summary-card .tutorial-denied-note {
+  margin-top: 4px;
+  color: #a52e2e;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.panel-empty,
+.dashboard-state {
+  padding: 60px 24px;
+  color: #777;
+  text-align: center;
+}
+
+.dashboard-state.error {
+  color: #a52b2b;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-heading {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .dashboard-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 700px) {
+  .dashboard-heading {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .student-summary {
+    width: 100%;
+    box-sizing: border-box;
+    justify-self: stretch;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-row {
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .lesson-room {
+    grid-column: 2;
+    text-align: left;
+  }
+}

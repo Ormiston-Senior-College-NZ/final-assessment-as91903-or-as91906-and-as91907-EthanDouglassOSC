@@ -1,0 +1,168 @@
+/* Student tutorial booking: compact date navigation and one clear form surface. */
+.tutorials-page { max-width: 1120px; }
+.tutorials-heading h1 { margin-bottom: 4px; }
+.tutorials-heading p,
+.tutorial-booking-panel header p { margin: 0; color: #70706c; }
+
+.tutorial-date-list {
+  display: grid;
+  margin: 22px 0 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.tutorial-date-list button {
+  display: grid;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid #dededb;
+  border-radius: 5px;
+  background: #fff;
+  color: #292929;
+  text-align: left;
+  cursor: pointer;
+  align-content: space-between;
+  gap: 8px;
+}
+.tutorial-date-list button:hover { border-color: #aaa9a4; }
+.tutorial-date-list button.active {
+  border-color: #a18702;
+  background: #fffaf0;
+  box-shadow: inset 3px 0 #a18702;
+}
+.tutorial-status { color: #777; font-size: 13px; text-transform: capitalize; }
+.tutorial-status.approved { color: #26733a; }
+.tutorial-status.denied { color: #a52e2e; }
+.tutorial-status.pending { color: #8a650f; }
+
+.tutorial-booking-panel {
+  overflow: hidden;
+  border: 1px solid #dededb;
+  border-radius: 6px;
+  background: #fff;
+}
+.tutorial-booking-panel > header {
+  padding: 18px 20px;
+  border-bottom: 1px solid #e5e5e2;
+}
+.tutorial-booking-panel h2 { margin: 0 0 5px; }
+.tutorial-booking-panel form {
+  display: grid;
+  padding: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.tutorial-booking-panel label {
+  display: flex;
+  color: #454542;
+  font-weight: 600;
+  flex-direction: column;
+  gap: 7px;
+}
+.tutorial-booking-panel input,
+.tutorial-booking-panel select,
+.tutorial-booking-panel textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cfcfcb;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #222;
+}
+.tutorial-booking-panel input:focus,
+.tutorial-booking-panel select:focus,
+.tutorial-booking-panel textarea:focus {
+  border-color: #a18702;
+  outline: 2px solid rgba(184, 134, 24, 0.14);
+}
+.tutorial-booking-panel textarea { min-height: 96px; resize: vertical; }
+.tutorial-details-field,
+.tutorial-booking-panel footer { grid-column: 1 / -1; }
+
+.tutorial-choice-field {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 8px;
+}
+.tutorial-choice-field legend {
+  width: 100%;
+  margin-bottom: 8px;
+  color: #454542;
+  font-weight: 700;
+}
+.tutorial-choice-field label {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 1px solid #d7d7d3;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #383835;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+.tutorial-choice-field label:hover { border-color: #aaa9a4; background: #fafaf8; }
+.tutorial-choice-field label:has(input:checked) {
+  border-color: #a18702;
+  background: #fff8e8;
+  color: #76550c;
+}
+.tutorial-choice-field input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.tutorial-offering-summary {
+  display: grid;
+  padding: 14px 16px;
+  border-left: 3px solid #a18702;
+  border-radius: 3px;
+  background: #f7f7f4;
+  grid-column: 1 / -1;
+  gap: 3px;
+}
+.tutorial-offering-summary span,
+.tutorial-empty { color: #6f6f6b; }
+.tutorial-booking-panel footer {
+  display: flex;
+  min-height: 42px;
+  padding-top: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.tutorial-booking-panel footer button {
+  padding: 11px 16px;
+  border: 1px solid #a18702;
+  border-radius: 4px;
+  background: #a18702;
+  color: #fff;
+  cursor: pointer;
+}
+.tutorial-booking-panel footer button:disabled { opacity: 0.65; cursor: wait; }
+.tutorial-message { color: #5e5e5a; }
+
+@media (max-width: 900px) {
+  .tutorial-date-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .tutorial-booking-panel form { grid-template-columns: 1fr; padding: 16px; }
+  .tutorial-date-list { grid-template-columns: 1fr; }
+  .tutorial-choice-field { grid-template-columns: 1fr; }
+  .tutorial-booking-panel footer { align-items: stretch; flex-direction: column; }
+}

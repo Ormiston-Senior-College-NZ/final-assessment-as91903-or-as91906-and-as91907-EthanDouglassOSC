@@ -1,0 +1,283 @@
+/*
+ * FIRST-TIME SETUP
+ * Covers the split-screen introduction, progress steps, profile fields,
+ * Kāinga and LA choices, timetable-line course selection, navigation buttons,
+ * validation feedback, completion summary, and mobile presentation.
+ */
+.setup-page {
+  height: 100vh;
+  display: grid;
+  padding: 20px;
+  overflow: hidden;
+  box-sizing: border-box;
+  place-items: center;
+  background: #f4f4f4;
+}
+
+.setup-card {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 40px);
+  padding: clamp(24px, 4vh, 38px) clamp(26px, 5vw, 46px);
+  border: 1px solid #e9e2d6;
+  border-radius: 18px;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(49, 38, 16, 0.09);
+}
+
+.setup-eyebrow {
+  color: #a18702;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.setup-card h1 {
+  margin: 7px 0 0;
+  color: #242424;
+  font-size: clamp(28px, 5vw, 38px);
+  letter-spacing: -0.035em;
+}
+
+.setup-card > p {
+  margin: 7px 0 20px;
+  color: #747474;
+}
+
+.progress {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 25px;
+}
+
+.progress::before {
+  position: absolute;
+  top: 17px;
+  right: 16.6%;
+  left: 16.6%;
+  height: 2px;
+  background: #e8e3d9;
+  content: "";
+}
+
+.progress-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 7px;
+  color: #999;
+}
+
+.progress-step span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #e4e0d8;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  place-items: center;
+}
+
+.progress-step small {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.progress-step.active {
+  color: #96670a;
+}
+
+.progress-step.active span {
+  border-color: #a18702;
+  background: #a18702;
+  color: #fff;
+}
+
+.setup-card h2 {
+  margin: 0 0 17px;
+  color: #292929;
+  font-size: 23px;
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.kainga-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.setup-card button {
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1px solid #dedede;
+  border-radius: 10px;
+  background: #fff;
+  color: #3b3b3b;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.setup-card button:hover:not(:disabled) {
+  border-color: #a18702;
+  transform: translateY(-1px);
+}
+
+.setup-card button.selected {
+  border-color: #a18702;
+  background: #fff5dc;
+  color: #8a5e08;
+  box-shadow: inset 0 0 0 1px #a18702;
+}
+
+.setup-card button.next {
+  min-width: 125px;
+  border-color: #a18702;
+  background: #a18702;
+  color: #fff;
+}
+
+.setup-card button.next:hover:not(:disabled) {
+  background: #b78114;
+}
+
+.setup-card button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.subject {
+  display: grid;
+  grid-template-columns: 125px minmax(0, 1fr);
+  gap: 14px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.subject label {
+  display: flex;
+  color: #565656;
+  font-size: 13px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subject label small {
+  color: #929292;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.subject select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 40px 0 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  outline: none;
+  background: #fff;
+  color: #303030;
+  font: inherit;
+}
+
+.subject select:focus {
+  border-color: #a18702;
+  box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.13);
+}
+
+.la-teacher-field {
+  display: flex;
+  margin-top: 16px;
+  text-align: left;
+  flex-direction: column;
+  gap: 6px;
+}
+.la-teacher-field > span {
+  color: #565656;
+  font-size: 12px;
+  font-weight: 800;
+}
+.la-teacher-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  outline: none;
+  background: #fff;
+  color: #303030;
+  font: inherit;
+  font-size: 12px;
+}
+.la-teacher-field select:focus {
+  border-color: #a18702;
+  box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.13);
+}
+.la-teacher-field select:disabled {
+  background: #f3f3f3;
+  color: #999;
+}
+.la-teacher-field small {
+  color: #8b8b8b;
+  font-size: 9px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.buttons-end {
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .setup-page {
+    height: 100vh;
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .setup-card {
+    height: 100vh;
+    max-height: 100vh;
+    padding: 28px 20px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kainga-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .subject {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .buttons button {
+    flex: 1;
+  }
+}

@@ -1,0 +1,207 @@
+/*
+ * TIMETABLE PAGE
+ * Styles the heading, weekday selector, active/today states, selected-day card,
+ * lesson time column, subject/teacher/room details, current-lesson emphasis,
+ * empty/loading states, and responsive single-column lesson rows.
+ */
+.timetable-page {
+  color: #1f1f1f;
+}
+
+.timetable-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.timetable-heading h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.timetable-heading p {
+  margin: 8px 0 0;
+  color: #6b6b6b;
+}
+
+.week-label {
+  padding: 8px 14px;
+  border: 1px solid #ead5a7;
+  border-radius: 999px;
+  background: #fff8e8;
+  color: #855c08;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.day-selector {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 28px 0 20px;
+}
+
+.day-selector button {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 16px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: #fff;
+  color: #303030;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.day-selector button:hover {
+  border-color: #a18702;
+  transform: translateY(-1px);
+}
+
+.day-selector button.active {
+  border-color: #a18702;
+  background: #a18702;
+  color: #fff;
+}
+
+.day-selector button span {
+  font-weight: 700;
+}
+
+.day-selector button small {
+  color: inherit;
+  opacity: 0.72;
+}
+
+.timetable-card {
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+}
+
+.selected-day-heading {
+  padding: 22px 24px;
+  border-bottom: 1px solid #ededed;
+}
+
+.selected-day-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.selected-day-heading h2,
+.selected-day-heading p {
+  margin: 0;
+}
+
+.selected-day-heading p {
+  margin-top: 3px;
+  color: #747474;
+  font-size: 14px;
+}
+
+.day-number,
+.session-badge {
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
+}
+
+.day-number {
+  width: auto;
+  height: auto;
+  font-size: 16px;
+}
+
+.session-badge {
+  width: auto;
+  height: auto;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.timetable-table th {
+  padding: 13px 18px;
+  background: #faf8f3;
+  color: #6b6049;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.timetable-table td {
+  padding: 17px 18px;
+  border-top: 1px solid #efefef;
+  vertical-align: middle;
+}
+
+.timetable-table tbody tr:hover {
+  background: #fffdf8;
+}
+
+.timetable-table td small {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+}
+
+.time-cell {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.timetable-message {
+  display: flex;
+  min-height: 210px;
+  padding: 30px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #747474;
+  text-align: center;
+}
+
+.timetable-message strong {
+  color: #333;
+  font-size: 18px;
+}
+
+.timetable-message.error {
+  color: #a52b2b;
+}
+
+@media (max-width: 760px) {
+  .day-selector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timetable-heading {
+    flex-direction: column;
+  }
+
+  .timetable-table th,
+  .timetable-table td {
+    padding: 13px;
+  }
+}

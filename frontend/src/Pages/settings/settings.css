@@ -1,0 +1,332 @@
+/*
+ * ACCOUNT SETTINGS
+ * Styles the profile form, LA teacher choice, five timetable-line selectors,
+ * save feedback, deletion request/cancellation actions,
+ * signed-out/loading states, and responsive form/card layouts.
+ */
+.settings-page {
+  color: #242424;
+}
+
+.settings-heading {
+  display: flex;
+  padding: 8px 0 26px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.settings-eyebrow,
+.settings-card-heading span {
+  color: #a18702;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.settings-heading h1 {
+  margin: 5px 0;
+  font-size: 34px;
+}
+.settings-heading p {
+  margin: 0;
+  color: #777;
+}
+
+.settings-avatar {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #fff1cf;
+  color: #956708;
+  font-weight: 900;
+  place-items: center;
+}
+
+.settings-page form {
+  display: grid;
+  gap: 18px;
+}
+
+.settings-card {
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.055);
+}
+
+.settings-card-heading {
+  display: flex;
+  padding: 20px 22px;
+  border-bottom: 1px solid #ececec;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.settings-card-heading h2 {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+.settings-card-heading p {
+  margin: 0;
+  color: #828282;
+  font-size: 12px;
+}
+
+.settings-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 24px 22px 26px;
+}
+
+.settings-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.settings-form-grid label > span {
+  color: #4e4e4e;
+  font-size: 12px;
+  font-weight: 700;
+}
+.settings-form-grid label small {
+  color: #929292;
+  font-size: 10px;
+}
+
+.settings-form-grid input,
+.settings-form-grid select {
+  width: 100%;
+  min-height: 45px;
+  padding: 0 13px;
+  border: 1px solid #dcdcdc;
+  border-radius: 9px;
+  outline: 0;
+  box-sizing: border-box;
+  background: #fff;
+  color: #292929;
+  font: inherit;
+  font-size: 13px;
+}
+
+.settings-form-grid input:focus,
+.settings-form-grid select:focus {
+  border-color: #a18702;
+  box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
+}
+
+.settings-form-grid input:disabled {
+  background: #f7f7f7;
+  color: #888;
+}
+.password-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.settings-subject-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 22px;
+}
+
+.settings-subject-grid label {
+  display: grid;
+  grid-template-columns: 38px 110px minmax(0, 1fr);
+  padding: 10px;
+  border-radius: 10px;
+  background: #fafafa;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-line-number {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff0cc;
+  color: #94670b;
+  font-weight: 900;
+  place-items: center;
+}
+
+.settings-line-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-line-copy strong {
+  font-size: 12px;
+}
+.settings-line-copy small {
+  color: #8b8b8b;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.settings-subject-grid select {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  font: inherit;
+  font-size: 11px;
+}
+
+.settings-subject-grid select:focus {
+  border-color: #a18702;
+  box-shadow: 0 0 0 3px rgba(200, 148, 28, 0.12);
+}
+
+.settings-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px 170px;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-actions > .logout-button,
+.settings-actions > .save-button {
+  width: 170px;
+  min-width: 170px;
+  max-width: 170px;
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 9px;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  flex: 0 0 170px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.save-button {
+  border: 1px solid #a18702;
+  background: #a18702;
+  color: #fff;
+}
+.save-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.logout-button {
+  border: 1px solid #e0b7b7;
+  background: #fff;
+  color: #a34343;
+}
+.danger-zone {
+  border-color: #edd1d1;
+}
+.danger-zone .settings-card-heading span {
+  color: #a34343;
+}
+.deletion-request-row {
+  display: flex;
+  padding: 22px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.deletion-request-row strong {
+  font-size: 13px;
+}
+.deletion-request-row p {
+  max-width: 680px;
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.request-deletion-button,
+.cancel-deletion-button {
+  min-width: 145px;
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.request-deletion-button {
+  border: 1px solid #c55a5a;
+  background: #fff0f0;
+  color: #9f3030;
+}
+.cancel-deletion-button {
+  border: 1px solid #d3d3d3;
+  background: #f4f4f4;
+  color: #555;
+}
+.request-deletion-button:disabled,
+.cancel-deletion-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.settings-message {
+  color: #438153;
+  font-size: 12px;
+  font-weight: 700;
+}
+.settings-message.error {
+  color: #ad3c3c;
+}
+.settings-state {
+  padding: 70px 20px;
+  color: #777;
+  text-align: center;
+}
+.settings-state.error {
+  color: #ad3c3c;
+}
+
+@media (max-width: 700px) {
+  .settings-form-grid,
+  .password-grid,
+  .settings-subject-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-subject-grid label {
+    grid-template-columns: 36px 96px minmax(0, 1fr);
+  }
+  .settings-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .settings-actions {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .settings-actions > .logout-button,
+  .settings-actions > .save-button {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex-basis: 48px;
+  }
+  .settings-message {
+    min-height: 18px;
+    margin: 0;
+  }
+  .deletion-request-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

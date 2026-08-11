@@ -16,7 +16,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "studentnet.db")
 _teacher_codes_ready = False
 
-
 def get_connection():
     global _teacher_codes_ready
     connection = sqlite3.connect(DATABASE)
@@ -40,6 +39,7 @@ def get_connection():
         rows = connection.execute("SELECT id, name FROM teachers").fetchall()
         for teacher_id, code in build_teacher_codes(rows).items():
             connection.execute("UPDATE teachers SET code = ? WHERE id = ?", (code, teacher_id))
+
         connection.executescript("""
             CREATE TABLE IF NOT EXISTS tutorial_offerings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

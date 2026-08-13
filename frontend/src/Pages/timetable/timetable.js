@@ -4,9 +4,9 @@
  * full schedule to the chosen day, and renders LA/iTime plus subject sessions
  * with teacher, room, line, and time information.
  */
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
+import { breakName, durationMinutes, formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
 import "./timetable.css";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -135,8 +135,22 @@ function StudentTimetable() {
                 </tr>
               </thead>
               <tbody>
-                {dayLessons.map((lesson) => (
-                  <tr key={`${lesson.day}-${lesson.session}-${lesson.code}`}>
+                {dayLessons.map((lesson, index) => {
+                  const previousLesson = dayLessons[index - 1];
+                  const breakMinutes = previousLesson
+                    ? durationMinutes(previousLesson.end_time, lesson.start_time)
+                    : 0;
+                  const lessonMinutes = durationMinutes(lesson.start_time, lesson.end_time);
+                  return <Fragment key={`${lesson.day}-${lesson.session}-${lesson.code}`}>
+                  {breakMinutes > 5 && (
+                    <tr className="timetable-break-row">
+                      <td colSpan="5">
+                        <strong>{breakName(previousLesson.end_time, lesson.start_time)}</strong>
+                        <span>{formatTimeRange(previousLesson.end_time, lesson.start_time, timeFormat)} · {breakMinutes} minutes</span>
+                      </td>
+                    </tr>
+                  )}
+                  <tr className="timetable-lesson-row" style={{ height: `${Math.max(68, 40 + lessonMinutes * 0.8)}px` }}>
                     <td>
                       <span className="session-badge">{lesson.session}</span>
                     </td>
@@ -150,7 +164,8 @@ function StudentTimetable() {
                     <td>{lesson.teacher || "To be confirmed"}</td>
                     <td>{lesson.room_name || lesson.room || "TBC"}</td>
                   </tr>
-                ))}
+                  </Fragment>;
+                })}
               </tbody>
             </table>
           </div>

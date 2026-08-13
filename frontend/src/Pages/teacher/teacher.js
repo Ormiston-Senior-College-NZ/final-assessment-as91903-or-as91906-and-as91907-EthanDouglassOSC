@@ -1,7 +1,7 @@
 /* Teacher dashboard variants for overview, timetable, tutorials, and settings. */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ConfirmDialog from "../../Components/confirmDialog";
-import { formatTime, formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
+import { breakName, durationMinutes, formatTime, formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
 import "./teacher.css";
 
 function TeacherPage({ view = "dashboard" }) {
@@ -177,10 +177,6 @@ function Timetable({ lessons, rooms, slots, onLocationChange }) {
       year: "numeric",
     });
   const displayTime = (time) => formatTime(time, timeFormat);
-  const minutes = (time) => {
-    const [hours, value] = time.split(":").map(Number);
-    return hours * 60 + value;
-  };
   return (
     <section className="teacher-calendar">
       <div className="teacher-week-step">
@@ -230,14 +226,16 @@ function Timetable({ lessons, rooms, slots, onLocationChange }) {
                     );
                     const previousSlot = daySlots[slotIndex - 1];
                     const breakMinutes = previousSlot
-                      ? minutes(slot.start_time) - minutes(previousSlot.end_time)
+                      ? durationMinutes(previousSlot.end_time, slot.start_time)
                       : 0;
+                    const slotMinutes = durationMinutes(slot.start_time, slot.end_time);
+                    const slotHeight = Math.max(72, 40 + slotMinutes * 1.15);
                     return (
                       <div key={`${slot.day}-${slot.line}`}>
                         {breakMinutes > 5 && (
                           <div className="teacher-schedule-break">
-                            <span>Break</span>
-                            <small>{breakMinutes} minutes</small>
+                            <span>{breakName(previousSlot.end_time, slot.start_time)}</span>
+                            <small>{formatTimeRange(previousSlot.end_time, slot.start_time, timeFormat)} · {breakMinutes} minutes</small>
                           </div>
                         )}
                         <div className="teacher-time-slot">
@@ -245,11 +243,13 @@ function Timetable({ lessons, rooms, slots, onLocationChange }) {
                             <WeeklyLesson
                               lesson={lesson}
                               displayTime={displayTime}
+                              height={slotHeight}
                               onEdit={() => setSelectedLesson(lesson)}
                             />
                           ) : (
                             <div
                               className={`teacher-empty-slot ${slot.line === 6 ? "itime" : ""}`}
+                              style={{ minHeight: `${slotHeight}px` }}
                             >
                               <header>
                                 <b>
@@ -293,9 +293,9 @@ function Timetable({ lessons, rooms, slots, onLocationChange }) {
   );
 }
 
-function WeeklyLesson({ lesson, displayTime, onEdit }) {
+function WeeklyLesson({ lesson, displayTime, height, onEdit }) {
   return (
-    <section className="teacher-week-lesson">
+    <section className="teacher-week-lesson" style={{ minHeight: `${height}px` }}>
       <header>
         <b>Line {lesson.line}</b>
         <span>

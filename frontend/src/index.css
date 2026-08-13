@@ -78,7 +78,6 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-/* Persistent dark appearance */
 /* Shared typography scale — kept last so legacy page styles inherit consistently. */
 .app-content main h1,
 .login-page h1,
@@ -200,7 +199,6 @@ code {
   --text: #252525;
   --muted: #6c6c68;
   --accent: #a18702;
-  --accent-dark: #a18702;
   --simple-radius: 6px;
 }
 
@@ -244,7 +242,6 @@ body,
 .timetable-card,
 .settings-card,
 .admin-card,
-.admin-view-panel,
 .teacher-panel,
 .ncea-summary > article,
 .ncea-subject-card,
@@ -430,7 +427,7 @@ body,
 
 .stat-card.accent strong,
 .rank-card strong {
-  color: var(--accent-dark) !important;
+  color: var(--accent) !important;
 }
 
 .student-summary,
@@ -462,7 +459,7 @@ body,
   }
 }
 
-/* Keep the same restrained hierarchy in dark mode. */
+/* Keep the same restrained hierarchy on the Kāinga administration view. */
 .kainga-page > header p {
   margin-top: 0;
   color: var(--muted);

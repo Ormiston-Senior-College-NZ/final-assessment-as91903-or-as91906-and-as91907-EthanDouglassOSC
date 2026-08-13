@@ -22,76 +22,31 @@
   margin: 0;
   color: #777;
 }
-.admin-view-heading a,
-.admin-view-panel a {
+.admin-view-heading a {
   color: #a18702;
   font-weight: 800;
   text-decoration: none;
 }
-.admin-view-stats {
-  display: grid;
-  margin-bottom: 18px;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-.admin-view-stats article,
-.admin-view-panel,
-.admin-line-grid article,
 .admin-category-grid article {
   border: 1px solid #e3e3e3;
   border-radius: 13px;
   background: #fff;
   box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
 }
-.admin-view-stats article {
-  display: flex;
-  padding: 22px;
-  flex-direction: column;
-}
-.admin-view-stats strong {
-  color: #a18702;
-  font-size: 28px;
-}
-.admin-view-stats span {
-  color: #777;
-}
-.admin-view-panel {
-  padding: 23px;
-}
-.admin-view-panel h2 {
-  margin: 0 0 7px;
-}
-.admin-view-panel p {
-  margin: 0 0 16px;
-  color: #777;
-}
-.admin-line-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-.admin-line-grid article {
-  overflow: hidden;
-}
-.admin-line-grid article > header,
 .admin-category-grid article > header {
   display: flex;
   padding: 16px;
   border-bottom: 1px solid #eee;
   flex-direction: column;
 }
-.admin-line-grid header span,
-.admin-line-grid header small,
 .admin-category-grid header span {
   color: #888;
 }
-.admin-line-grid article > div,
 .admin-category-grid article > div {
   display: grid;
   padding: 12px;
   gap: 8px;
 }
-.admin-line-class,
 .admin-category-grid article > div > div {
   display: grid;
   padding: 10px;
@@ -99,11 +54,9 @@
   background: #f7f7f7;
   gap: 3px;
 }
-.admin-line-class b,
 .admin-category-grid b {
   color: #a18702;
 }
-.admin-line-class small,
 .admin-category-grid small {
   color: #888;
 }

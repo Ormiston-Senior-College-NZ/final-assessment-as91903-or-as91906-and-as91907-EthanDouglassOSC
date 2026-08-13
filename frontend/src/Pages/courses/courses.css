@@ -176,6 +176,33 @@
   background: #f7f7f7;
   gap: 10px;
 }
+.catalogue-year-group {
+  overflow: hidden;
+  border: 1px solid #dedede;
+  border-radius: 11px;
+  background: #f1f1ef;
+}
+.catalogue-year-group > summary {
+  display: flex;
+  padding: 15px 17px;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.catalogue-year-group > summary::-webkit-details-marker { display: none; }
+.catalogue-year-group > summary > div { display: flex; align-items: baseline; gap: 10px; }
+.catalogue-year-group > summary h3 { margin: 0; font-size: 18px; }
+.catalogue-year-group > summary span { color: #777; font-size: 13px; }
+.catalogue-year-group > summary > i {
+  color: #a18702;
+  font-size: 19px;
+  font-style: normal;
+  transition: transform 150ms;
+}
+.catalogue-year-group[open] > summary > i { transform: rotate(180deg); }
+.catalogue-year-areas { display: grid; padding: 0 10px 10px; gap: 8px; }
 .catalogue-group {
   overflow: hidden;
   border: 1px solid #e2e2e2;
@@ -193,7 +220,7 @@
 .catalogue-group > summary::-webkit-details-marker {
   display: none;
 }
-.catalogue-group summary h3 {
+.catalogue-group summary h4 {
   margin: 0;
   font-size: 13px;
 }

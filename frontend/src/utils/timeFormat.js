@@ -37,6 +37,19 @@ export function formatTimeRange(start, end, format = getTimeFormat()) {
   return `${formatTime(start, format)}–${formatTime(end, format)}`;
 }
 
+export function timeToMinutes(value) {
+  const [hours, minutes] = String(value || "").split(":").map(Number);
+  return Number.isFinite(hours) && Number.isFinite(minutes) ? hours * 60 + minutes : 0;
+}
+
+export function durationMinutes(start, end) {
+  return Math.max(0, timeToMinutes(end) - timeToMinutes(start));
+}
+
+export function breakName(start, end) {
+  return timeToMinutes(end) >= 12 * 60 ? "Lunch break" : "Morning break";
+}
+
 export function formatClock(date, format = getTimeFormat()) {
   return date.toLocaleTimeString("en-NZ", {
     hour: "2-digit",

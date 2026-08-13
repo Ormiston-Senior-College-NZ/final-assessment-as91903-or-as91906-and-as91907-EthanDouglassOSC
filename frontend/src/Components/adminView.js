@@ -1,29 +1,13 @@
 /*
  * ADMINISTRATOR PAGE VARIANTS
- * Provides school-wide versions of the shared Dashboard, Timetable, NCEA,
- * Courses, Kāinga, and Settings routes. Data comes from the existing admin
- * scheduling endpoints and is presented differently for each requested page.
+ * Provides the administrator-specific Courses and Kāinga views that remain in
+ * the role's navigation. Data comes from the existing scheduling endpoints.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./adminView.css";
 
 const PAGE_COPY = {
-  dashboard: [
-    "Administration overview",
-    "Dashboard",
-    "A school-wide view of courses, staffing, spaces, and requests.",
-  ],
-  timetable: [
-    "Master schedule",
-    "Timetable",
-    "Review every scheduled class by timetable line.",
-  ],
-  ncea: [
-    "NCEA administration",
-    "NCEA",
-    "Review the curriculum catalogue available for student achievement tracking.",
-  ],
   courses: [
     "Curriculum management",
     "Courses",
@@ -41,9 +25,7 @@ function AdminView({ page }) {
   const studentId = localStorage.getItem("studentId");
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
-  const [rooms, setRooms] = useState([]);
   const [assignments, setAssignments] = useState([]);
-  const [requests, setRequests] = useState([]);
   const [status, setStatus] = useState("loading");
 
   // Load the school-wide datasets used across all administrator variants.
@@ -55,18 +37,15 @@ function AdminView({ page }) {
     Promise.all([
       fetch("/courses", { signal: controller.signal }),
       fetch("/admin/scheduling", options),
-      fetch("/admin/account-deletions", options),
     ])
       .then(async (responses) => {
         if (responses.some((response) => !response.ok)) throw new Error();
         return Promise.all(responses.map((response) => response.json()));
       })
-      .then(([courseData, schedulingData, requestData]) => {
+      .then(([courseData, schedulingData]) => {
         setCourses(courseData);
         setTeachers(schedulingData.teachers);
-        setRooms(schedulingData.rooms);
         setAssignments(schedulingData.assignments);
-        setRequests(requestData);
         setStatus("ready");
       })
       .catch((error) => {
@@ -76,23 +55,7 @@ function AdminView({ page }) {
     return () => controller.abort();
   }, [studentId]);
 
-  // Lookup maps and grouped records shared by the page variants.
-  const courseMap = useMemo(
-    () => new Map(courses.map((course) => [course.id, course])),
-    [courses],
-  );
-  const teacherMap = useMemo(
-    () => new Map(teachers.map((teacher) => [teacher.id, teacher])),
-    [teachers],
-  );
-  const roomMap = useMemo(
-    () => new Map(rooms.map((room) => [room.id, room])),
-    [rooms],
-  );
-  const pendingRequests = requests.filter(
-    (request) => request.status === "pending",
-  );
-  const copy = PAGE_COPY[page] || PAGE_COPY.dashboard;
+  const copy = PAGE_COPY[page] || PAGE_COPY.courses;
 
   if (status === "loading")
     return <div className="admin-view-state">Loading administration data…</div>;
@@ -102,17 +65,6 @@ function AdminView({ page }) {
         Could not load administration data.
       </div>
     );
-
-  const context = {
-    courses,
-    teachers,
-    rooms,
-    assignments,
-    pendingRequests,
-    courseMap,
-    teacherMap,
-    roomMap,
-  };
 
   return (
     <main className="admin-view-page">
@@ -124,118 +76,9 @@ function AdminView({ page }) {
         <Link to="/admin">Open admin workspace →</Link>
       </header>
 
-      {page === "dashboard" && <AdminDashboard {...context} />}
-      {page === "timetable" && <AdminTimetable {...context} />}
-      {page === "ncea" && <AdminNcea {...context} />}
-      {page === "courses" && <AdminCourses {...context} />}
-      {page === "kainga" && <AdminKainga {...context} />}
+      {page === "courses" && <AdminCourses courses={courses} assignments={assignments} />}
+      {page === "kainga" && <AdminKainga teachers={teachers} />}
     </main>
-  );
-}
-
-function AdminDashboard({
-  courses,
-  teachers,
-  rooms,
-  assignments,
-  pendingRequests,
-}) {
-  const stats = [
-    [courses.length, "Courses"],
-    [assignments.length, "Scheduled classes"],
-    [teachers.length, "Teachers"],
-    [rooms.length, "Learning spaces"],
-  ];
-  return (
-    <>
-      <section className="admin-view-stats">
-        {stats.map(([value, label]) => (
-          <article key={label}>
-            <strong>{value}</strong>
-            <span>{label}</span>
-          </article>
-        ))}
-      </section>
-      <section className="admin-view-panel">
-        <h2>Attention needed</h2>
-        <p>
-          {pendingRequests.length
-            ? `${pendingRequests.length} account deletion request${pendingRequests.length === 1 ? "" : "s"} waiting for review.`
-            : "There are no pending account deletion requests."}
-        </p>
-        <Link to="/admin">Review administration tasks</Link>
-      </section>
-    </>
-  );
-}
-
-function AdminTimetable({ assignments, courseMap, teacherMap, roomMap }) {
-  return (
-    <section className="admin-line-grid">
-      {[1, 2, 3, 4, 5].map((line) => {
-        const items = assignments.filter((item) => item.line === line);
-        return (
-          <article key={line}>
-            <header>
-              <span>Timetable</span>
-              <strong>Line {line}</strong>
-              <small>{items.length} classes</small>
-            </header>
-            <div>
-              {items.length ? (
-                items.map((item) => {
-                  const course = courseMap.get(item.course_id);
-                  return (
-                    <div className="admin-line-class" key={item.course_id}>
-                      <b>{course?.code || "—"}</b>
-                      <span>{course?.name || "Unknown course"}</span>
-                      <small>
-                        {teacherMap.get(item.teacher_id)?.name || "No teacher"}{" "}
-                        ·{" "}
-                        {roomMap.get(item.room_id)?.code ||
-                          item.area ||
-                          "No room"}
-                      </small>
-                    </div>
-                  );
-                })
-              ) : (
-                <p>No classes assigned.</p>
-              )}
-            </div>
-          </article>
-        );
-      })}
-    </section>
-  );
-}
-
-function AdminNcea({ courses }) {
-  const levels = [1, 2, 3].map((level) => ({
-    level,
-    count: courses.filter(
-      (course) => course.level === level || (course.level === 23 && level > 1),
-    ).length,
-  }));
-  return (
-    <>
-      <section className="admin-view-stats">
-        {levels.map(({ level, count }) => (
-          <article key={level}>
-            <strong>{count}</strong>
-            <span>Level {level} courses</span>
-          </article>
-        ))}
-      </section>
-      <section className="admin-view-panel">
-        <h2>Student achievement records</h2>
-        <p>
-          Students select standards and record grades from their own NCEA page.
-          Administrators manage the courses those standards are connected to.
-        </p>
-        <Link to="/admin">Manage the course catalogue</Link>
-      </section>
-    </>
   );
 }
 

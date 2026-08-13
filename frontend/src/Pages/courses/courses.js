@@ -154,7 +154,7 @@ function StudentCourses() {
     return () => controller.abort();
   }, [studentId]);
 
-  // Search results and curriculum-area groups
+  // Search results grouped first by school year, then curriculum area.
   const selectedIds = useMemo(
     () => new Set(subjects.map((subject) => subject.id)),
     [subjects],
@@ -178,19 +178,20 @@ function StudentCourses() {
   );
 
   const courseGroups = useMemo(
-    () =>
-      Object.entries(
-        visibleCourses.reduce(
-          (groups, course) => ({
-            ...groups,
-            [course.category || "Other"]: [
-              ...(groups[course.category || "Other"] || []),
-              course,
-            ],
-          }),
-          {},
-        ),
-      ).sort(([first], [second]) => first.localeCompare(second)),
+    () => [
+      { year: 11, levels: [1] },
+      { year: 12, levels: [2, 23] },
+      { year: 13, levels: [3, 23] },
+    ].map(({ year, levels }) => {
+      const yearCourses = visibleCourses.filter((course) => levels.includes(course.level));
+      const areas = Object.entries(
+        yearCourses.reduce((groups, course) => {
+          const category = course.category || "Other";
+          return { ...groups, [category]: [...(groups[category] || []), course] };
+        }, {}),
+      ).sort(([first], [second]) => first.localeCompare(second));
+      return { year, courseCount: yearCourses.length, areas };
+    }).filter((group) => group.courseCount),
     [visibleCourses],
   );
 
@@ -300,41 +301,30 @@ function StudentCourses() {
         </div>
         {courseGroups.length ? (
           <div className="catalogue-groups">
-            {courseGroups.map(([category, categoryCourses]) => (
-              <details
-                className="catalogue-group"
-                key={category}
-                open={Boolean(query)}
-              >
+            {courseGroups.map(({ year, courseCount, areas }) => (
+              <details className="catalogue-year-group" key={year} open={Boolean(query)}>
                 <summary>
-                  <div>
-                    <h3>{category}</h3>
-                    <span>{categoryCourses.length} courses</span>
-                  </div>
+                  <div><h3>Year {year}</h3><span>{courseCount} {courseCount === 1 ? "course" : "courses"}</span></div>
                   <i>⌄</i>
                 </summary>
-                <div className="catalogue-course-grid">
-                  {categoryCourses.map((course) => (
-                    <button
-                      type="button"
-                      className={selectedIds.has(course.id) ? "selected" : ""}
-                      key={course.id}
-                      onClick={() =>
-                        window.location.assign(officialCourseUrl(course))
-                      }
-                      aria-label={`View official information for ${course.name}`}
-                    >
-                      <span className="catalogue-code">{course.code}</span>
-                      <div>
-                        <strong>{course.name}</strong>
-                        <small>
-                          {levelLabel(course.level)} · Official course
-                          information
-                        </small>
+                <div className="catalogue-year-areas">
+                  {areas.map(([category, categoryCourses]) => (
+                    <details className="catalogue-group" key={`${year}-${category}`} open={Boolean(query)}>
+                      <summary>
+                        <div><h4>{category}</h4><span>{categoryCourses.length} courses</span></div>
+                        <i>⌄</i>
+                      </summary>
+                      <div className="catalogue-course-grid">
+                        {categoryCourses.map((course) => (
+                          <button type="button" className={selectedIds.has(course.id) ? "selected" : ""} key={course.id} onClick={() => window.location.assign(officialCourseUrl(course))} aria-label={`View official information for ${course.name}`}>
+                            <span className="catalogue-code">{course.code}</span>
+                            <div><strong>{course.name}</strong><small>{levelLabel(course.level)} · Official course information</small></div>
+                            {selectedIds.has(course.id) && <em>My course</em>}
+                            <i>→</i>
+                          </button>
+                        ))}
                       </div>
-                      {selectedIds.has(course.id) && <em>My course</em>}
-                      <i>→</i>
-                    </button>
+                    </details>
                   ))}
                 </div>
               </details>

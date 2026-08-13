@@ -710,3 +710,17 @@
   .booked-space-actions { align-items: flex-start; }
   .booked-space-actions b { text-align: left; }
 }
+.teacher-time-format-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.teacher-time-format-setting select {
+  min-height: 42px;
+  padding: 0 11px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  background: #fff;
+  color: #292929;
+  font: inherit;
+}

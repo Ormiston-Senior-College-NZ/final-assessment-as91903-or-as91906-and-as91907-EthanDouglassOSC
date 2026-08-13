@@ -25,6 +25,14 @@
   box-shadow: 0 18px 50px rgba(49, 38, 16, 0.09);
 }
 
+.setup-school-logo {
+  display: block;
+  width: 165px;
+  max-width: 45%;
+  height: auto;
+  margin: 0 0 14px;
+}
+
 .setup-eyebrow {
   color: #a18702;
   font-size: 11px;

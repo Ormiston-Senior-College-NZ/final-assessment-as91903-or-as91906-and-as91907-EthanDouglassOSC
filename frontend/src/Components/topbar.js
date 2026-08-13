@@ -5,12 +5,14 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentLesson } from "../utils/timetableHelper";
+import { formatClock, formatTimeRange, useTimeFormat } from "../utils/timeFormat";
 import "./topbar.css";
 
 function Topbar() {
   // Clock and current timetable state
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timetable, setTimetable] = useState([]);
+  const [timeFormat] = useTimeFormat();
   const isAdmin = localStorage.getItem("isAdmin") === "true";
   const isTeacher = localStorage.getItem("accountType") === "teacher";
 
@@ -110,7 +112,7 @@ function Topbar() {
               <span>{lesson.room_name || lesson.room}</span>
             ) : null}
             <span>
-              {lesson.start}–{lesson.end}
+              {formatTimeRange(lesson.start, lesson.end, timeFormat)}
             </span>
           </div>
         ) : (
@@ -126,11 +128,7 @@ function Topbar() {
           {currentTime.toLocaleDateString("en-NZ", { weekday: "short" })}
         </span>
         <strong>
-          {currentTime.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          })}
+          {formatClock(currentTime, timeFormat)}
         </strong>
       </div>
     </header>

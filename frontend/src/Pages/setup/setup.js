@@ -128,6 +128,7 @@ function Setup() {
   return (
     <div className="setup-page">
       <div className="setup-card">
+        <img className="setup-school-logo" src="/osc-logo.jpeg" alt="Ormiston Senior College" />
         <h1>Welcome to StudentNET</h1>
 
         <p>Let's personalise your account.</p>

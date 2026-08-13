@@ -6,6 +6,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
 import "./timetable.css";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -18,6 +19,7 @@ function StudentTimetable() {
   );
   const [lessons, setLessons] = useState([]);
   const [status, setStatus] = useState("loading");
+  const [timeFormat] = useTimeFormat();
 
   // Load the signed-in student's generated timetable.
   useEffect(() => {
@@ -139,7 +141,7 @@ function StudentTimetable() {
                       <span className="session-badge">{lesson.session}</span>
                     </td>
                     <td className="time-cell">
-                      {lesson.start_time}–{lesson.end_time}
+                      {formatTimeRange(lesson.start_time, lesson.end_time, timeFormat)}
                     </td>
                     <td>
                       <strong>{lesson.name}</strong>

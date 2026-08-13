@@ -5,8 +5,9 @@
  * administrator-reviewed account-deletion request.
  */
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../Components/confirmDialog";
+import { formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
 import "./settings.css";
 
 const KAINGAS = ["Pūngāwerewere", "Pūkeko", "Mokoroa", "Kea"];
@@ -29,9 +30,11 @@ function StudentSettings() {
   const [courses, setCourses] = useState([]);
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  const [saveNotice, setSaveNotice] = useState("");
   const [deletionRequest, setDeletionRequest] = useState(null);
   const [deletionBusy, setDeletionBusy] = useState(false);
   const [confirmation, setConfirmation] = useState(null);
+  const [timeFormat, setTimeFormat] = useTimeFormat();
 
   // Load the student's account and all editable selection options.
   useEffect(() => {
@@ -89,7 +92,14 @@ function StudentSettings() {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
     setMessage("");
+    setSaveNotice("");
   };
+
+  useEffect(() => {
+    if (!saveNotice) return undefined;
+    const timer = window.setTimeout(() => setSaveNotice(""), 3500);
+    return () => window.clearTimeout(timer);
+  }, [saveNotice]);
 
   const save = async (event) => {
     event.preventDefault();
@@ -114,6 +124,7 @@ function StudentSettings() {
 
     setStatus("saving");
     setMessage("");
+    setSaveNotice("");
 
     try {
       const response = await fetch(`/user/${encodeURIComponent(studentId)}`, {
@@ -145,7 +156,8 @@ function StudentSettings() {
         confirmPassword: "",
       }));
       setStatus("ready");
-      setMessage(data.message);
+      setMessage("");
+      setSaveNotice(data.message || "Changes saved successfully.");
     } catch (error) {
       setStatus("form-error");
       setMessage(error.message);
@@ -159,6 +171,7 @@ function StudentSettings() {
       return { ...current, subjects };
     });
     setMessage("");
+    setSaveNotice("");
   };
 
   const filteredCourses = courses.filter((course) => {
@@ -326,7 +339,12 @@ function StudentSettings() {
               <span>Timetable</span>
               <h2>My subjects</h2>
             </div>
-            <p>Choose one different subject for each timetable line.</p>
+            <div className="settings-card-heading-actions">
+              <p>Choose one different subject for each timetable line.</p>
+              <Link to="/courses" className="settings-back-link">
+                ← Back to courses
+              </Link>
+            </div>
           </div>
           <div className="settings-subject-grid">
             {[1, 2, 3, 4, 5].map((line, index) => (
@@ -337,11 +355,11 @@ function StudentSettings() {
                   <small>
                     {
                       [
-                        "Mon 09:00–10:30",
-                        "Mon 10:50–12:20",
-                        "Mon 13:40–14:30",
-                        "Mon 14:35–15:25",
-                        "Tue 10:50–12:20",
+                        `Mon ${formatTimeRange("09:00", "10:30", timeFormat)}`,
+                        `Mon ${formatTimeRange("10:50", "12:20", timeFormat)}`,
+                        `Mon ${formatTimeRange("13:40", "14:30", timeFormat)}`,
+                        `Mon ${formatTimeRange("14:35", "15:25", timeFormat)}`,
+                        `Tue ${formatTimeRange("10:50", "12:20", timeFormat)}`,
                       ][index]
                     }
                   </small>
@@ -366,6 +384,26 @@ function StudentSettings() {
                 </select>
               </label>
             ))}
+          </div>
+        </section>
+
+        <section className="settings-card">
+          <div className="settings-card-heading">
+            <div>
+              <span>Display</span>
+              <h2>Time format</h2>
+            </div>
+            <p>Choose how times appear throughout StudentNET.</p>
+          </div>
+          <div className="settings-form-grid time-format-grid">
+            <label>
+              <span>Clock and timetable times</span>
+              <select value={timeFormat} onChange={(event) => setTimeFormat(event.target.value)}>
+                <option value="24">24-hour time (13:40)</option>
+                <option value="12">12-hour time (1:40 pm)</option>
+              </select>
+              <small>This preference is saved automatically on this browser.</small>
+            </label>
           </div>
         </section>
 
@@ -479,6 +517,13 @@ function StudentSettings() {
           </button>
         </div>
       </form>
+      {saveNotice && (
+        <div className="settings-save-toast" role="status" aria-live="polite">
+          <span aria-hidden="true">✓</span>
+          <strong>{saveNotice}</strong>
+          <button type="button" aria-label="Dismiss confirmation" onClick={() => setSaveNotice("")}>×</button>
+        </div>
+      )}
       {confirmation && (
         <ConfirmDialog
           title="Request account deletion"

@@ -31,8 +31,12 @@ function TeacherLayout() {
     <div className="teacher-layout">
       <aside className="teacher-sidebar">
         <header>
-          <strong>TeacherNET</strong>
-          <small>Ormiston Senior College</small>
+          <span className="teacher-brand-logo">
+            <img src="/osc-logo-white.png" alt="Ormiston Senior College" />
+          </span>
+          <span className="teacher-brand-copy">
+            <strong>TeacherNET</strong>
+          </span>
         </header>
         <nav>
           {LINKS.map(([to, label]) => (

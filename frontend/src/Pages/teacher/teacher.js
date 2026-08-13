@@ -1,6 +1,7 @@
 /* Teacher dashboard variants for overview, timetable, tutorials, and settings. */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ConfirmDialog from "../../Components/confirmDialog";
+import { formatTime, formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
 import "./teacher.css";
 
 function TeacherPage({ view = "dashboard" }) {
@@ -150,6 +151,7 @@ function formatRoom(room) {
 }
 
 function Timetable({ lessons, rooms, slots, onLocationChange }) {
+  const [timeFormat] = useTimeFormat();
   const [weekOffset, setWeekOffset] = useState(0);
   const today = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(
@@ -174,16 +176,7 @@ function Timetable({ lessons, rooms, slots, onLocationChange }) {
       month: "short",
       year: "numeric",
     });
-  const displayTime = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return new Date(2000, 0, 1, hours, minutes)
-      .toLocaleTimeString("en-NZ", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .toLowerCase();
-  };
+  const displayTime = (time) => formatTime(time, timeFormat);
   const minutes = (time) => {
     const [hours, value] = time.split(":").map(Number);
     return hours * 60 + value;
@@ -324,6 +317,7 @@ function WeeklyLesson({ lesson, displayTime, onEdit }) {
 }
 
 function LocationModal({ lesson, rooms, onClose, onSave }) {
+  const [timeFormat] = useTimeFormat();
   const areas = [...new Set(rooms.map((room) => room.name.split(" ")[0]))].sort(
     (a, b) => a.localeCompare(b, "mi"),
   );
@@ -346,8 +340,7 @@ function LocationModal({ lesson, rooms, onClose, onSave }) {
             <span>Lesson location</span>
             <h2 id="location-title">{lesson.name}</h2>
             <p>
-              {DAYS[lesson.day - 1]} · Line {lesson.line} · {lesson.start_time}–
-              {lesson.end_time}
+              {DAYS[lesson.day - 1]} · Line {lesson.line} · {formatTimeRange(lesson.start_time, lesson.end_time, timeFormat)}
             </p>
           </div>
           <button
@@ -634,6 +627,7 @@ function TutorialSpaces({ teacherId }) {
 }
 
 function Settings({ teacher }) {
+  const [timeFormat, setTimeFormat] = useTimeFormat();
   return (
     <section className="teacher-panel teacher-profile-settings">
       <div>
@@ -652,6 +646,13 @@ function Settings({ teacher }) {
         <span>Kāinga</span>
         <strong>{teacher.kainga}</strong>
       </div>
+      <label className="teacher-time-format-setting">
+        <span>Time format</span>
+        <select value={timeFormat} onChange={(event) => setTimeFormat(event.target.value)}>
+          <option value="24">24-hour (13:40)</option>
+          <option value="12">12-hour (1:40 pm)</option>
+        </select>
+      </label>
       <a href="/teacher/change-password">Change password</a>
     </section>
   );

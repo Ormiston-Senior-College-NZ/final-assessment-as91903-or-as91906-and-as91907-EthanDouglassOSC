@@ -24,9 +24,16 @@ body {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
+.login-school-logo {
+  display: block;
+  width: min(240px, 75%);
+  height: auto;
+  margin: 0 auto 18px;
+}
+
 .login-card h1 {
   text-align: center;
-  margin-bottom: 30px;
+  margin: 0 0 30px;
   color: #a18702;
   font-size: 32px;
 }

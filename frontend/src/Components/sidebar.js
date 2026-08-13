@@ -73,9 +73,11 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
+        <span className="sidebar-logo-frame">
+          <img src="/osc-logo-white.png" alt="Ormiston Senior College" />
+        </span>
         <div>
-          <strong>StudentNET</strong>
-          <small>Ormiston Senior College</small>
+          <strong>{isAdmin ? "AdminNET" : "StudentNET"}</strong>
         </div>
       </div>
 

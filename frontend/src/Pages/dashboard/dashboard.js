@@ -6,6 +6,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
+import { formatTime, formatTimeRange, useTimeFormat } from "../../utils/timeFormat";
 import "./dashboard.css";
 
 function toMinutes(time) {
@@ -23,6 +24,7 @@ function StudentDashboard() {
   const [standards, setStandards] = useState([]);
   const [tutorialBookings, setTutorialBookings] = useState([]);
   const [status, setStatus] = useState("loading");
+  const [timeFormat] = useTimeFormat();
   const now = useMemo(() => new Date(), []);
 
   // Load the timetable and NCEA results shown in the overview.
@@ -218,7 +220,7 @@ function StudentDashboard() {
           </strong>
           <small>
             {nextLesson
-              ? `${nextLesson.start_time}–${nextLesson.end_time}`
+              ? formatTimeRange(nextLesson.start_time, nextLesson.end_time, timeFormat)
               : "No more classes today"}
           </small>
         </article>
@@ -271,8 +273,8 @@ function StudentDashboard() {
                   key={`${lesson.day}-${lesson.session}`}
                 >
                   <div className="lesson-time">
-                    <strong>{lesson.start_time}</strong>
-                    <span>{lesson.end_time}</span>
+                    <strong>{formatTime(lesson.start_time, timeFormat)}</strong>
+                    <span>{formatTime(lesson.end_time, timeFormat)}</span>
                   </div>
                   <div className="lesson-details">
                     <strong>{lesson.name}</strong>

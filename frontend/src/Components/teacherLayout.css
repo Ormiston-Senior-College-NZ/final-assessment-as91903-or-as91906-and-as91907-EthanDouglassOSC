@@ -20,12 +20,26 @@
   display: flex;
   padding: 0 10px 28px;
   flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
 }
+.teacher-brand-logo {
+  display: grid;
+  width: 100%;
+  height: 72px;
+  overflow: visible;
+  padding: 0;
+  box-sizing: border-box;
+  place-items: center;
+}
+.teacher-brand-logo img { display: block; width: 100%; height: auto; transform: translateX(-20%) scale(1.18); }
+.teacher-brand-copy { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; text-align: left; transform: translateX(-3px); }
 .teacher-sidebar header strong {
   font-size: 18px;
 }
 .teacher-sidebar header small {
   color: #aaa;
+  font-size: 10px;
 }
 .teacher-sidebar nav {
   display: grid;

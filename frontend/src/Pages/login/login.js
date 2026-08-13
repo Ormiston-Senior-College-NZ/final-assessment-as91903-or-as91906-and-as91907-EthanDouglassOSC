@@ -171,7 +171,8 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>OSC StudentNET</h1>
+        <img className="login-school-logo" src="/osc-logo.jpeg" alt="Ormiston Senior College" />
+
 
         <div className="tabs">
           <button

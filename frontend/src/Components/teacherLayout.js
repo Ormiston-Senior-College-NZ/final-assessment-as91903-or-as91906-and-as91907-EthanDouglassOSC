@@ -1,5 +1,5 @@
 /* Teacher-only application shell with navigation and shared account controls. */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import Topbar from "./topbar";
 import "./teacherLayout.css";
@@ -14,10 +14,19 @@ const LINKS = [
 function TeacherLayout() {
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
-  if (localStorage.getItem("accountType") !== "teacher")
-    return <Navigate to="/" replace />;
+  const accountRef = useRef(null);
   const name =
     `${localStorage.getItem("firstName") || ""} ${localStorage.getItem("lastName") || ""}`.trim();
+  useEffect(() => {
+    if (!accountOpen) return undefined;
+    const closeOutside = (event) => {
+      if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, [accountOpen]);
+  if (localStorage.getItem("accountType") !== "teacher")
+    return <Navigate to="/" replace />;
   return (
     <div className="teacher-layout">
       <aside className="teacher-sidebar">
@@ -32,7 +41,7 @@ function TeacherLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="teacher-account">
+        <div className="teacher-account" ref={accountRef}>
           {accountOpen && (
             <div className="teacher-account-menu">
               <NavLink to="/teacher/settings" onClick={() => setAccountOpen(false)}>

@@ -84,6 +84,62 @@ def get_connection():
             connection.execute(
                 "ALTER TABLE tutorial_bookings ADD COLUMN offering_id INTEGER REFERENCES tutorial_offerings(id)"
             )
+        standard_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(student_standards)")
+        }
+        if "catalog_standard_id" not in standard_columns:
+            connection.execute(
+                "ALTER TABLE student_standards ADD COLUMN catalog_standard_id INTEGER REFERENCES assessment_catalog(id)"
+            )
+            connection.execute("""
+                UPDATE student_standards
+                SET catalog_standard_id = (
+                    SELECT assessment_catalog.id FROM assessment_catalog
+                    WHERE assessment_catalog.standard_number = student_standards.standard_number
+                    LIMIT 1
+                )
+                WHERE EXISTS (
+                    SELECT 1 FROM assessment_catalog
+                    WHERE assessment_catalog.standard_number = student_standards.standard_number
+                )
+            """)
+        if "is_additional" not in standard_columns:
+            connection.execute(
+                "ALTER TABLE student_standards ADD COLUMN is_additional INTEGER NOT NULL DEFAULT 0"
+            )
+        standard_info = {
+            row[1]: row for row in connection.execute("PRAGMA table_info(student_standards)")
+        }
+        if standard_info["course_id"][3] or standard_info["standard_number"][3]:
+            # Additional standards are intentionally independent of an enrolled
+            # course and may not have an NZQA number, so both fields are nullable.
+            connection.executescript("""
+                ALTER TABLE student_standards RENAME TO student_standards_old;
+                CREATE TABLE student_standards (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    student_id TEXT NOT NULL,
+                    course_id INTEGER,
+                    standard_number TEXT,
+                    title TEXT NOT NULL,
+                    credits INTEGER NOT NULL,
+                    assessment_type TEXT NOT NULL,
+                    grade TEXT NOT NULL DEFAULT '',
+                    ue_approved INTEGER NOT NULL DEFAULT 1,
+                    catalog_standard_id INTEGER REFERENCES assessment_catalog(id),
+                    is_additional INTEGER NOT NULL DEFAULT 0,
+                    UNIQUE(student_id, standard_number),
+                    FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE,
+                    FOREIGN KEY(course_id) REFERENCES courses(id)
+                );
+                INSERT INTO student_standards
+                    (id, student_id, course_id, standard_number, title, credits,
+                     assessment_type, grade, ue_approved, catalog_standard_id, is_additional)
+                SELECT id, student_id, course_id, NULLIF(TRIM(standard_number), ''),
+                       title, credits, assessment_type, grade, ue_approved,
+                       catalog_standard_id, is_additional
+                FROM student_standards_old;
+                DROP TABLE student_standards_old;
+            """)
         connection.execute("DROP INDEX IF EXISTS one_student_per_tutorial_space")
         commons = (
             ("PapaC", "Papatūānuku Commons"),
@@ -864,15 +920,18 @@ def get_student_standards(student_id):
             JOIN assessment_catalog ON assessment_catalog.id = course_standard_catalog.standard_id
         )
         SELECT student_standards.*, courses.code AS course_code,
-               courses.name AS course_name, courses.level AS course_level
+               courses.name AS course_name,
+               COALESCE(courses.level, assessment_catalog.level) AS course_level
                , numbered_catalog.short_code
         FROM student_standards
-        JOIN courses ON courses.id = student_standards.course_id
+        LEFT JOIN courses ON courses.id = student_standards.course_id
+        LEFT JOIN assessment_catalog
+            ON assessment_catalog.id = student_standards.catalog_standard_id
         LEFT JOIN numbered_catalog
             ON numbered_catalog.course_id = student_standards.course_id
             AND numbered_catalog.standard_number = student_standards.standard_number
         WHERE student_standards.student_id = ?
-        ORDER BY courses.name, student_standards.standard_number
+        ORDER BY student_standards.is_additional, courses.name, student_standards.standard_number
     """, (student_id,)).fetchall()
     connection.close()
     return standards
@@ -890,18 +949,14 @@ def get_standard_catalog(student_id):
             FROM course_standard_catalog
             JOIN assessment_catalog ON assessment_catalog.id = course_standard_catalog.standard_id
         )
-        SELECT numbered_catalog.*
-        FROM numbered_catalog
-        JOIN student_lines ON student_lines.course_id = numbered_catalog.course_id
-        WHERE student_lines.student_id = ?
-        ORDER BY numbered_catalog.course_id, numbered_catalog.level,
-                 CAST(numbered_catalog.standard_number AS INTEGER)
-    """, (student_id,)).fetchall()
+        SELECT numbered_catalog.* FROM numbered_catalog
+        ORDER BY course_id, level, standard_number
+    """).fetchall()
     connection.close()
     return standards
 
 
-def save_student_standard(student_id, standard_id, course_id, number, title, credits, assessment_type, grade, ue_approved):
+def save_student_standard(student_id, standard_id, course_id, number, title, credits, assessment_type, grade, ue_approved, catalog_id=None, is_additional=False):
     connection = get_connection()
     try:
         selected_course = connection.execute("""
@@ -910,31 +965,63 @@ def save_student_standard(student_id, standard_id, course_id, number, title, cre
             JOIN courses ON courses.id = student_lines.course_id
             WHERE student_lines.student_id = ? AND courses.id = ?
         """, (student_id, course_id)).fetchone()
-        if not selected_course:
+        if not is_additional and not selected_course:
             return False, "Choose one of your enrolled classes.", None
+        if is_additional:
+            number = number or None
+
+        existing = None
+        if standard_id:
+            existing = connection.execute(
+                "SELECT catalog_standard_id FROM student_standards WHERE id = ? AND student_id = ?",
+                (standard_id, student_id),
+            ).fetchone()
+        official_id = existing["catalog_standard_id"] if existing and existing["catalog_standard_id"] else catalog_id
+        if official_id:
+            official = connection.execute("""
+                SELECT assessment_catalog.id, assessment_catalog.standard_number,
+                       assessment_catalog.title, assessment_catalog.credits,
+                       assessment_catalog.assessment_type
+                FROM assessment_catalog
+                WHERE assessment_catalog.id = ?
+                  AND (? = 1 OR EXISTS (
+                    SELECT 1 FROM course_standard_catalog
+                    WHERE course_standard_catalog.standard_id = assessment_catalog.id
+                      AND course_standard_catalog.course_id = ?
+                  ))
+            """, (official_id, int(is_additional), course_id)).fetchone()
+            if not official:
+                return False, "Choose an official standard assigned to this class.", None
+            official_id = official["id"]
+            number = official["standard_number"]
+            title = official["title"]
+            credits = official["credits"]
+            assessment_type = official["assessment_type"]
 
         if standard_id:
             cursor = connection.execute("""
                 UPDATE student_standards
                 SET course_id = ?, standard_number = ?, title = ?, credits = ?,
-                    assessment_type = ?, grade = ?, ue_approved = ?
+                    assessment_type = ?, grade = ?, ue_approved = ?, catalog_standard_id = ?, is_additional = ?
                 WHERE id = ? AND student_id = ?
-            """, (course_id, number, title, credits, assessment_type, grade, ue_approved, standard_id, student_id))
+            """, (course_id, number, title, credits, assessment_type, grade, ue_approved, official_id, int(is_additional), standard_id, student_id))
             saved_id = standard_id
         else:
             cursor = connection.execute("""
                 INSERT INTO student_standards
-                    (student_id, course_id, standard_number, title, credits, assessment_type, grade, ue_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (student_id, course_id, number, title, credits, assessment_type, grade, ue_approved))
+                    (student_id, course_id, standard_number, title, credits, assessment_type, grade, ue_approved, catalog_standard_id, is_additional)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (student_id, course_id, number, title, credits, assessment_type, grade, ue_approved, official_id, int(is_additional)))
             saved_id = cursor.lastrowid
         if cursor.rowcount != 1:
             return False, "Standard not found.", None
         connection.commit()
         return True, "Standard saved.", saved_id
-    except sqlite3.IntegrityError:
+    except sqlite3.IntegrityError as error:
         connection.rollback()
-        return False, "That standard number is already in your results.", None
+        if "student_standards.student_id, student_standards.standard_number" in str(error):
+            return False, "That standard is already listed. Edit or delete the existing entry instead.", None
+        return False, "The standard could not be saved because some information was invalid.", None
     finally:
         connection.close()
 

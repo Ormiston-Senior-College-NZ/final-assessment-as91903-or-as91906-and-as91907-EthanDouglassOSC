@@ -1070,12 +1070,13 @@ function AssignmentModal({
       ...(field === "area" ? { roomId: "" } : {}),
     }));
   return (
-    <div className="assignment-modal-backdrop" role="presentation">
+    <div className="assignment-modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
         className="assignment-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="assignment-title"
+        onMouseDown={(event) => event.stopPropagation()}
       >
         <header>
           <div>

@@ -3,7 +3,7 @@
  * Builds role-aware navigation, reads the student's identity, creates initials,
  * controls the account menu and clears the session on logout.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./sidebar.css";
 
@@ -27,6 +27,7 @@ function Sidebar() {
   // Account, navigation, and appearance state
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef(null);
   const [profile, setProfile] = useState(() => ({
     firstName: localStorage.getItem("firstName") || "Student",
     lastName: localStorage.getItem("lastName") || "",
@@ -48,6 +49,15 @@ function Sidebar() {
     return () =>
       window.removeEventListener("studentnet-profile-updated", updateProfile);
   }, []);
+
+  useEffect(() => {
+    if (!accountOpen) return undefined;
+    const closeOutside = (event) => {
+      if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, [accountOpen]);
 
   const logout = () => {
     localStorage.removeItem("authToken");
@@ -83,7 +93,7 @@ function Sidebar() {
         ))}
       </nav>
 
-      <div className="sidebar-account">
+      <div className="sidebar-account" ref={accountRef}>
         {accountOpen && (
           <div className="account-menu">
             {!isAdmin && (

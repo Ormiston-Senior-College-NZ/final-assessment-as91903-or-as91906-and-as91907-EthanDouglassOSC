@@ -357,8 +357,9 @@ def ncea_standards(student_id):
     if request.method == "GET":
         return jsonify([dict(item) for item in get_student_standards(student_id)])
     data = request.get_json(silent=True) or {}
+    is_additional = bool(data.get("isAdditional"))
     try:
-        course_id = int(data.get("courseId"))
+        course_id = int(data.get("courseId")) if data.get("courseId") else None
         credits = int(data.get("credits"))
     except (TypeError, ValueError):
         return jsonify({"success": False, "message": "Choose a class and enter valid credits."}), 400
@@ -366,11 +367,14 @@ def ncea_standards(student_id):
     title = str(data.get("title", "")).strip()
     assessment_type = data.get("assessmentType")
     grade = data.get("grade", "")
-    if not number or not title or credits < 1 or credits > 30 or assessment_type not in ("Internal", "External") or grade not in ("", "NA", "A", "M", "E"):
+    valid_assessment_types = ("Internal", "External", "Unit Standard") if is_additional else ("Internal", "External")
+    valid_grades = ("", "NA", "A") if assessment_type == "Unit Standard" else ("", "NA", "A", "M", "E")
+    if (not number and not is_additional) or not title or credits < 1 or credits > 30 or assessment_type not in valid_assessment_types or grade not in valid_grades:
         return jsonify({"success": False, "message": "Complete every standard field with valid values."}), 400
     success, message, saved_id = save_student_standard(
         student_id, None, course_id, number, title, credits,
-        assessment_type, grade, bool(data.get("ueApproved", True))
+        assessment_type, grade, bool(data.get("ueApproved", True)),
+        data.get("catalogId") or None, is_additional
     )
     return jsonify({"success": success, "message": message, "id": saved_id}), 201 if success else 400
 
@@ -390,8 +394,9 @@ def ncea_standard(student_id, standard_id):
         success = delete_student_standard(student_id, standard_id)
         return jsonify({"success": success, "message": "Standard deleted." if success else "Standard not found."}), 200 if success else 404
     data = request.get_json(silent=True) or {}
+    is_additional = bool(data.get("isAdditional"))
     try:
-        course_id = int(data.get("courseId"))
+        course_id = int(data.get("courseId")) if data.get("courseId") else None
         credits = int(data.get("credits"))
     except (TypeError, ValueError):
         return jsonify({"success": False, "message": "Choose a class and enter valid credits."}), 400
@@ -399,11 +404,14 @@ def ncea_standard(student_id, standard_id):
     title = str(data.get("title", "")).strip()
     assessment_type = data.get("assessmentType")
     grade = data.get("grade", "")
-    if not number or not title or credits < 1 or credits > 30 or assessment_type not in ("Internal", "External") or grade not in ("", "NA", "A", "M", "E"):
+    valid_assessment_types = ("Internal", "External", "Unit Standard") if is_additional else ("Internal", "External")
+    valid_grades = ("", "NA", "A") if assessment_type == "Unit Standard" else ("", "NA", "A", "M", "E")
+    if (not number and not is_additional) or not title or credits < 1 or credits > 30 or assessment_type not in valid_assessment_types or grade not in valid_grades:
         return jsonify({"success": False, "message": "Complete every standard field with valid values."}), 400
     success, message, saved_id = save_student_standard(
         student_id, standard_id, course_id, number, title, credits,
-        assessment_type, grade, bool(data.get("ueApproved", True))
+        assessment_type, grade, bool(data.get("ueApproved", True)),
+        data.get("catalogId") or None, is_additional
     )
     return jsonify({"success": success, "message": message, "id": saved_id}), 200 if success else 400
 

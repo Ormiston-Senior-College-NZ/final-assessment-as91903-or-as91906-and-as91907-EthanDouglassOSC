@@ -232,16 +232,19 @@ cursor.execute("""
 CREATE TABLE student_standards (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id TEXT NOT NULL,
-    course_id INTEGER NOT NULL,
-    standard_number TEXT NOT NULL,
+    course_id INTEGER,
+    standard_number TEXT,
     title TEXT NOT NULL,
     credits INTEGER NOT NULL,
     assessment_type TEXT NOT NULL,
     grade TEXT NOT NULL DEFAULT '',
     ue_approved INTEGER NOT NULL DEFAULT 1,
+    catalog_standard_id INTEGER,
+    is_additional INTEGER NOT NULL DEFAULT 0,
     UNIQUE(student_id, standard_number),
     FOREIGN KEY(student_id) REFERENCES users(student_id) ON DELETE CASCADE,
-    FOREIGN KEY(course_id) REFERENCES courses(id)
+    FOREIGN KEY(course_id) REFERENCES courses(id),
+    FOREIGN KEY(catalog_standard_id) REFERENCES assessment_catalog(id)
 )
 """)
 

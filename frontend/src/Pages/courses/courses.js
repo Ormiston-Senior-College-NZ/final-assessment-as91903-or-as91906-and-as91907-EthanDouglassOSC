@@ -201,6 +201,7 @@ function StudentCourses() {
     return {
       ...subject,
       teacher: lesson?.teacher,
+      teacherCode: lesson?.teacher_code,
       room: lesson?.room_name || lesson?.room,
     };
   };
@@ -226,10 +227,6 @@ function StudentCourses() {
             View your current classes and explore the StudentNET course
             catalogue.
           </p>
-        </div>
-        <div className="courses-count">
-          <strong>{courses.length}</strong>
-          <span>available courses</span>
         </div>
       </header>
 
@@ -262,7 +259,11 @@ function StudentCourses() {
                 <dl>
                   <div>
                     <dt>Teacher</dt>
-                    <dd>{detail.teacher || "To be confirmed"}</dd>
+                    <dd>
+                      {detail.teacher
+                        ? `${detail.teacher}${detail.teacherCode ? ` (${detail.teacherCode})` : ""}`
+                        : "To be confirmed"}
+                    </dd>
                   </div>
                 </dl>
                 <button type="button">View course</button>
@@ -370,8 +371,8 @@ function Courses() {
 // Details popup used by cards in the student's current course list.
 function CourseModal({ course, selected, subject, detail, onClose }) {
   return (
-    <div className="course-modal-backdrop">
-      <section className="course-modal" role="dialog" aria-modal="true">
+    <div className="course-modal-backdrop" onMouseDown={onClose}>
+      <section className="course-modal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
         <header>
           <div>
             <span className="courses-eyebrow">

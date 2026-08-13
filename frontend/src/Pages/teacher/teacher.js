@@ -333,12 +333,13 @@ function LocationModal({ lesson, rooms, onClose, onSave }) {
   const [saving, setSaving] = useState(false);
   const areaRooms = rooms.filter((room) => room.name.startsWith(area));
   return (
-    <div className="teacher-location-backdrop" role="presentation">
+    <div className="teacher-location-backdrop" role="presentation" onMouseDown={onClose}>
       <section
         className="teacher-location-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="location-title"
+        onMouseDown={(event) => event.stopPropagation()}
       >
         <header>
           <div>
